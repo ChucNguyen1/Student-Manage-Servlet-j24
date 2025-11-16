@@ -118,17 +118,19 @@
             </a>
           </li>
           <li>
-            <a href="#"> 
-              <i class="bi bi-circle"></i><span>Quản lý Năm học</span>
+			<a href="${baseURL}/admin/namhoc-list">
+              <i class="bi bi-circle">
+              </i><span>Quản lý Năm học</span>
             </a>
           </li>
           <li>
-            <a href="#"> 
-              <i class="bi bi-circle"></i><span>Quản lý Học kỳ</span>
+            <a href="${baseURL}/admin/hocky-list">
+              <i class="bi bi-circle"></i>
+              <span>Quản lý Học kỳ</span>
             </a>
           </li>
           <li>
-            <a href="#">
+             <a href="${baseURL}/admin/monhoc-list">
               <i class="bi bi-circle"></i><span>Quản lý Môn học</span>
             </a>
           </li>
@@ -138,7 +140,7 @@
       <li class="nav-heading">Quản lý Nghiệp vụ</li>
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="#">
+        <a class="nav-link collapsed" href="${baseURL}/admin/giaovien-list">
           <i class="bi bi-person-video3"></i>
           <span>Quản lý Giáo viên</span>
         </a>

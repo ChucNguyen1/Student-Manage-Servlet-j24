@@ -268,3 +268,66 @@ INSERT INTO BangDiem (maHS, maMonHoc, maHocKy, diemMieng, diem15p_1, diem1Tiet_1
 (1002, 1, 1, 9, 10, 9.5, 10), 
 (1002, 2, 1, 8, 8, 8.5, 8); 
 GO
+
+-- Cập nhật trạng thái cho csdl
+USE db_quanlyhocsinh;
+GO
+
+-- 1. Cập nhật bảng KHOI
+ALTER TABLE Khoi 
+ADD trangThai BIT NOT NULL DEFAULT 1;
+GO
+
+-- 2. Cập nhật bảng NAMHOC
+ALTER TABLE NamHoc 
+ADD trangThai BIT NOT NULL DEFAULT 1;
+GO
+
+-- 3. Cập nhật bảng MONHOC
+ALTER TABLE MonHoc 
+ADD trangThai BIT NOT NULL DEFAULT 1;
+GO
+
+-- 4. Cập nhật bảng ROLES
+ALTER TABLE Roles 
+ADD trangThai BIT NOT NULL DEFAULT 1;
+GO
+
+-- 5. Cập nhật bảng HOCKY
+ALTER TABLE HocKy 
+ADD trangThai BIT NOT NULL DEFAULT 1;
+GO
+
+-- 6. Cập nhật bảng USERS
+ALTER TABLE Users 
+ADD trangThai BIT NOT NULL DEFAULT 1;
+GO
+
+-- 7. Cập nhật bảng GIAOVIEN
+ALTER TABLE GiaoVien 
+ADD trangThai BIT NOT NULL DEFAULT 1;
+GO
+
+-- 8. Cập nhật bảng LOPHOC
+ALTER TABLE LopHoc 
+ADD trangThai BIT NOT NULL DEFAULT 1;
+GO
+
+-- 9. Cập nhật bảng HOCSINH
+ALTER TABLE HocSinh 
+ADD trangThai BIT NOT NULL DEFAULT 1;
+GO
+
+-- 10. Cập nhật bảng THONGBAO
+ALTER TABLE ThongBao 
+ADD trangThai BIT NOT NULL DEFAULT 1;
+GO
+
+-- 11. Cập nhật bảng PHANCONG
+ALTER TABLE PhanCong 
+ADD trangThai BIT NOT NULL DEFAULT 1;
+GO
+
+-- Kiểm tra lại kết quả
+SELECT maGV, hoTen, trangThai FROM GiaoVien;
+SELECT maKhoi, tenKhoi, trangThai FROM Khoi;
