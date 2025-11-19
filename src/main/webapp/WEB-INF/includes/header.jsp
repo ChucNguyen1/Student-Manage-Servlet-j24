@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <c:set var="baseURL" value="${pageContext.request.contextPath}" />
-
+<%@ page isELIgnored="false" %>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -168,7 +168,7 @@
       </li><!-- End Diem Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="#"> 
+        <a class="nav-link collapsed" href="${baseURL}/admin/thongbao-list"> 
           <i class="bi bi-bell-fill"></i>
           <span>Quản lý Thông báo</span>
         </a>
