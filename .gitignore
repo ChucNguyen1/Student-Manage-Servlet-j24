@@ -1,1 +1,19 @@
+# Chặn thư mục build
 /target/
+/build/
+
+# Chặn file cấu hình riêng của Eclipse IDE
+.settings/
+.classpath
+.project
+.factorypath
+src/main/resources/.env
+
+# Chặn file cấu hình của VS Code/IntelliJ (nếu team dùng nhiều IDE)
+.vscode/
+.idea/
+*.iml
+
+# Chặn file hệ thống
+.DS_Store
+Thumbs.db

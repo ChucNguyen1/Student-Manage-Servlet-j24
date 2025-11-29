@@ -12,18 +12,10 @@
   scroll-behavior: smooth;
 }
 
-/* SỬA LỖI 1: 
-  Biến <body> thành một cột flex, cao 100% màn hình
-*/
 body {
   font-family: "Open Sans", sans-serif;
   background: #f6f9ff;
   color: #444444;
-  
-  /* Thêm 3 dòng này */
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
 }
 
 a {
@@ -52,12 +44,6 @@ h6 {
   margin-top: 60px;
   padding: 20px 30px;
   transition: all 0.3s;
-
-  /* SỬA LỖI 2: 
-    Bắt buộc #main (phần nội dung chính) phải
-    giãn ra để chiếm hết không gian thừa, đẩy footer xuống.
-  */
-  flex-grow: 1;
 }
 
 @media (max-width: 1199px) {
@@ -1259,18 +1245,6 @@ h6 {
   font-size: 14px;
   transition: all 0.3s;
   border-top: 1px solid #cddfff;
-
-  /* SỬA LỖI 3: 
-    Xóa code 'position: fixed' sai của bạn.
-    Footer sẽ tự động nằm dưới cùng vì nó là 
-    phần tử cuối cùng trong cột flex (body).
-  */
-  /* XÓA MẤY DÒNG NÀY ĐI:
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: #fff; 
-  */
 }
 
 .footer .copyright {
