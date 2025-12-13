@@ -187,4 +187,46 @@ public class HocKyDAOImpl implements HocKyDAO {
 		}
 		return false;
 	}
+
+	@Override
+	public List<HocKy> findAll() {
+		List<HocKy> list = new ArrayList<>();
+		// Lấy tất cả học kỳ đang hiện (trangThai = 1)
+		// JOIN bảng NamHoc để lấy tên năm học
+		String sql = "SELECT hk.*, nh.tenNH " + "FROM HocKy hk " + "JOIN NamHoc nh ON hk.maNH = nh.maNH "
+				+ "WHERE hk.trangThai = 1 " + "ORDER BY nh.maNH DESC, hk.tenHK ASC"; // Sắp xếp năm mới nhất, kỳ 1 trước
+																						// kỳ 2
+
+		try (Connection conn = DBConnection.getNewConnection();
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+
+			while (rs.next()) {
+				list.add(HocKyMapper.mapRow(rs));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	@Override
+	public List<HocKy> findByNamHoc(String maNH) {
+		List<HocKy> list = new ArrayList<>();
+		// Lấy học kỳ của năm đó, sắp xếp theo tên (HK1, HK2)
+		String sql = "SELECT * FROM HocKy WHERE maNH = ? AND trangThai = 1 ORDER BY tenHK ASC";
+
+		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.setString(1, maNH);
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					// Ở đây không cần JOIN tên năm học nữa vì ta đã biết năm nào rồi
+					list.add(HocKyMapper.mapRow(rs));
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
 }

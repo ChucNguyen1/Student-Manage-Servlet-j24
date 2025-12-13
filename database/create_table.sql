@@ -1,333 +1,260 @@
-﻿IF DB_ID('db_quanlyhocsinh') IS NOT NULL
+﻿IF DB_ID('db_quanlyhocsinh_v2') IS NOT NULL
 BEGIN
-    ALTER DATABASE db_quanlyhocsinh SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-    DROP DATABASE db_quanlyhocsinh;
+    ALTER DATABASE db_quanlyhocsinh_v2 SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE db_quanlyhocsinh_v2;
 END
 GO
 
-CREATE DATABASE db_quanlyhocsinh;
+CREATE DATABASE db_quanlyhocsinh_v2;
 GO
 
-USE db_quanlyhocsinh;
+USE db_quanlyhocsinh_v2;
 GO
 
+/* ==========================================================================
+   1. NHÓM DANH MỤC & HỆ THỐNG
+   ========================================================================== */
 
-/* QUẢN LÝ KHỐI */
-CREATE TABLE Khoi (
-    maKhoi INT PRIMARY KEY IDENTITY(1,1),
-    tenKhoi NVARCHAR(50) NOT NULL UNIQUE
+/* Bảng Vai trò */
+CREATE TABLE Roles (
+    roleID INT PRIMARY KEY IDENTITY(1,1),
+    roleName NVARCHAR(50) NOT NULL UNIQUE, -- Admin, GiaoVien, HocSinh, PhuHuynh
+    trangThai BIT DEFAULT 1
 );
 GO
 
-/* QUẢN LÝ NĂM HỌC */
+/* Bảng Người dùng */
+CREATE TABLE Users (
+    userID INT PRIMARY KEY IDENTITY(1,1),
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    avatar NVARCHAR(255) DEFAULT 'default.png',
+    roleID INT NOT NULL,
+    trangThai BIT DEFAULT 1, -- 1: Active, 0: Blocked
+    FOREIGN KEY (roleID) REFERENCES Roles(roleID)
+);
+GO
+
+/* Bảng Năm học */
 CREATE TABLE NamHoc (
-    maNH VARCHAR(10) PRIMARY KEY, 
+    maNH VARCHAR(10) PRIMARY KEY, -- VD: '2024-2025'
     tenNH NVARCHAR(100) NOT NULL,
     ngayBatDau DATE,
-    ngayKetThuc DATE
+    ngayKetThuc DATE,
+    trangThai BIT DEFAULT 1
 );
 GO
 
-/*QUẢN LÝ MÔN HỌC */
+/* Bảng Học kỳ */
+CREATE TABLE HocKy (
+    maHK INT PRIMARY KEY IDENTITY(1,1),
+    tenHK NVARCHAR(50) NOT NULL, -- Học kỳ 1, Học kỳ 2
+    heSo INT DEFAULT 1,
+    maNH VARCHAR(10) NOT NULL,
+    trangThai BIT DEFAULT 1,
+    FOREIGN KEY (maNH) REFERENCES NamHoc(maNH)
+);
+GO
+
+/* Bảng Khối */
+CREATE TABLE Khoi (
+    maKhoi INT PRIMARY KEY IDENTITY(1,1),
+    tenKhoi NVARCHAR(50) NOT NULL UNIQUE, -- Khối 10, 11, 12
+    trangThai BIT DEFAULT 1
+);
+GO
+
+/* Bảng Môn học */
 CREATE TABLE MonHoc (
     maMH INT PRIMARY KEY IDENTITY(1,1),
     tenMH NVARCHAR(100) NOT NULL,
-    soTiet INT
+    soTiet INT DEFAULT 45, -- Số tiết quy định trong phân phối chương trình
+    heSoMon INT DEFAULT 1, -- Hệ số môn (ví dụ Toán văn Anh hệ số 2)
+    trangThai BIT DEFAULT 1
 );
 GO
 
-/* QUẢN LÝ PHÂN QUYỀN (ROLES) */
-CREATE TABLE Roles (
-    roleID INT PRIMARY KEY IDENTITY(1,1),
-    roleName NVARCHAR(50) NOT NULL UNIQUE 
-);
-GO
+/* ==========================================================================
+   2. NHÓM NHÂN SỰ & LỚP HỌC
+   ========================================================================== */
 
-/* QUẢN LÝ GIÁO VIÊN */
+/* Bảng Giáo viên */
 CREATE TABLE GiaoVien (
     maGV INT PRIMARY KEY IDENTITY(1,1),
     hoTen NVARCHAR(100) NOT NULL,
     ngaySinh DATE,
     gioiTinh NVARCHAR(10),
-    chuyenMon NVARCHAR(100),
-    email VARCHAR(100) UNIQUE,
     sdt VARCHAR(15) UNIQUE,
-    diaChi NVARCHAR(MAX)
+    email VARCHAR(100) UNIQUE,
+    diaChi NVARCHAR(MAX),
+    maMonHocChuyenMon INT, -- Giáo viên chuyên dạy môn gì (để gợi ý phân công)
+    userID INT UNIQUE, -- Liên kết tài khoản
+    trangThai BIT DEFAULT 1,
+    FOREIGN KEY (userID) REFERENCES Users(userID),
+    FOREIGN KEY (maMonHocChuyenMon) REFERENCES MonHoc(maMH)
 );
 GO
 
-CREATE TABLE HocKy (
-    maHK INT PRIMARY KEY IDENTITY(1,1),
-    tenHK NVARCHAR(50) NOT NULL, 
-    heSo INT DEFAULT 1,
-    maNH VARCHAR(10) NOT NULL,
-    FOREIGN KEY (maNH) REFERENCES NamHoc(maNH)
-);
-GO
-
-/* QUẢN LÝ NGƯỜI DÙNG (USERS) */
-CREATE TABLE Users (
-    userID INT PRIMARY KEY IDENTITY(1,1),
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    roleID INT NOT NULL,
-    FOREIGN KEY (roleID) REFERENCES Roles(roleID)
-);
-GO
-
-/*QUẢN LÝ LỚP HỌC */
+/* Bảng Lớp học */
 CREATE TABLE LopHoc (
     maLop INT PRIMARY KEY IDENTITY(1,1),
     tenLop NVARCHAR(50) NOT NULL,
     maKhoi INT NOT NULL,
     maNH VARCHAR(10) NOT NULL,
-    maGVCN INT,
+    maGVCN INT, -- Giáo viên chủ nhiệm (QUAN TRỌNG)
+    trangThai BIT DEFAULT 1,
+    
     FOREIGN KEY (maKhoi) REFERENCES Khoi(maKhoi),
     FOREIGN KEY (maNH) REFERENCES NamHoc(maNH),
-    FOREIGN KEY (maGVCN) REFERENCES GiaoVien(maGV) ON DELETE SET NULL
+    FOREIGN KEY (maGVCN) REFERENCES GiaoVien(maGV),
+    
+    -- Ràng buộc: Trong 1 năm học, tên lớp không được trùng
+    CONSTRAINT UQ_TenLop_NamHoc UNIQUE (tenLop, maNH)
 );
 GO
 
-/*QUẢN LÝ HỌC SINH */
+/* ==========================================================================
+   3. NHÓM HỒ SƠ HỌC SINH (MỞ RỘNG)
+   ========================================================================== */
+
+/* Bảng Học sinh - Hồ sơ chi tiết */
 CREATE TABLE HocSinh (
     maHS INT PRIMARY KEY IDENTITY(1,1),
+    -- Thông tin cá nhân
     hoTen NVARCHAR(100) NOT NULL,
     ngaySinh DATE,
-    gioiTinh NVARCHAR(10), 
+    gioiTinh NVARCHAR(10),
+    noiSinh NVARCHAR(100), -- Mới
+    danToc NVARCHAR(50),   -- Mới
+    tonGiao NVARCHAR(50),  -- Mới
     diaChi NVARCHAR(MAX),
-    email VARCHAR(100) UNIQUE,
-    sdtPhuHuynh VARCHAR(15),
-    maLop INT,
-    FOREIGN KEY (maLop) REFERENCES LopHoc(maLop) ON DELETE SET NULL
+    
+    -- Thông tin liên lạc
+    email VARCHAR(100),
+    sdtCaNhan VARCHAR(15),
+    
+    -- Thông tin gia đình (Mới - Để liên lạc)
+    hoTenCha NVARCHAR(100),
+    ngheNghiepCha NVARCHAR(100),
+    sdtCha VARCHAR(15),
+    hoTenMe NVARCHAR(100),
+    ngheNghiepMe NVARCHAR(100),
+    sdtMe VARCHAR(15),
+    
+    -- Thông tin học vụ
+    maLop INT, -- Lớp hiện tại đang học
+    userID INT UNIQUE,
+    trangThaiHocTap NVARCHAR(50) DEFAULT N'Đang học', -- Đang học, Bảo lưu, Đuổi học, Tốt nghiệp
+    trangThai BIT DEFAULT 1, -- Xóa mềm
+    
+    FOREIGN KEY (maLop) REFERENCES LopHoc(maLop),
+    FOREIGN KEY (userID) REFERENCES Users(userID)
 );
 GO
 
-/* QUẢN LÝ THÔNG BÁO */
-CREATE TABLE ThongBao (
-    maTB INT PRIMARY KEY IDENTITY(1,1),
-    tieuDe NVARCHAR(255) NOT NULL,
-    noiDung NVARCHAR(MAX) NOT NULL,
-    ngayDang DATETIME DEFAULT GETDATE(),
-    maNguoiTao INT NOT NULL, 
-    FOREIGN KEY (maNguoiTao) REFERENCES Users(userID)
-);
-GO
+/* ==========================================================================
+   4. NHÓM THỜI KHÓA BIỂU & PHÂN CÔNG (MỚI)
+   ========================================================================== */
 
-/* QUẢN LÝ ĐIỂM */
-CREATE TABLE BangDiem (
-    maHS INT NOT NULL,
-    maMonHoc INT NOT NULL,
-    maHocKy INT NOT NULL,
-    diemMieng FLOAT,
-    diem15p_1 FLOAT,
-    diem15p_2 FLOAT,
-    diem1Tiet_1 FLOAT,
-    diem1Tiet_2 FLOAT,
-    diemThi FLOAT,
-    diemTBMon FLOAT, 
-    PRIMARY KEY (maHS, maMonHoc, maHocKy), 
-    FOREIGN KEY (maHS) REFERENCES HocSinh(maHS) ON DELETE CASCADE,
-    FOREIGN KEY (maMonHoc) REFERENCES MonHoc(maMH) ON DELETE CASCADE,
-    FOREIGN KEY (maHocKy) REFERENCES HocKy(maHK) ON DELETE CASCADE
-);
-GO
-
-/* PHÂN CÔNG GIẢNG DẠY */
+/* Bảng Phân công giảng dạy (Ai dạy môn gì lớp nào) */
 CREATE TABLE PhanCong (
     maPhanCong INT PRIMARY KEY IDENTITY(1,1),
     maGV INT NOT NULL,
     maLop INT NOT NULL,
     maMonHoc INT NOT NULL,
     maHocKy INT NOT NULL,
-    CONSTRAINT uq_phancong UNIQUE (maGV, maLop, maMonHoc, maHocKy), -- Đảm bảo không trùng lặp
+    trangThai BIT DEFAULT 1,
+    
     FOREIGN KEY (maGV) REFERENCES GiaoVien(maGV),
     FOREIGN KEY (maLop) REFERENCES LopHoc(maLop),
     FOREIGN KEY (maMonHoc) REFERENCES MonHoc(maMH),
-    FOREIGN KEY (maHocKy) REFERENCES HocKy(maHK)
+    FOREIGN KEY (maHocKy) REFERENCES HocKy(maHK),
+    
+    -- Ràng buộc: Trong 1 học kỳ, 1 lớp, 1 môn chỉ có 1 giáo viên dạy chính
+    CONSTRAINT UQ_PhanCong UNIQUE (maLop, maMonHoc, maHocKy)
 );
 GO
 
-
-ALTER TABLE HocSinh
-ADD userID INT NULL,
-CONSTRAINT fk_hocsinh_user
-    FOREIGN KEY (userID) REFERENCES Users(userID) ON DELETE SET NULL;
+/* Bảng Thời khóa biểu (MỚI) */
+CREATE TABLE ThoiKhoaBieu (
+    maTKB INT PRIMARY KEY IDENTITY(1,1),
+    maLop INT NOT NULL,
+    maMonHoc INT NOT NULL,
+    maGV INT NOT NULL, -- Giáo viên dạy tiết này (thường lấy từ bảng PhanCong sang)
+    maHocKy INT NOT NULL,
+    
+    thu INT CHECK (thu BETWEEN 2 AND 8), -- Thứ 2 đến Chủ nhật (8)
+    tiet INT CHECK (tiet BETWEEN 1 AND 12), -- Tiết 1 đến 12 (Sáng/Chiều)
+    phongHoc NVARCHAR(50), -- Phòng học (nếu có thay đổi)
+    
+    FOREIGN KEY (maLop) REFERENCES LopHoc(maLop),
+    FOREIGN KEY (maMonHoc) REFERENCES MonHoc(maMH),
+    FOREIGN KEY (maGV) REFERENCES GiaoVien(maGV),
+    FOREIGN KEY (maHocKy) REFERENCES HocKy(maHK),
+    
+    -- Ràng buộc Logic:
+    -- 1. Trong 1 học kỳ, vào thứ X tiết Y, Lớp Z chỉ học 1 môn
+    CONSTRAINT UQ_TKB_Lop UNIQUE (maLop, maHocKy, thu, tiet),
+    
+    -- 2. Trong 1 học kỳ, vào thứ X tiết Y, Giáo viên Z chỉ dạy 1 lớp
+    CONSTRAINT UQ_TKB_GiaoVien UNIQUE (maGV, maHocKy, thu, tiet)
+);
 GO
 
-ALTER TABLE GiaoVien
-ADD userID INT NULL,
-CONSTRAINT fk_giaovien_user
-    FOREIGN KEY (userID) REFERENCES Users(userID) ON DELETE SET NULL;
+/* ==========================================================================
+   5. NHÓM KẾT QUẢ HỌC TẬP & RÈN LUYỆN
+   ========================================================================== */
+
+/* Bảng Điểm chi tiết (Điểm môn học) */
+CREATE TABLE DiemChiTiet (
+    maDiem INT PRIMARY KEY IDENTITY(1,1),
+    maHS INT NOT NULL,
+    maMonHoc INT NOT NULL,
+    maHocKy INT NOT NULL,
+    
+    -- Các cột điểm
+    diemMieng_1 FLOAT, diemMieng_2 FLOAT, diemMieng_3 FLOAT,
+    diem15p_1 FLOAT, diem15p_2 FLOAT, diem15p_3 FLOAT,
+    diem1Tiet_1 FLOAT, diem1Tiet_2 FLOAT,
+    diemThi FLOAT,
+    
+    -- Điểm trung bình môn (Tính toán tự động hoặc trigger)
+    diemTBM FLOAT,
+    
+    FOREIGN KEY (maHS) REFERENCES HocSinh(maHS),
+    FOREIGN KEY (maMonHoc) REFERENCES MonHoc(maMH),
+    FOREIGN KEY (maHocKy) REFERENCES HocKy(maHK),
+    
+    CONSTRAINT UQ_Diem_HocSinh UNIQUE (maHS, maMonHoc, maHocKy)
+);
 GO
 
-
--- =================================================================
--- =================================================================
--- THÊM DỮ LIỆU MẪU 
--- =================================================================
--- =================================================================
-
-SET IDENTITY_INSERT Khoi ON;
-INSERT INTO Khoi (maKhoi, tenKhoi) VALUES
-(6, N'Khối 6'),
-(7, N'Khối 7'),
-(8, N'Khối 8'),
-(9, N'Khối 9'),
-(10, N'Khối 10');
-SET IDENTITY_INSERT Khoi OFF;
+/* Bảng Tổng kết học kỳ (Hạnh kiểm & Danh hiệu) - MỚI */
+CREATE TABLE TongKetHocKy (
+    maTongKet INT PRIMARY KEY IDENTITY(1,1),
+    maHS INT NOT NULL,
+    maHocKy INT NOT NULL,
+    
+    diemTrungBinhHocKy FLOAT, -- Tổng kết tất cả các môn
+    hanhKiem NVARCHAR(20),    -- Tốt, Khá, Trung bình, Yếu
+    hocLuc NVARCHAR(20),      -- Giỏi, Khá, Trung bình, Yếu, Kém
+    nhanXetCuaGVCN NVARCHAR(MAX),
+    
+    FOREIGN KEY (maHS) REFERENCES HocSinh(maHS),
+    FOREIGN KEY (maHocKy) REFERENCES HocKy(maHK),
+    
+    CONSTRAINT UQ_TongKet UNIQUE (maHS, maHocKy)
+);
 GO
 
-INSERT INTO NamHoc (maNH, tenNH, ngayBatDau, ngayKetThuc) VALUES
-('2022-2023', N'Năm học 2022-2023', '2022-09-05', '2023-05-31'),
-('2023-2024', N'Năm học 2023-2024', '2023-09-05', '2024-05-31'),
-('2024-2025', N'Năm học 2024-2025', '2024-09-05', '2025-05-31'),
-('2025-2026', N'Năm học 2025-2026', '2025-09-05', '2026-05-31'),
-('2026-2027', N'Năm học 2026-2027', '2026-09-05', '2027-05-31');
+/* Bảng Thông báo */
+CREATE TABLE ThongBao (
+    maTB INT PRIMARY KEY IDENTITY(1,1),
+    tieuDe NVARCHAR(255) NOT NULL,
+    noiDung NVARCHAR(MAX) NOT NULL,
+    ngayDang DATETIME DEFAULT GETDATE(),
+    maNguoiTao INT NOT NULL, 
+    trangThai BIT DEFAULT 1,
+    FOREIGN KEY (maNguoiTao) REFERENCES Users(userID)
+);
 GO
-
-INSERT INTO MonHoc (tenMH, soTiet) VALUES
-(N'Toán', 120),
-(N'Vật lý', 80),
-(N'Hóa học', 80),
-(N'Ngữ văn', 120),
-(N'Tiếng Anh', 100);
-GO
-
-SET IDENTITY_INSERT Roles ON;
-INSERT INTO Roles (roleID, roleName) VALUES
-(1, N'Admin'),
-(2, N'GiaoVien'),
-(3, N'HocSinh');
-SET IDENTITY_INSERT Roles OFF;
-GO
-
-INSERT INTO Users (username, password_hash, roleID) VALUES
-('admin', '123', 1), 
-('gv01', '123', 2),
-('gv02', '123', 2),
-('hs01', '123', 3),
-('hs02', '123', 3);
-GO
-
-SET IDENTITY_INSERT GiaoVien ON;
-INSERT INTO GiaoVien (maGV, hoTen, ngaySinh, gioiTinh, chuyenMon, email, sdt, diaChi, userID) VALUES
-(101, N'Nguyễn Văn An', '1980-05-20', N'Nam', N'Toán', 'an.nv@email.com', '0912345601', N'Hà Nội', 2),
-(102, N'Trần Thị Bình', '1985-10-15', N'Nữ', N'Ngữ văn', 'binh.tt@email.com', '0912345602', N'Hải Phòng', 3),
-(103, N'Lê Văn Cường', '1990-01-30', N'Nam', N'Vật lý', 'cuong.lv@email.com', '0912345603', N'Đà Nẵng', NULL),
-(104, N'Phạm Thị Dung', '1988-11-02', N'Nữ', N'Tiếng Anh', 'dung.pt@email.com', '0912345604', N'TP. HCM', NULL),
-(105, N'Hoàng Minh Em', '1992-07-12', N'Nam', N'Hóa học', 'em.hm@email.com', '0912345605', N'Cần Thơ', NULL);
-SET IDENTITY_INSERT GiaoVien OFF;
-GO
-
-INSERT INTO HocKy (tenHK, heSo, maNH) VALUES
-(N'Học kỳ 1', 1, '2024-2025'),
-(N'Học kỳ 2', 2, '2024-2025'),
-(N'Học kỳ 1', 1, '2023-2024'),
-(N'Học kỳ 2', 2, '2023-2024'),
-(N'Học kỳ 1', 1, '2022-2023');
-GO
-
-INSERT INTO LopHoc (tenLop, maKhoi, maNH, maGVCN) VALUES
-(N'10A1', 10, '2024-2025', 101),
-(N'10A2', 10, '2024-2025', 103), 
-(N'9A1', 9, '2024-2025', 102),  
-(N'10A1', 10, '2023-2024', 101), 
-(N'9A1', 9, '2023-2024', 104);  
-GO
-
-SET IDENTITY_INSERT HocSinh ON;
-INSERT INTO HocSinh (maHS, hoTen, ngaySinh, gioiTinh, diaChi, email, sdtPhuHuynh, maLop, userID) VALUES
-(1001, N'Nguyễn Văn Hùng', '2009-03-10', N'Nam', N'123 Đường A', 'hung.nv@email.com', '0987654321', 1, 4),
-(1002, N'Trần Thị Lan', '2009-06-15', N'Nữ', N'456 Đường B', 'lan.tt@email.com', '0987654322', 1, 5),
-(1003, N'Lê Văn Minh', '2009-09-20', N'Nam', N'789 Đường C', 'minh.lv@email.com', '0987654323', 2, NULL),
-(1004, N'Phạm Thị Oanh', '2010-01-25', N'Nữ', N'321 Đường D', 'oanh.pt@email.com', '0987654324', 3, NULL),
-(1005, N'Hoàng Văn Phúc', '2010-04-30', N'Nam', N'654 Đường E', 'phuc.hv@email.com', '0987654325', 3, NULL);
-SET IDENTITY_INSERT HocSinh OFF;
-GO
-
-INSERT INTO PhanCong (maGV, maLop, maMonHoc, maHocKy) VALUES
-(101, 1, 1, 1), 
-(103, 1, 2, 1), 
-(105, 1, 3, 1), 
-(102, 1, 4, 1), 
-(104, 1, 5, 1); 
-GO
-
-INSERT INTO ThongBao (tieuDe, noiDung, maNguoiTao) VALUES
-(N'Thông báo nghỉ lễ 30/4', N'Học sinh toàn trường được nghỉ lễ 30/4-1/5.', 1), 
-(N'Kế hoạch thi Học kỳ 1', N'Nhà trường thông báo kế hoạch thi HK1 năm 2024-2025...', 1), 
-(N'Nộp bài tập Toán', N'Các em lớp 10A1 nộp bài tập Toán trước ngày 15/10.', 2), 
-(N'Thay đổi giờ học Văn', N'Lớp 10A1 đổi giờ học Văn sang tiết 3 sáng thứ 4.', 3), 
-(N'Học bổng tài năng', N'Thông báo về chương trình học bổng tài năng 2025...', 1); 
-GO
-
-INSERT INTO BangDiem (maHS, maMonHoc, maHocKy, diemMieng, diem15p_1, diem1Tiet_1, diemThi) VALUES
-(1001, 1, 1, 8, 9, 8.5, 9),
-(1001, 2, 1, 7, 8, 7.5, 8), 
-(1001, 3, 1, 9, 9, 9.5, 9), 
-(1002, 1, 1, 9, 10, 9.5, 10), 
-(1002, 2, 1, 8, 8, 8.5, 8); 
-GO
-
--- Cập nhật trạng thái cho csdl
-USE db_quanlyhocsinh;
-GO
-
--- 1. Cập nhật bảng KHOI
-ALTER TABLE Khoi 
-ADD trangThai BIT NOT NULL DEFAULT 1;
-GO
-
--- 2. Cập nhật bảng NAMHOC
-ALTER TABLE NamHoc 
-ADD trangThai BIT NOT NULL DEFAULT 1;
-GO
-
--- 3. Cập nhật bảng MONHOC
-ALTER TABLE MonHoc 
-ADD trangThai BIT NOT NULL DEFAULT 1;
-GO
-
--- 4. Cập nhật bảng ROLES
-ALTER TABLE Roles 
-ADD trangThai BIT NOT NULL DEFAULT 1;
-GO
-
--- 5. Cập nhật bảng HOCKY
-ALTER TABLE HocKy 
-ADD trangThai BIT NOT NULL DEFAULT 1;
-GO
-
--- 6. Cập nhật bảng USERS
-ALTER TABLE Users 
-ADD trangThai BIT NOT NULL DEFAULT 1;
-GO
-
--- 7. Cập nhật bảng GIAOVIEN
-ALTER TABLE GiaoVien 
-ADD trangThai BIT NOT NULL DEFAULT 1;
-GO
-
--- 8. Cập nhật bảng LOPHOC
-ALTER TABLE LopHoc 
-ADD trangThai BIT NOT NULL DEFAULT 1;
-GO
-
--- 9. Cập nhật bảng HOCSINH
-ALTER TABLE HocSinh 
-ADD trangThai BIT NOT NULL DEFAULT 1;
-GO
-
--- 10. Cập nhật bảng THONGBAO
-ALTER TABLE ThongBao 
-ADD trangThai BIT NOT NULL DEFAULT 1;
-GO
-
--- 11. Cập nhật bảng PHANCONG
-ALTER TABLE PhanCong 
-ADD trangThai BIT NOT NULL DEFAULT 1;
-GO
-
--- Kiểm tra lại kết quả
-SELECT maGV, hoTen, trangThai FROM GiaoVien;
-SELECT maKhoi, tenKhoi, trangThai FROM Khoi;

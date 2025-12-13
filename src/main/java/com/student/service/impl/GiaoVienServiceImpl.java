@@ -56,6 +56,15 @@ public class GiaoVienServiceImpl implements GiaoVienService {
 		return giaoVienDAO.findById(maGV);
 	}
 
+	public List<GiaoVien> findAll() {
+		return giaoVienDAO.findAll();
+	}
+
+	@Override
+	public List<GiaoVien> findByChuyenMon(int maMonHoc) {
+		return giaoVienDAO.findByChuyenMon(maMonHoc);
+	}
+
 	// Main test cho Service
 	public static void main(String[] args) {
 		GiaoVienService service = new GiaoVienServiceImpl();

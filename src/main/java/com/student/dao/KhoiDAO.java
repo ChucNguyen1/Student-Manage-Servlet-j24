@@ -31,4 +31,6 @@ public interface KhoiDAO {
 
 	List<Khoi> getAll();
 
+	List<Khoi> findAll();
+
 }

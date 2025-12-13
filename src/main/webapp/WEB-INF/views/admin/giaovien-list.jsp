@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
-<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %> <%-- Thư viện để format ngày tháng --%>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %> 
 <c:set var="baseURL" value="${pageContext.request.contextPath}" />
 
 <jsp:include page="/WEB-INF/includes/header.jsp" />
@@ -19,7 +19,7 @@
       </nav>
     </div>
 
-    <%-- 2. TOAST THÔNG BÁO (Góc trên phải) --%>
+    <%-- 2. TOAST THÔNG BÁO --%>
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100">
       <c:if test="${not empty sessionScope.message}">
         <div id="toastSuccess" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -73,7 +73,7 @@
               </div>
 
               <%-- BẢNG DỮ LIỆU --%>
-              <div class="table-responsive"> <%-- Thêm class này để bảng cuộn ngang nếu màn hình nhỏ --%>
+              <div class="table-responsive">
                   <table class="table table-striped table-hover align-middle">
                     <thead>
                       <tr>
@@ -83,12 +83,13 @@
                         <th>Ngày sinh</th>
                         <th>Chuyên môn</th>
                         <th>Liên hệ</th>
+                        <th>Trạng thái</th> <%-- THÊM CỘT TRẠNG THÁI --%>
                         <th>Hành động</th>
                       </tr>
                     </thead>
                     <tbody>
                         <c:if test="${empty dsGiaoVien}">
-                            <tr><td colspan="7" class="text-center">Không có dữ liệu.</td></tr>
+                            <tr><td colspan="8" class="text-center">Không có dữ liệu.</td></tr>
                         </c:if>
 
                         <c:forEach var="gv" items="${dsGiaoVien}">
@@ -103,28 +104,43 @@
                                 </c:choose>
                               </td>
                               <td><fmt:formatDate value="${gv.ngaySinh}" pattern="dd/MM/yyyy"/></td>
-                              <td>${gv.chuyenMon}</td>
+                              
+                              <%-- HIỂN THỊ TÊN MÔN HỌC (Lấy từ DTO) --%>
+                              <td><span class="badge bg-light text-dark border">${gv.tenMonHocChuyenMon}</span></td>
+                              
                               <td>
                                 <small><i class="bi bi-envelope"></i> ${gv.email}</small><br>
                                 <small><i class="bi bi-telephone"></i> ${gv.sdt}</small>
                               </td>
+
+                              <%-- SWITCH TRẠNG THÁI --%>
                               <td>
-                                <%-- NÚT SỬA: Lưu trữ tất cả dữ liệu vào data-attributes --%>
+                                <div class="form-check form-switch">
+                                  <input class="form-check-input" type="checkbox" 
+                                         onchange="toggleStatus('${gv.maGV}', this)" 
+                                         ${gv.trangThai ? 'checked' : ''}>
+                                  <label class="form-check-label">${gv.trangThai ? 'HĐ' : 'Khóa'}</label>
+                                </div>
+                              </td>
+
+                              <td>
+                                <%-- NÚT SỬA: Lưu Mã Môn Học (maMonHocChuyenMon) vào data-mamh --%>
                                 <button type="button" class="btn btn-warning btn-sm" title="Sửa"
                                         data-bs-toggle="modal" data-bs-target="#modalSua"
                                         data-id="${gv.maGV}"
                                         data-ten="${gv.hoTen}"
-                                        data-ngaysinh="${gv.ngaySinh}" <%-- Output format: yyyy-MM-dd --%>
+                                        data-ngaysinh="${gv.ngaySinh}" 
                                         data-gioitinh="${gv.gioiTinh}"
-                                        data-chuyenmon="${gv.chuyenMon}"
+                                        data-mamh="${gv.maMonHocChuyenMon}"  <%-- QUAN TRỌNG: ID Môn --%>
                                         data-email="${gv.email}"
                                         data-sdt="${gv.sdt}"
                                         data-diachi="${gv.diaChi}">
                                   <i class="bi bi-pencil-square"></i>
                                 </button>
 
+                                <%-- NÚT XÓA (Xóa mềm) --%>
                                 <a href="${baseURL}/admin/giaovien-delete?id=${gv.maGV}" class="btn btn-danger btn-sm" title="Xóa"
-                                   onclick="return confirm('Bạn có chắc muốn xóa giáo viên ${gv.hoTen} không?');">
+                                   onclick="return confirm('Bạn có chắc muốn xóa (khóa) giáo viên ${gv.hoTen} không?');">
                                   <i class="bi bi-trash"></i>
                                 </a>
                               </td>
@@ -134,60 +150,37 @@
                   </table>
               </div>
 
-<%-- PHÂN TRANG (Giao diện giống Khối) --%>
-              
-              <%-- Đặt pageSize = 10 (vì trong Controller ta đang gán cứng là 10) --%>
+              <%-- PHÂN TRANG --%>
               <c:set var="pageSize" value="10" />
-              
               <div class="row align-items-center mt-3">
-                  <%-- CỘT TRÁI: Hiển thị thông tin số lượng --%>
                   <div class="col-md-6">
                       <span class="text-muted">
-                          <%-- Tính toán số mục bắt đầu và kết thúc --%>
                           <c:set var="startItem" value="${(currentPage - 1) * pageSize + 1}" />
                           <c:set var="endItem" value="${currentPage * pageSize}" />
-                          
-                          <%-- Xử lý biên: Nếu trang cuối ít hơn 10 mục --%>
-                          <c:if test="${endItem > totalItems}">
-                              <c:set var="endItem" value="${totalItems}" />
-                          </c:if>
-                          
-                          <%-- Hiển thị text --%>
-                          <c:if test="${totalItems > 0}">
-                             Hiển thị <b>${startItem}</b> đến <b>${endItem}</b> trong <b>${totalItems}</b> giáo viên
-                          </c:if>
-                          <c:if test="${totalItems == 0}">
-                             Chưa có giáo viên nào
-                          </c:if>
+                          <c:if test="${endItem > totalItems}"><c:set var="endItem" value="${totalItems}" /></c:if>
+                          <c:if test="${totalItems > 0}">Hiển thị <b>${startItem}</b> đến <b>${endItem}</b> trong <b>${totalItems}</b> giáo viên</c:if>
+                          <c:if test="${totalItems == 0}">Chưa có giáo viên nào</c:if>
                       </span>
                   </div>
-
-                  <%-- CỘT PHẢI: Các nút bấm --%>
                   <div class="col-md-6">
                       <nav aria-label="Page navigation">
                           <ul class="pagination justify-content-end mb-0">
-                              
-                              <%-- Nút TRƯỚC --%>
                               <li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
                                 <a class="page-link" href="${baseURL}/admin/giaovien-list?page=${currentPage - 1}&searchKey=${param.searchKey}">Trước</a>
                               </li>
-                              
-                              <%-- Vòng lặp số trang --%>
                               <c:forEach var="i" begin="1" end="${totalPages > 0 ? totalPages : 1}">
                                   <li class="page-item ${i == currentPage ? 'active' : ''}">
                                     <a class="page-link" href="${baseURL}/admin/giaovien-list?page=${i}&searchKey=${param.searchKey}">${i}</a>
                                   </li>
                               </c:forEach>
-                              
-                              <%-- Nút SAU --%>
                               <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
                                 <a class="page-link" href="${baseURL}/admin/giaovien-list?page=${currentPage + 1}&searchKey=${param.searchKey}">Sau</a>
                               </li>
-                              
                           </ul>
                       </nav>
                   </div>
               </div>
+
             </div>
           </div>
         </div>
@@ -196,7 +189,7 @@
 
     <%-- ==================== MODAL THÊM MỚI ==================== --%>
     <div class="modal fade" id="modalThemMoi" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-lg"> <%-- modal-lg: Form rộng hơn --%>
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <form action="${baseURL}/admin/giaovien-add" method="POST">
             <div class="modal-header">
@@ -220,10 +213,18 @@
                           <option value="Nữ">Nữ</option>
                       </select>
                   </div>
+                  
+                  <%-- DROPDOWN MÔN HỌC --%>
                   <div class="col-md-6">
-                      <label class="form-label">Chuyên môn</label>
-                      <input type="text" class="form-control" name="chuyenMon">
+                      <label class="form-label">Chuyên môn (Môn dạy) <span class="text-danger">*</span></label>
+                      <select class="form-select" name="maMH" required>
+                          <option value="" selected disabled>-- Chọn Môn --</option>
+                          <c:forEach var="mh" items="${dsMonHoc}">
+                              <option value="${mh.maMH}">${mh.tenMH}</option>
+                          </c:forEach>
+                      </select>
                   </div>
+
                   <div class="col-md-6">
                       <label class="form-label">Email</label>
                       <input type="email" class="form-control" name="email">
@@ -257,7 +258,6 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <%-- INPUT ẨN CHỨA ID --%>
               <input type="hidden" id="maGV_edit" name="maGV_edit">
               
               <div class="row g-3">
@@ -276,10 +276,18 @@
                           <option value="Nữ">Nữ</option>
                       </select>
                   </div>
+                  
+                  <%-- DROPDOWN MÔN HỌC (EDIT) --%>
                   <div class="col-md-6">
-                      <label class="form-label">Chuyên môn</label>
-                      <input type="text" class="form-control" id="chuyenMon_edit" name="chuyenMon_edit">
+                      <label class="form-label">Chuyên môn (Môn dạy) <span class="text-danger">*</span></label>
+                      <select class="form-select" id="maMH_edit" name="maMH_edit" required>
+                          <option value="" disabled>-- Chọn Môn --</option>
+                          <c:forEach var="mh" items="${dsMonHoc}">
+                              <option value="${mh.maMH}">${mh.tenMH}</option>
+                          </c:forEach>
+                      </select>
                   </div>
+
                   <div class="col-md-6">
                       <label class="form-label">Email</label>
                       <input type="email" class="form-control" id="email_edit" name="email_edit">
@@ -307,36 +315,41 @@
 
 <%-- SCRIPT XỬ LÝ --%>
 <script>
-  document.addEventListener('DOMContentLoaded', (event) => {
-    // 1. Kích hoạt Toast
-    const toastSuccessEl = document.getElementById('toastSuccess');
-    if (toastSuccessEl) new bootstrap.Toast(toastSuccessEl, {delay: 5000}).show();
-    
-    const toastErrorEl = document.getElementById('toastError');
-    if (toastErrorEl) new bootstrap.Toast(toastErrorEl, {delay: 5000}).show();
+  // Hàm Switch Trạng thái
+  function toggleStatus(id, cb) {
+      const s = cb.checked;
+      cb.nextElementSibling.textContent = s ? 'HĐ' : 'Khóa';
+      // Bạn cần thêm Controller để xử lý URL này nếu muốn switch hoạt động
+      // fetch('${baseURL}/admin/giaovien-status?id='+id+'&status='+s);
+  }
 
-    // 2. Xử lý Modal Sửa (Bơm dữ liệu)
+  document.addEventListener('DOMContentLoaded', (event) => {
+    // Toast
+    const ts = document.getElementById('toastSuccess'); if(ts) new bootstrap.Toast(ts, {delay:5000}).show();
+    const te = document.getElementById('toastError'); if(te) new bootstrap.Toast(te, {delay:5000}).show();
+
+    // Modal Sửa
     const modalSua = document.getElementById('modalSua');
     if(modalSua) {
         modalSua.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget;
             
-            // Lấy dữ liệu từ button
+            // Lấy dữ liệu
             const id = button.getAttribute('data-id');
             const ten = button.getAttribute('data-ten');
             const ngaysinh = button.getAttribute('data-ngaysinh');
             const gioitinh = button.getAttribute('data-gioitinh');
-            const chuyenmon = button.getAttribute('data-chuyenmon');
+            const mamh = button.getAttribute('data-mamh'); // ID Môn
             const email = button.getAttribute('data-email');
             const sdt = button.getAttribute('data-sdt');
             const diachi = button.getAttribute('data-diachi');
 
-            // Điền vào form
+            // Điền form
             modalSua.querySelector('#maGV_edit').value = id;
             modalSua.querySelector('#hoTen_edit').value = ten;
             modalSua.querySelector('#ngaySinh_edit').value = ngaysinh;
             modalSua.querySelector('#gioiTinh_edit').value = gioitinh;
-            modalSua.querySelector('#chuyenMon_edit').value = chuyenmon;
+            modalSua.querySelector('#maMH_edit').value = mamh; // Chọn đúng môn
             modalSua.querySelector('#email_edit').value = email;
             modalSua.querySelector('#sdt_edit').value = sdt;
             modalSua.querySelector('#diaChi_edit').value = diachi;

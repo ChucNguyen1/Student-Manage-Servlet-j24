@@ -23,4 +23,8 @@ public interface GiaoVienService {
 
 	// Tìm theo ID (để hiển thị lên form sửa)
 	GiaoVien findById(int maGV);
+
+	List<GiaoVien> findAll();
+
+	List<GiaoVien> findByChuyenMon(int maMonHoc);
 }

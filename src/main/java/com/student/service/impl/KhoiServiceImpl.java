@@ -68,4 +68,10 @@ public class KhoiServiceImpl implements KhoiService {
 		KhoiService khoiService = new KhoiServiceImpl();
 
 	}
+
+	@Override
+	public List<Khoi> findAll() {
+		// TODO Auto-generated method stub
+		return khoiDAO.findAll();
+	}
 }

@@ -147,21 +147,21 @@
       </li><!-- End Giao Vien Nav -->
       
       <li class="nav-item">
-        <a class="nav-link collapsed" href="#"> 
+        <a class="nav-link collapsed" href="${baseURL}/admin/lophoc-list"> 
           <i class="bi bi-building"></i>
           <span>Quản lý Lớp học</span>
         </a>
       </li><!-- End Lop Hoc Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="#">
+        <a class="nav-link collapsed" href="${baseURL}/admin/hocsinh-list">
           <i class="bi bi-people-fill"></i>
           <span>Quản lý Học sinh</span>
         </a>
       </li><!-- End Hoc Sinh Nav -->
       
       <li class="nav-item">
-        <a class="nav-link collapsed" href="#"> 
+        <a class="nav-link collapsed" href="${baseURL}/admin/diem-list"> 
           <i class="bi bi-card-checklist"></i>
           <span>Quản lý Điểm số</span>
         </a>
@@ -173,6 +173,13 @@
           <span>Quản lý Thông báo</span>
         </a>
       </li><!-- End Thong Bao Nav -->
+      
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="${baseURL}/admin/phancong-list"> 
+          <i class="bi bi-bell-fill"></i>
+          <span>Quản lý Phân công</span>
+        </a>
+      </li>
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="#"> 

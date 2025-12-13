@@ -53,4 +53,9 @@ public interface HocKyDAO {
 	 * PhanCong...). Dùng để chặn việc Xóa cứng nếu dữ liệu còn ràng buộc.
 	 */
 	boolean isUsed(int maHK);
+
+	List<HocKy> findAll();
+
+	// Lấy danh sách học kỳ thuộc 1 năm học cụ thể
+	List<HocKy> findByNamHoc(String maNH);
 }

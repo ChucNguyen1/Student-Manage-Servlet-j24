@@ -19,4 +19,6 @@ public interface KhoiService {
 	boolean delete(int maKhoi);
 
 	boolean update(Khoi khoi);
+
+	List<Khoi> findAll();
 }

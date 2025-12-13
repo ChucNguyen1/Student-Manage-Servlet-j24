@@ -1,37 +1,32 @@
 package com.student.model;
 
-import java.sql.Date; // <-- Quan trọng: Dùng java.sql.Date
+import java.sql.Date;
 
 public class GiaoVien {
-
 	private int maGV;
 	private String hoTen;
 	private Date ngaySinh;
 	private String gioiTinh;
-	private String chuyenMon;
-	private String email;
 	private String sdt;
+	private String email;
 	private String diaChi;
-	private Integer userID;
 
-	// Constructors (Thêm 1 constructor rỗng và 1 đầy đủ)
+	// THAY ĐỔI: Chuyên môn giờ là ID (int)
+	private int maMonHocChuyenMon;
+
+	// THÊM: Tên môn học (để hiển thị ra bảng mà không cần query lại)
+	private String tenMonHocChuyenMon;
+
+	// THÊM: Trạng thái
+	private boolean trangThai;
+
+	private Integer userID; // Giữ nguyên
+
 	public GiaoVien() {
 	}
 
-	public GiaoVien(int maGV, String hoTen, Date ngaySinh, String gioiTinh, String chuyenMon, String email, String sdt,
-			String diaChi, Integer userID) {
-		this.maGV = maGV;
-		this.hoTen = hoTen;
-		this.ngaySinh = ngaySinh;
-		this.gioiTinh = gioiTinh;
-		this.chuyenMon = chuyenMon;
-		this.email = email;
-		this.sdt = sdt;
-		this.diaChi = diaChi;
-		this.userID = userID;
-	}
+	// --- GETTERS & SETTERS (Tạo lại cho đầy đủ) ---
 
-	// Getters and Setters (Tạo cho tất cả các thuộc tính)
 	public int getMaGV() {
 		return maGV;
 	}
@@ -64,12 +59,12 @@ public class GiaoVien {
 		this.gioiTinh = gioiTinh;
 	}
 
-	public String getChuyenMon() {
-		return chuyenMon;
+	public String getSdt() {
+		return sdt;
 	}
 
-	public void setChuyenMon(String chuyenMon) {
-		this.chuyenMon = chuyenMon;
+	public void setSdt(String sdt) {
+		this.sdt = sdt;
 	}
 
 	public String getEmail() {
@@ -80,14 +75,6 @@ public class GiaoVien {
 		this.email = email;
 	}
 
-	public String getSdt() {
-		return sdt;
-	}
-
-	public void setSdt(String sdt) {
-		this.sdt = sdt;
-	}
-
 	public String getDiaChi() {
 		return diaChi;
 	}
@@ -96,16 +83,37 @@ public class GiaoVien {
 		this.diaChi = diaChi;
 	}
 
+	// Getter/Setter cho ID Môn
+	public int getMaMonHocChuyenMon() {
+		return maMonHocChuyenMon;
+	}
+
+	public void setMaMonHocChuyenMon(int maMonHocChuyenMon) {
+		this.maMonHocChuyenMon = maMonHocChuyenMon;
+	}
+
+	// Getter/Setter cho Tên Môn (DTO)
+	public String getTenMonHocChuyenMon() {
+		return tenMonHocChuyenMon;
+	}
+
+	public void setTenMonHocChuyenMon(String tenMonHocChuyenMon) {
+		this.tenMonHocChuyenMon = tenMonHocChuyenMon;
+	}
+
+	public boolean isTrangThai() {
+		return trangThai;
+	}
+
+	public void setTrangThai(boolean trangThai) {
+		this.trangThai = trangThai;
+	}
+
 	public Integer getUserID() {
 		return userID;
 	}
 
 	public void setUserID(Integer userID) {
 		this.userID = userID;
-	}
-
-	@Override
-	public String toString() {
-		return "GiaoVien{" + "maGV=" + maGV + ", hoTen=" + hoTen + '}';
 	}
 }

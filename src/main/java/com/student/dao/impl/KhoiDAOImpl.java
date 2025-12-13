@@ -162,4 +162,23 @@ public class KhoiDAOImpl implements KhoiDAO {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public List<Khoi> findAll() {
+		List<Khoi> list = new ArrayList<>();
+		// Lấy tất cả khối đang hoạt động, sắp xếp theo tên (Khối 10, 11...)
+		String sql = "SELECT * FROM Khoi WHERE trangThai = 1 ORDER BY tenKhoi ASC";
+
+		try (Connection conn = DBConnection.getNewConnection();
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+
+			while (rs.next()) {
+				list.add(KhoiMapper.mapRow(rs));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
 }

@@ -6,27 +6,32 @@ import java.sql.SQLException;
 import com.student.model.GiaoVien;
 
 public class GiaoVienMapper {
-
-	/**
-	 * Ánh xạ một hàng của ResultSet sang đối tượng GiaoVien.
-	 */
 	public static GiaoVien mapRow(ResultSet rs) throws SQLException {
 		GiaoVien gv = new GiaoVien();
-
 		gv.setMaGV(rs.getInt("maGV"));
 		gv.setHoTen(rs.getString("hoTen"));
 		gv.setNgaySinh(rs.getDate("ngaySinh"));
 		gv.setGioiTinh(rs.getString("gioiTinh"));
-		gv.setChuyenMon(rs.getString("chuyenMon"));
-		gv.setEmail(rs.getString("email"));
 		gv.setSdt(rs.getString("sdt"));
+		gv.setEmail(rs.getString("email"));
 		gv.setDiaChi(rs.getString("diaChi"));
+		gv.setTrangThai(rs.getBoolean("trangThai"));
 
-		int userIdInt = rs.getInt("userID");
-		if (rs.wasNull()) {
-			gv.setUserID(null);
-		} else {
-			gv.setUserID(userIdInt);
+		// Map khóa ngoại Môn học
+		gv.setMaMonHocChuyenMon(rs.getInt("maMonHocChuyenMon"));
+
+		// Map tên môn học (Lấy từ bảng MonHoc đã JOIN)
+		// Dùng try-catch để tránh lỗi nếu câu SQL không join
+		try {
+			gv.setTenMonHocChuyenMon(rs.getString("tenMH"));
+		} catch (SQLException e) {
+			// Không có cột tenMH thì thôi (để null)
+		}
+
+		// Map userID (xử lý null)
+		int uid = rs.getInt("userID");
+		if (!rs.wasNull()) {
+			gv.setUserID(uid);
 		}
 
 		return gv;

@@ -23,4 +23,8 @@ public interface GiaoVienDAO {
 
 	// 6. Tìm theo ID (Dùng cho chức năng Sửa để hiển thị thông tin cũ)
 	GiaoVien findById(int maGV);
+
+	List<GiaoVien> findAll();
+
+	List<GiaoVien> findByChuyenMon(int maMonHoc);
 }

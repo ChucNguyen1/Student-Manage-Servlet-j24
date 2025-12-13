@@ -20,4 +20,10 @@ public interface HocKyService {
 	boolean updateStatus(int maHK, boolean status);
 
 	HocKy findById(int maHK);
+
+	List<HocKy> findAll();
+
+	// Lấy danh sách học kỳ thuộc 1 năm học cụ thể
+	List<HocKy> findByNamHoc(String maNH);
+
 }

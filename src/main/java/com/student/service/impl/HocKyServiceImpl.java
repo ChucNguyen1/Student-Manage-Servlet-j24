@@ -71,4 +71,14 @@ public class HocKyServiceImpl implements HocKyService {
 	public HocKy findById(int maHK) {
 		return hocKyDAO.findById(maHK);
 	}
+
+	@Override
+	public List<HocKy> findAll() {
+		return hocKyDAO.findAll();
+	}
+
+	@Override
+	public List<HocKy> findByNamHoc(String maNH) {
+		return hocKyDAO.findByNamHoc(maNH);
+	}
 }
