@@ -1,0 +1,132 @@
+
+
+/* ================== BẢNG ĐIỂM ================== */
+
+.table-bordered th,
+.table-bordered td {
+  vertical-align: middle;
+}
+
+/* ================== INPUT ĐIỂM ================== */
+
+input[type="number"].form-control-sm {
+  font-size: 0.95rem;
+  padding: 0.4rem;
+}
+
+/* Hiệu ứng khi focus vào ô nhập điểm */
+input[type="number"]:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Loại bỏ spinner/arrow buttons cho input number */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* ================== CỘT ĐIỂM TRUNG BÌNH ================== */
+
+.dtb-display {
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+/* Màu sắc theo học lực */
+.dtb-display.hoc-luc-gioi {
+  color: #198754 !important; /* Giỏi >= 8.0 */
+}
+
+.dtb-display.hoc-luc-kha {
+  color: #0d6efd !important; /* Khá >= 6.5 */
+}
+
+.dtb-display.hoc-luc-tb {
+  color: #ffc107 !important; /* Trung bình >= 5.0 */
+}
+
+.dtb-display.hoc-luc-yeu {
+  color: #dc3545 !important; /* Yếu < 5.0 */
+}
+
+.dtb-display.chua-co-diem {
+  color: #6c757d !important; /* Chưa có điểm */
+}
+
+/* ================== RESPONSIVE ================== */
+
+@media (max-width: 768px) {
+  .table-responsive {
+    font-size: 0.85rem;
+  }
+
+  input[type="number"].form-control-sm {
+    font-size: 0.8rem;
+    padding: 0.25rem;
+  }
+
+  .dtb-display {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .table-responsive {
+    font-size: 0.75rem;
+  }
+
+  input[type="number"].form-control-sm {
+    font-size: 0.7rem;
+    padding: 0.2rem;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+}
+
+/* ================== HIỆU ỨNG & ANIMATION ================== */
+
+/* Highlight row khi hover */
+.table-hover tbody tr:hover {
+  background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* Animation khi cập nhật điểm */
+@keyframes highlight-update {
+  0% {
+    background-color: rgba(25, 135, 84, 0.3);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.updated-score {
+  animation: highlight-update 1s ease-out;
+}
+
+/* ================== ALERT & NOTIFICATION ================== */
+
+.alert-info {
+  border-left: 4px solid #0dcaf0;
+}
+
+.alert-success {
+  border-left: 4px solid #198754;
+}
+
+.alert-warning {
+  border-left: 4px solid #ffc107;
+}
+
+.alert-danger {
+  border-left: 4px solid #dc3545;
+}

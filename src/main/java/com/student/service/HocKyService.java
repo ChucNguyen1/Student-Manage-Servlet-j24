@@ -14,7 +14,6 @@ public interface HocKyService {
 
 	boolean update(HocKy hk);
 
-	// Trả về String để Controller biết lý do lỗi (nếu có)
 	String delete(int maHK);
 
 	boolean updateStatus(int maHK, boolean status);
@@ -23,7 +22,6 @@ public interface HocKyService {
 
 	List<HocKy> findAll();
 
-	// Lấy danh sách học kỳ thuộc 1 năm học cụ thể
 	List<HocKy> findByNamHoc(String maNH);
 
 }

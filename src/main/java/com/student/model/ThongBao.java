@@ -9,8 +9,6 @@ public class ThongBao {
     private String noiDung;
     private Date ngayDang;
     private int maNguoiTao;
-    
-    // Thuộc tính phụ (Không có trong bảng ThongBao, nhưng cần để hiển thị tên người đăng)
     private String tenNguoiTao; 
 
 

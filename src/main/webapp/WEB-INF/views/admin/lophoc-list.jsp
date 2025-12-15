@@ -6,7 +6,6 @@
 
 <main id="main" class="main">
 
-    <%-- 1. HEADER & BREADCRUMB --%>
     <div class="pagetitle">
       <h1>Quản lý Lớp học</h1>
       <nav>
@@ -18,7 +17,6 @@
       </nav>
     </div>
 
-    <%-- 2. TOAST NOTIFICATION --%>
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100">
       <c:if test="${not empty sessionScope.message}">
         <div id="toastSuccess" class="toast" role="alert"><div class="toast-header bg-success text-white"><strong>Thành công</strong><button type="button" class="btn-close" data-bs-dismiss="toast"></button></div><div class="toast-body">${sessionScope.message}</div></div>
@@ -30,7 +28,6 @@
       </c:if>
     </div>
 
-    <%-- 3. CONTENT --%>
     <section class="section">
       <div class="row">
         <div class="col-lg-12">
@@ -82,7 +79,6 @@
                               <td><span class="badge bg-secondary">${lop.tenKhoi}</span></td>
                               <td>${lop.tenNamHoc}</td>
                               
-                              <%-- Hiển thị GVCN --%>
                               <td>
                                 <c:choose>
                                     <c:when test="${not empty lop.tenGVCN}">
@@ -94,7 +90,6 @@
                                 </c:choose>
                               </td>
 
-                              <%-- Switch Status --%>
                               <td>
                                 <div class="form-check form-switch">
                                   <input class="form-check-input" type="checkbox" 
@@ -108,7 +103,7 @@
                               </td>
 
                               <td>
-                                <%-- Nút Sửa --%>
+
                                 <button type="button" class="btn btn-warning btn-sm" title="Sửa"
                                         data-bs-toggle="modal" data-bs-target="#modalSua"
                                         data-id="${lop.maLop}"
@@ -119,7 +114,7 @@
                                   <i class="bi bi-pencil-square"></i>
                                 </button>
 
-                                <%-- Nút Xóa --%>
+
                                 <a href="${baseURL}/admin/lophoc-delete?id=${lop.maLop}" class="btn btn-danger btn-sm" title="Xóa"
                                    onclick="return confirm('Bạn có chắc muốn xóa lớp ${lop.tenLop} không?');">
                                   <i class="bi bi-trash"></i>

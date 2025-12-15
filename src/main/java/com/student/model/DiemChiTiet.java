@@ -3,12 +3,10 @@ package com.student.model;
 public class DiemChiTiet {
 	private int maDiem;
 
-	// Khóa ngoại
 	private int maHS;
 	private int maMonHoc;
 	private int maHocKy;
 
-	// Các cột điểm (Dùng Double lớp vỏ để chấp nhận null nếu chưa nhập)
 	private Double diemMieng1;
 	private Double diemMieng2;
 	private Double diemMieng3;
@@ -21,9 +19,8 @@ public class DiemChiTiet {
 	private Double diem1Tiet2;
 
 	private Double diemThi;
-	private Double diemTBM; // Trung bình môn
+	private Double diemTBM; 
 
-	// --- CÁC TRƯỜNG PHỤ (DTO) ĐỂ HIỂN THỊ ---
 	private String tenHocSinh;
 	private String tenMonHoc;
 	private String tenHocKy;
@@ -31,7 +28,7 @@ public class DiemChiTiet {
 	public DiemChiTiet() {
 	}
 
-	// --- GETTERS & SETTERS (Generate tự động) ---
+	// --- GETTERS & SETTERS ---
 
 	public int getMaDiem() {
 		return maDiem;

@@ -138,7 +138,7 @@ public class MonHocDAOImpl implements MonHocDAO {
 	@Override
 	public List<MonHoc> findAll() {
 		List<MonHoc> list = new ArrayList<>();
-		String sql = "SELECT * FROM MonHoc WHERE trangThai = 1";
+		String sql = "SELECT mh.*, t.tenTo FROM MonHoc mh LEFT JOIN ToBoMon t WHERE trangThai = 1";
 		try (Connection conn = DBConnection.getNewConnection();
 				PreparedStatement ps = conn.prepareStatement(sql);
 				ResultSet rs = ps.executeQuery()) {
@@ -148,5 +148,21 @@ public class MonHocDAOImpl implements MonHocDAO {
 			e.printStackTrace();
 		}
 		return list;
+	}
+
+	@Override
+	public MonHoc findById(int maMH) {
+		String sql = "SELECT mh.*, t.tenTo FROM MonHoc mh " + "LEFT JOIN ToBoMon t ON mh.maTo = t.maTo "
+				+ "WHERE mh.maMH = ?";
+		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.setInt(1, maMH);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next())
+					return MonHocMapper.mapRow(rs);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

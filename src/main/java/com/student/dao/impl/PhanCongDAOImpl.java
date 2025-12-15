@@ -17,7 +17,6 @@ public class PhanCongDAOImpl implements PhanCongDAO {
 	@Override
 	public List<PhanCong> findByLopAndHocKy(int maLop, int maHocKy) {
 		List<PhanCong> list = new ArrayList<>();
-		// JOIN để lấy tên Giáo viên và Tên môn học
 		String sql = "SELECT pc.*, gv.hoTen AS tenGiaoVien, mh.tenMH AS tenMonHoc " + "FROM PhanCong pc "
 				+ "JOIN GiaoVien gv ON pc.maGV = gv.maGV " + "JOIN MonHoc mh ON pc.maMonHoc = mh.maMH "
 				+ "WHERE pc.maLop = ? AND pc.maHocKy = ? AND pc.trangThai = 1";
@@ -70,7 +69,6 @@ public class PhanCongDAOImpl implements PhanCongDAO {
 
 	@Override
 	public boolean update(PhanCong pc) {
-		// Cập nhật giáo viên mới cho môn đó lớp đó
 		String sql = "UPDATE PhanCong SET maGV=?, trangThai=1 WHERE maLop=? AND maMonHoc=? AND maHocKy=?";
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, pc.getMaGV());
@@ -86,7 +84,6 @@ public class PhanCongDAOImpl implements PhanCongDAO {
 
 	@Override
 	public boolean delete(int maLop, int maMonHoc, int maHocKy) {
-		// Xóa cứng hoặc xóa mềm tùy bạn. Ở đây tôi dùng xóa cứng để sạch data
 		String sql = "DELETE FROM PhanCong WHERE maLop=? AND maMonHoc=? AND maHocKy=?";
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, maLop);
@@ -97,5 +94,36 @@ public class PhanCongDAOImpl implements PhanCongDAO {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	@Override
+	public List<PhanCong> findByGiaoVienAndHocKy(int maGV, int maHocKy) {
+		List<PhanCong> list = new ArrayList<>();
+		String sql = "SELECT pc.*, " + 
+				"lh.tenLop, " + 
+				"mh.tenMH AS tenMonHoc, " + 
+				"hk.tenHK AS tenHocKy, " +
+				"gv.hoTen AS tenGiaoVien " +
+				"FROM PhanCong pc " + 
+				"JOIN LopHoc lh ON pc.maLop = lh.maLop " + 
+				"JOIN MonHoc mh ON pc.maMonHoc = mh.maMH " + 
+				"JOIN HocKy hk ON pc.maHocKy = hk.maHK " +
+				"JOIN GiaoVien gv ON pc.maGV = gv.maGV " + 
+				"WHERE pc.maGV = ? AND pc.maHocKy = ? AND pc.trangThai = 1";
+
+		try (Connection conn = DBConnection.getNewConnection(); 
+			 PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.setInt(1, maGV);
+			ps.setInt(2, maHocKy);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					list.add(PhanCongMapper.mapRow(rs));
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
 	}
 }

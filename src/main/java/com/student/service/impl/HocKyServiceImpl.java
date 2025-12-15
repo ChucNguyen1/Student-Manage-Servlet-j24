@@ -23,12 +23,10 @@ public class HocKyServiceImpl implements HocKyService {
 
 	@Override
 	public boolean insert(HocKy hk) {
-		// Validate: Hệ số phải dương
 		if (hk.getHeSo() < 1) {
 			System.out.println("Lỗi: Hệ số học kỳ phải lớn hơn hoặc bằng 1.");
 			return false;
 		}
-		// Validate: Tên không được rỗng
 		if (hk.getTenHK() == null || hk.getTenHK().trim().isEmpty()) {
 			return false;
 		}
@@ -48,13 +46,10 @@ public class HocKyServiceImpl implements HocKyService {
 
 	@Override
 	public String delete(int maHK) {
-		// 1. Kiểm tra xem học kỳ có đang được dùng trong Bảng Điểm hoặc Phân Công
-		// không?
-		if (hocKyDAO.isUsed(maHK)) {
-			return "FOREIGN_KEY_ERROR"; // Không thể xóa cứng
-		}
 
-		// 2. Nếu không vướng dữ liệu -> Xóa cứng
+		if (hocKyDAO.isUsed(maHK)) {
+			return "FOREIGN_KEY_ERROR";
+		}
 		if (hocKyDAO.delete(maHK)) {
 			return "SUCCESS";
 		} else {

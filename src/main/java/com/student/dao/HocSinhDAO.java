@@ -13,10 +13,8 @@ public interface HocSinhDAO {
 
 	boolean update(HocSinh hs);
 
-	boolean delete(int maHS); // Xóa mềm
-
+	boolean delete(int maHS);
 	HocSinh findById(int maHS);
 
-	// Thêm hàm lấy HS theo Lớp (Để dùng cho nhập điểm sau này)
 	List<HocSinh> findByLop(int maLop);
 }

@@ -8,8 +8,6 @@ import com.student.model.Khoi;
 public class KhoiMapper {
 
 	/**
-	 * Ánh xạ một hàng (row) của ResultSet sang đối tượng Khoi.
-	 * 
 	 * @param rs ResultSet đang trỏ đến hàng cần ánh xạ
 	 * @return Đối tượng Khoi
 	 * @throws SQLException

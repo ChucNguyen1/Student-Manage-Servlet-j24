@@ -7,7 +7,7 @@ import com.student.service.ThongBaoService;
 
 public class ThongBaoServiceImpl implements ThongBaoService {
     
-    private ThongBaoDAO dao = new ThongBaoDAOImpl(); // Gọi DAO
+    private ThongBaoDAO dao = new ThongBaoDAOImpl(); 
 
     @Override
     public List<ThongBao> findAll(String searchKey, int page, int pageSize) {

@@ -11,21 +11,15 @@ public class GiaoVien {
 	private String email;
 	private String diaChi;
 
-	// THAY ĐỔI: Chuyên môn giờ là ID (int)
-	private int maMonHocChuyenMon;
+	private int maTo;
+	private String tenTo;
 
-	// THÊM: Tên môn học (để hiển thị ra bảng mà không cần query lại)
-	private String tenMonHocChuyenMon;
-
-	// THÊM: Trạng thái
 	private boolean trangThai;
 
-	private Integer userID; // Giữ nguyên
+	private Integer userID;
 
 	public GiaoVien() {
 	}
-
-	// --- GETTERS & SETTERS (Tạo lại cho đầy đủ) ---
 
 	public int getMaGV() {
 		return maGV;
@@ -83,22 +77,20 @@ public class GiaoVien {
 		this.diaChi = diaChi;
 	}
 
-	// Getter/Setter cho ID Môn
-	public int getMaMonHocChuyenMon() {
-		return maMonHocChuyenMon;
+	public int getMaTo() {
+		return maTo;
 	}
 
-	public void setMaMonHocChuyenMon(int maMonHocChuyenMon) {
-		this.maMonHocChuyenMon = maMonHocChuyenMon;
+	public void setMaTo(int maTo) {
+		this.maTo = maTo;
 	}
 
-	// Getter/Setter cho Tên Môn (DTO)
-	public String getTenMonHocChuyenMon() {
-		return tenMonHocChuyenMon;
+	public String getTenTo() {
+		return tenTo;
 	}
 
-	public void setTenMonHocChuyenMon(String tenMonHocChuyenMon) {
-		this.tenMonHocChuyenMon = tenMonHocChuyenMon;
+	public void setTenTo(String tenTo) {
+		this.tenTo = tenTo;
 	}
 
 	public boolean isTrangThai() {

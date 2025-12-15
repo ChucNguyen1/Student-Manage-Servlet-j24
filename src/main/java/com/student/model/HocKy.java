@@ -4,10 +4,9 @@ public class HocKy {
 	private int maHK;
 	private String tenHK;
 	private int heSo;
-	private String maNH; // Khóa ngoại lưu trong DB
+	private String maNH; 
 	private boolean trangThai;
 
-	// Thuộc tính phụ (DTO) để hiển thị tên năm học ra bảng
 	private String tenNamHoc;
 
 	public HocKy() {

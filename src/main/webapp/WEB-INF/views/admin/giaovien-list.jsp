@@ -7,7 +7,6 @@
 
 <main id="main" class="main">
 
-    <%-- 1. TIÊU ĐỀ & BREADCRUMBS --%>
     <div class="pagetitle">
       <h1>Quản lý Giáo viên</h1>
       <nav>
@@ -19,7 +18,6 @@
       </nav>
     </div>
 
-    <%-- 2. TOAST THÔNG BÁO --%>
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100">
       <c:if test="${not empty sessionScope.message}">
         <div id="toastSuccess" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -44,7 +42,6 @@
       </c:if>
     </div>
 
-    <%-- 3. NỘI DUNG CHÍNH --%>
     <section class="section">
       <div class="row">
         <div class="col-lg-12">
@@ -72,7 +69,6 @@
                 </div>
               </div>
 
-              <%-- BẢNG DỮ LIỆU --%>
               <div class="table-responsive">
                   <table class="table table-striped table-hover align-middle">
                     <thead>
@@ -81,9 +77,8 @@
                         <th>Họ và Tên</th>
                         <th>Giới tính</th>
                         <th>Ngày sinh</th>
-                        <th>Chuyên môn</th>
-                        <th>Liên hệ</th>
-                        <th>Trạng thái</th> <%-- THÊM CỘT TRẠNG THÁI --%>
+                        <th>Tổ Bộ Môn</th> <th>Liên hệ</th>
+                        <th>Trạng thái</th>
                         <th>Hành động</th>
                       </tr>
                     </thead>
@@ -105,15 +100,14 @@
                               </td>
                               <td><fmt:formatDate value="${gv.ngaySinh}" pattern="dd/MM/yyyy"/></td>
                               
-                              <%-- HIỂN THỊ TÊN MÔN HỌC (Lấy từ DTO) --%>
-                              <td><span class="badge bg-light text-dark border">${gv.tenMonHocChuyenMon}</span></td>
+                              <%-- [SỬA 1] HIỂN THỊ TÊN TỔ (Lấy từ DTO mới) --%>
+                              <td><span class="badge bg-light text-dark border">${gv.tenTo}</span></td>
                               
                               <td>
                                 <small><i class="bi bi-envelope"></i> ${gv.email}</small><br>
                                 <small><i class="bi bi-telephone"></i> ${gv.sdt}</small>
                               </td>
 
-                              <%-- SWITCH TRẠNG THÁI --%>
                               <td>
                                 <div class="form-check form-switch">
                                   <input class="form-check-input" type="checkbox" 
@@ -124,21 +118,21 @@
                               </td>
 
                               <td>
-                                <%-- NÚT SỬA: Lưu Mã Môn Học (maMonHocChuyenMon) vào data-mamh --%>
+
                                 <button type="button" class="btn btn-warning btn-sm" title="Sửa"
                                         data-bs-toggle="modal" data-bs-target="#modalSua"
                                         data-id="${gv.maGV}"
                                         data-ten="${gv.hoTen}"
                                         data-ngaysinh="${gv.ngaySinh}" 
                                         data-gioitinh="${gv.gioiTinh}"
-                                        data-mamh="${gv.maMonHocChuyenMon}"  <%-- QUAN TRỌNG: ID Môn --%>
+                                        data-mato="${gv.maTo}"
                                         data-email="${gv.email}"
                                         data-sdt="${gv.sdt}"
                                         data-diachi="${gv.diaChi}">
                                   <i class="bi bi-pencil-square"></i>
                                 </button>
 
-                                <%-- NÚT XÓA (Xóa mềm) --%>
+
                                 <a href="${baseURL}/admin/giaovien-delete?id=${gv.maGV}" class="btn btn-danger btn-sm" title="Xóa"
                                    onclick="return confirm('Bạn có chắc muốn xóa (khóa) giáo viên ${gv.hoTen} không?');">
                                   <i class="bi bi-trash"></i>
@@ -150,7 +144,6 @@
                   </table>
               </div>
 
-              <%-- PHÂN TRANG --%>
               <c:set var="pageSize" value="10" />
               <div class="row align-items-center mt-3">
                   <div class="col-md-6">
@@ -214,13 +207,12 @@
                       </select>
                   </div>
                   
-                  <%-- DROPDOWN MÔN HỌC --%>
                   <div class="col-md-6">
-                      <label class="form-label">Chuyên môn (Môn dạy) <span class="text-danger">*</span></label>
-                      <select class="form-select" name="maMH" required>
-                          <option value="" selected disabled>-- Chọn Môn --</option>
-                          <c:forEach var="mh" items="${dsMonHoc}">
-                              <option value="${mh.maMH}">${mh.tenMH}</option>
+                      <label class="form-label">Tổ Bộ Môn <span class="text-danger">*</span></label>
+                      <select class="form-select" name="maTo" required>
+                          <option value="" selected disabled>-- Chọn Tổ --</option>
+                          <c:forEach var="to" items="${dsToBoMon}">
+                              <option value="${to.maTo}">${to.tenTo}</option>
                           </c:forEach>
                       </select>
                   </div>
@@ -277,13 +269,12 @@
                       </select>
                   </div>
                   
-                  <%-- DROPDOWN MÔN HỌC (EDIT) --%>
                   <div class="col-md-6">
-                      <label class="form-label">Chuyên môn (Môn dạy) <span class="text-danger">*</span></label>
-                      <select class="form-select" id="maMH_edit" name="maMH_edit" required>
-                          <option value="" disabled>-- Chọn Môn --</option>
-                          <c:forEach var="mh" items="${dsMonHoc}">
-                              <option value="${mh.maMH}">${mh.tenMH}</option>
+                      <label class="form-label">Tổ Bộ Môn <span class="text-danger">*</span></label>
+                      <select class="form-select" id="maTo_edit" name="maTo_edit" required>
+                          <option value="" disabled>-- Chọn Tổ --</option>
+                          <c:forEach var="to" items="${dsToBoMon}">
+                              <option value="${to.maTo}">${to.tenTo}</option>
                           </c:forEach>
                       </select>
                   </div>
@@ -315,12 +306,9 @@
 
 <%-- SCRIPT XỬ LÝ --%>
 <script>
-  // Hàm Switch Trạng thái
   function toggleStatus(id, cb) {
       const s = cb.checked;
       cb.nextElementSibling.textContent = s ? 'HĐ' : 'Khóa';
-      // Bạn cần thêm Controller để xử lý URL này nếu muốn switch hoạt động
-      // fetch('${baseURL}/admin/giaovien-status?id='+id+'&status='+s);
   }
 
   document.addEventListener('DOMContentLoaded', (event) => {
@@ -334,22 +322,21 @@
         modalSua.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget;
             
-            // Lấy dữ liệu
             const id = button.getAttribute('data-id');
             const ten = button.getAttribute('data-ten');
             const ngaysinh = button.getAttribute('data-ngaysinh');
             const gioitinh = button.getAttribute('data-gioitinh');
-            const mamh = button.getAttribute('data-mamh'); // ID Môn
+            const mato = button.getAttribute('data-mato'); 
             const email = button.getAttribute('data-email');
             const sdt = button.getAttribute('data-sdt');
             const diachi = button.getAttribute('data-diachi');
 
-            // Điền form
+            // Điền vào form sửa
             modalSua.querySelector('#maGV_edit').value = id;
             modalSua.querySelector('#hoTen_edit').value = ten;
             modalSua.querySelector('#ngaySinh_edit').value = ngaysinh;
             modalSua.querySelector('#gioiTinh_edit').value = gioitinh;
-            modalSua.querySelector('#maMH_edit').value = mamh; // Chọn đúng môn
+            modalSua.querySelector('#maTo_edit').value = mato; 
             modalSua.querySelector('#email_edit').value = email;
             modalSua.querySelector('#sdt_edit').value = sdt;
             modalSua.querySelector('#diaChi_edit').value = diachi;

@@ -1,14 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
-<%@ taglib uri="jakarta.tags.functions" prefix="fn" %> <%-- Thêm cái này để cắt chuỗi dài --%>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn" %> 
 <c:set var="baseURL" value="${pageContext.request.contextPath}" />
 
 <jsp:include page="/WEB-INF/includes/header.jsp" />
 
 <main id="main" class="main">
 
-    <%-- 1. TIÊU ĐỀ --%>
     <div class="pagetitle">
       <h1>Quản lý Thông báo</h1>
       <nav>
@@ -19,7 +18,6 @@
       </nav>
     </div>
 
-    <%-- 2. TOAST MESSAGE --%>
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100">
       <c:if test="${not empty sessionScope.message}">
         <div id="toastSuccess" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -43,7 +41,6 @@
       </c:if>
     </div>
 
-    <%-- 3. NỘI DUNG CHÍNH --%>
     <section class="section">
       <div class="row">
         <div class="col-lg-12">
@@ -111,7 +108,6 @@
                                 <fmt:formatDate value="${tb.ngayDang}" pattern="dd/MM/yyyy HH:mm"/>
                               </td>
                               <td>
-                                <%-- NÚT SỬA (Màu vàng) --%>
                                 <button type="button" class="btn btn-warning btn-sm" title="Sửa"
                                         data-bs-toggle="modal" data-bs-target="#modalSua"
                                         data-id="${tb.maTB}"
@@ -119,8 +115,6 @@
                                         data-noidung="${tb.noiDung}">
                                   <i class="bi bi-pencil-square"></i>
                                 </button>
-
-                                <%-- NÚT XÓA (Màu đỏ) --%>
                                 <a href="${baseURL}/admin/thongbao-delete?id=${tb.maTB}" 
                                    class="btn btn-danger btn-sm" title="Xóa"
                                    onclick="return confirm('Bạn có chắc muốn xóa thông báo này không?');">
@@ -241,13 +235,13 @@
     const modalSua = document.getElementById('modalSua');
     if(modalSua) {
         modalSua.addEventListener('show.bs.modal', function (event) {
-            // Nút nào đã kích hoạt modal?
+            // Nút nào đã kích hoạt modal
             const button = event.relatedTarget;
             
             // Lấy dữ liệu từ data-attribute của nút đó
             const id = button.getAttribute('data-id');
             const tieuDe = button.getAttribute('data-tieude');
-            const noiDung = button.getAttribute('data-noidung'); // Lưu ý: Nếu nội dung có HTML thì cần xử lý thêm
+            const noiDung = button.getAttribute('data-noidung'); 
 
             // Điền vào form
             modalSua.querySelector('#maTB_edit').value = id;

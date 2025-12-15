@@ -15,7 +15,6 @@ public class LopHocMapper {
 		lh.setMaGVCN(rs.getInt("maGVCN"));
 		lh.setTrangThai(rs.getBoolean("trangThai"));
 
-		// Map các trường phụ (Nếu câu SQL có JOIN)
 		try {
 			lh.setTenKhoi(rs.getString("tenKhoi"));
 		} catch (Exception e) {

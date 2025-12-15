@@ -66,7 +66,6 @@ public class NamHocDAOImpl implements NamHocDAO {
 
 	@Override
 	public boolean insert(NamHoc nh) {
-		// Insert mặc định trangThai = 1
 		String sql = "INSERT INTO NamHoc (maNH, tenNH, ngayBatDau, ngayKetThuc, trangThai) VALUES (?, ?, ?, ?, 1)";
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, nh.getMaNH());
@@ -97,14 +96,12 @@ public class NamHocDAOImpl implements NamHocDAO {
 
 	@Override
 	public boolean delete(String maNH) {
-		// Xóa mềm
 		String sql = "DELETE FROM NamHoc WHERE maNH = ?";
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, maNH);
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
 			e.printStackTrace();
-			// Nếu lỗi do khóa ngoại (FK), nó sẽ rơi vào đây
 		}
 		return false;
 	}
@@ -124,9 +121,7 @@ public class NamHocDAOImpl implements NamHocDAO {
 
 	@Override
 	public boolean isUsed(String maNH) {
-		// Kiểm tra xem có Lớp nào thuộc năm học này không?
 		String sql1 = "SELECT COUNT(*) FROM LopHoc WHERE maNH = ?";
-		// Kiểm tra xem có Học kỳ nào thuộc năm học này không?
 		String sql2 = "SELECT COUNT(*) FROM HocKy WHERE maNH = ?";
 
 		try (Connection conn = DBConnection.getNewConnection()) {
@@ -134,18 +129,18 @@ public class NamHocDAOImpl implements NamHocDAO {
 				ps.setString(1, maNH);
 				ResultSet rs = ps.executeQuery();
 				if (rs.next() && rs.getInt(1) > 0)
-					return true; // Đang dùng trong LopHoc
+					return true; 
 			}
 			try (PreparedStatement ps = conn.prepareStatement(sql2)) {
 				ps.setString(1, maNH);
 				ResultSet rs = ps.executeQuery();
 				if (rs.next() && rs.getInt(1) > 0)
-					return true; // Đang dùng trong HocKy
+					return true;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return false; // Không được sử dụng
+		return false; 
 	}
 
 	@Override
@@ -181,7 +176,6 @@ public class NamHocDAOImpl implements NamHocDAO {
 	@Override
 	public List<NamHoc> findAll() {
 		List<NamHoc> list = new ArrayList<>();
-		// Lấy tất cả năm học đang hoạt động (trangThai = 1)
 		String sql = "SELECT * FROM NamHoc WHERE trangThai = 1 ORDER BY maNH DESC";
 
 		try (Connection conn = DBConnection.getNewConnection();

@@ -17,19 +17,11 @@ public class KhoiDAOImpl implements KhoiDAO {
 	@Override
 	public boolean insert(Khoi khoi) {
 		String sql = "INSERT INTO Khoi (tenKhoi) VALUES (?)";
-
-		// Dùng try-with-resources để tự động đóng Connection, PreparedStatement
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-			// Thiết lập tham số cho dấu ?
 			ps.setString(1, khoi.getTenKhoi());
-
-			// Thực thi câu lệnh (INSERT, UPDATE, DELETE dùng executeUpdate())
-			// Nó sẽ trả về số dòng bị ảnh hưởng
 			int rowsAffected = ps.executeUpdate();
 
-			return rowsAffected > 0; // Trả về true nếu ít nhất 1 dòng bị ảnh hưởng
-
+			return rowsAffected > 0;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Lỗi khi thêm mới Khối");
@@ -51,8 +43,6 @@ public class KhoiDAOImpl implements KhoiDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Lỗi khi xóa Khối: " + e.getMessage());
-			// Lỗi khóa ngoại (nếu Khối này đang được Lớp Học sử dụng)
-			// sẽ bị bắt ở đây.
 			return false;
 		}
 	}
@@ -78,65 +68,49 @@ public class KhoiDAOImpl implements KhoiDAO {
 
 	@Override
 	public int count(String searchKey) {
-		// Bắt đầu câu SQL
 		String sql = "SELECT COUNT(*) FROM Khoi";
-
-		// Nếu có tìm kiếm, thêm mệnh đề WHERE
 		if (searchKey != null && !searchKey.isEmpty()) {
 			sql += " WHERE tenKhoi LIKE ?";
 		}
 
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-			// Nếu có tìm kiếm, set tham số
 			if (searchKey != null && !searchKey.isEmpty()) {
 				ps.setString(1, "%" + searchKey + "%");
 			}
 
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
-					return rs.getInt(1); // Trả về giá trị của cột COUNT(*)
+					return rs.getInt(1); 
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return 0; // Trả về 0 nếu có lỗi
+		return 0; 
 	}
 
 	/**
-	 * PHƯƠNG THỨC MỚI: Lấy dữ liệu phân trang
+	 * Lấy dữ liệu phân trang
 	 */
 	@Override
 	public List<Khoi> findAndPaginate(String searchKey, int pageNumber, int pageSize) {
 		List<Khoi> results = new ArrayList<>();
-		// Bắt đầu câu SQL
 		String sql = "SELECT * FROM Khoi";
-
-		// Nếu có tìm kiếm, thêm mệnh đề WHERE
 		if (searchKey != null && !searchKey.isEmpty()) {
 			sql += " WHERE tenKhoi LIKE ?";
 		}
+		sql += " ORDER BY maKhoi ASC"; 
 
-		// Thêm mệnh đề ORDER BY (BẮT BUỘC cho OFFSET/FETCH)
-		sql += " ORDER BY maKhoi ASC"; // (hoặc tenKhoi)
-
-		// Thêm mệnh đề Phân Trang (SQL Server 2012+)
 		sql += " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
 			int paramIndex = 1;
 
-			// Set tham số cho tìm kiếm (nếu có)
 			if (searchKey != null && !searchKey.isEmpty()) {
 				ps.setString(paramIndex++, "%" + searchKey + "%");
 			}
-
-			// Tính toán OFFSET
 			int offset = (pageNumber - 1) * pageSize;
-
-			// Set tham số cho OFFSET và FETCH
 			ps.setInt(paramIndex++, offset);
 			ps.setInt(paramIndex++, pageSize);
 
@@ -151,7 +125,6 @@ public class KhoiDAOImpl implements KhoiDAO {
 		return results;
 	}
 
-	// Main method để test
 	public static void main(String[] args) {
 		KhoiDAO khoiDAO = new KhoiDAOImpl();
 
@@ -159,14 +132,12 @@ public class KhoiDAOImpl implements KhoiDAO {
 
 	@Override
 	public List<Khoi> getAll() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List<Khoi> findAll() {
 		List<Khoi> list = new ArrayList<>();
-		// Lấy tất cả khối đang hoạt động, sắp xếp theo tên (Khối 10, 11...)
 		String sql = "SELECT * FROM Khoi WHERE trangThai = 1 ORDER BY tenKhoi ASC";
 
 		try (Connection conn = DBConnection.getNewConnection();

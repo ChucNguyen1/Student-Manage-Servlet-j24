@@ -3,7 +3,7 @@ package com.student.model;
 import java.sql.Date;
 
 public class NamHoc {
-	private String maNH; // Khóa chính là String
+	private String maNH; 
 	private String tenNH;
 	private Date ngayBatDau;
 	private Date ngayKetThuc;

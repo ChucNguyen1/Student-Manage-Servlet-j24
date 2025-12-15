@@ -5,11 +5,11 @@ import java.sql.Date;
 import java.util.List;
 
 import com.student.model.GiaoVien;
-import com.student.model.MonHoc; // Import Model Môn học
+import com.student.model.ToBoMon;
 import com.student.service.GiaoVienService;
-import com.student.service.MonHocService; // Import Service Môn học
+import com.student.service.ToBoMonService;
 import com.student.service.impl.GiaoVienServiceImpl;
-import com.student.service.impl.MonHocServiceImpl;
+import com.student.service.impl.ToBoMonServiceImpl;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -27,9 +27,7 @@ public class GiaoVienController extends HttpServlet {
 
 	// Khởi tạo Service Giáo viên
 	private GiaoVienService service = new GiaoVienServiceImpl();
-
-	// [QUAN TRỌNG] Khởi tạo Service Môn học để lấy dữ liệu cho Dropdown
-	private MonHocService monHocService = new MonHocServiceImpl();
+	private ToBoMonService toBoMonService = new ToBoMonServiceImpl();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -65,10 +63,8 @@ public class GiaoVienController extends HttpServlet {
 		resp.sendRedirect(req.getContextPath() + "/admin/giaovien-list");
 	}
 
-	// --- CÁC HÀM XỬ LÝ CHI TIẾT ---
-
 	private void showList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// 1. Lấy tham số phân trang & tìm kiếm
+
 		String searchKey = req.getParameter("searchKey");
 		String pageParam = req.getParameter("page");
 
@@ -83,17 +79,13 @@ public class GiaoVienController extends HttpServlet {
 
 		int pageSize = 10;
 
-		// 2. Gọi Service lấy danh sách Giáo viên
 		List<GiaoVien> list = service.findAndPaginate(searchKey, page, pageSize);
 		int totalItems = service.count(searchKey);
 		int totalPages = (int) Math.ceil((double) totalItems / pageSize);
 
-		// [QUAN TRỌNG] 3. Gọi Service lấy danh sách Môn học (để đổ vào Dropdown)
-		List<MonHoc> listMonHoc = monHocService.findAll();
-
-		// 4. Gửi dữ liệu sang JSP
+		List<ToBoMon> listTo = toBoMonService.findAll();
 		req.setAttribute("dsGiaoVien", list);
-		req.setAttribute("dsMonHoc", listMonHoc); // <-- Gửi list Môn học sang View
+		req.setAttribute("dsToBoMon", listTo);
 
 		req.setAttribute("totalItems", totalItems);
 		req.setAttribute("totalPages", totalPages);
@@ -105,22 +97,17 @@ public class GiaoVienController extends HttpServlet {
 
 	private void handleAdd(HttpServletRequest req, HttpSession session) {
 		try {
-			// 1. Lấy dữ liệu từ form
 			String hoTen = req.getParameter("hoTen");
 			String ngaySinhStr = req.getParameter("ngaySinh");
 			String gioiTinh = req.getParameter("gioiTinh");
 			String email = req.getParameter("email");
 			String sdt = req.getParameter("sdt");
 			String diaChi = req.getParameter("diaChi");
+			String maToStr = req.getParameter("maTo");
 
-			// [SỬA] Lấy Mã Môn Học (int) từ dropdown select name="maMH"
-			int maMonHoc = Integer.parseInt(req.getParameter("maMH"));
-
-			// 2. Tạo đối tượng
 			GiaoVien gv = new GiaoVien();
 			gv.setHoTen(hoTen);
 			gv.setGioiTinh(gioiTinh);
-			gv.setMaMonHocChuyenMon(maMonHoc); // Set ID môn học
 			gv.setEmail(email);
 			gv.setSdt(sdt);
 			gv.setDiaChi(diaChi);
@@ -130,7 +117,16 @@ public class GiaoVienController extends HttpServlet {
 				gv.setNgaySinh(Date.valueOf(ngaySinhStr));
 			}
 
-			// 3. Gọi Service
+			int maTo = 0;
+			if (maToStr != null && !maToStr.isEmpty()) {
+				try {
+					maTo = Integer.parseInt(maToStr);
+				} catch (NumberFormatException e) {
+					System.out.println("Lỗi parse mã tổ: " + e.getMessage());
+				}
+			}
+			gv.setMaTo(maTo);
+
 			if (service.insert(gv)) {
 				session.setAttribute("message", "Thêm giáo viên thành công!");
 			} else {
@@ -145,38 +141,39 @@ public class GiaoVienController extends HttpServlet {
 
 	private void handleEdit(HttpServletRequest req, HttpSession session) {
 		try {
-			// 1. Lấy ID
-			int maGV = Integer.parseInt(req.getParameter("maGV_edit"));
-
-			// 2. Lấy thông tin khác
+			String maGVStr = req.getParameter("maGV_edit");
+			if (maGVStr == null || maGVStr.isEmpty()) {
+				session.setAttribute("error", "Không tìm thấy ID giáo viên cần sửa!");
+				return;
+			}
+			int maGV = Integer.parseInt(maGVStr);
 			String hoTen = req.getParameter("hoTen_edit");
 			String ngaySinhStr = req.getParameter("ngaySinh_edit");
 			String gioiTinh = req.getParameter("gioiTinh_edit");
 			String email = req.getParameter("email_edit");
 			String sdt = req.getParameter("sdt_edit");
 			String diaChi = req.getParameter("diaChi_edit");
-
-			// [SỬA] Lấy Mã Môn Học (int) từ dropdown select name="maMH_edit"
-			int maMonHoc = Integer.parseInt(req.getParameter("maMH_edit"));
-
-			// 3. Tạo đối tượng
+			String maToStr = req.getParameter("maTo_edit");
 			GiaoVien gv = new GiaoVien();
 			gv.setMaGV(maGV);
 			gv.setHoTen(hoTen);
 			gv.setGioiTinh(gioiTinh);
-			gv.setMaMonHocChuyenMon(maMonHoc); // Set ID môn học
 			gv.setEmail(email);
 			gv.setSdt(sdt);
 			gv.setDiaChi(diaChi);
-
-			// Không setTrangThai ở đây (vì logic update thường giữ nguyên trạng thái cũ
-			// hoặc DAO sẽ tự xử lý chỉ update các trường thông tin)
 
 			if (ngaySinhStr != null && !ngaySinhStr.isEmpty()) {
 				gv.setNgaySinh(Date.valueOf(ngaySinhStr));
 			}
 
-			// 4. Gọi Service
+			int maTo = 0;
+			if (maToStr != null && !maToStr.isEmpty()) {
+				try {
+					maTo = Integer.parseInt(maToStr);
+				} catch (NumberFormatException e) {
+					System.out.println("Lỗi parse mã tổ khi edit");
+				}
+			}
 			if (service.update(gv)) {
 				session.setAttribute("message", "Cập nhật giáo viên thành công!");
 			} else {
@@ -194,7 +191,6 @@ public class GiaoVienController extends HttpServlet {
 		try {
 			int maGV = Integer.parseInt(req.getParameter("id"));
 
-			// Gọi hàm delete (đã được sửa thành xóa mềm trong DAO)
 			if (service.delete(maGV)) {
 				session.setAttribute("message", "Xóa (khóa) giáo viên thành công!");
 			} else {

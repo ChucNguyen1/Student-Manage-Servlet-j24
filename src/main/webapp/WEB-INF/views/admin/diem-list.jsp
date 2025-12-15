@@ -16,7 +16,6 @@
       </nav>
     </div>
 
-    <%-- TOAST THÔNG BÁO --%>
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100">
       <c:if test="${not empty sessionScope.message}">
         <div id="toastSuccess" class="toast" role="alert"><div class="toast-header bg-success text-white"><strong>Thành công</strong><button type="button" class="btn-close" data-bs-dismiss="toast"></button></div><div class="toast-body">${sessionScope.message}</div></div>
@@ -36,11 +35,9 @@
             <div class="card-body">
               <h5 class="card-title">Chọn lớp cần nhập điểm</h5>
               
-              <%-- Form GET để lọc dữ liệu --%>
               <form action="${baseURL}/admin/diem-list" method="GET" id="filterForm">
                 
                 <div class="row g-3">
-                    <%-- 1. Năm Học (Thay đổi sẽ auto reload) --%>
                     <div class="col-md-2">
                       <label class="form-label fw-bold">Năm học</label>
                       <select class="form-select" name="maNH" onchange="document.getElementById('filterForm').submit()">
@@ -51,7 +48,6 @@
                       </select>
                     </div>
     
-                    <%-- 2. Học Kỳ --%>
                     <div class="col-md-2">
                       <label class="form-label fw-bold">Học kỳ</label>
                       <select class="form-select" name="maHK">
@@ -62,7 +58,6 @@
                       </select>
                     </div>
     
-                    <%-- 3. Khối (MỚI - Thay đổi sẽ auto reload) --%>
                     <div class="col-md-2">
                       <label class="form-label fw-bold">Khối</label>
                       <select class="form-select" name="maKhoi" onchange="document.getElementById('filterForm').submit()">
@@ -73,7 +68,6 @@
                       </select>
                     </div>
     
-                    <%-- 4. Lớp Học (Dữ liệu phụ thuộc vào Năm & Khối) --%>
                     <div class="col-md-3">
                       <label class="form-label fw-bold">Lớp</label>
                       <select class="form-select" name="maLop">
@@ -82,13 +76,11 @@
                            <option value="${lop.maLop}" ${param.maLop == lop.maLop ? 'selected' : ''}>${lop.tenLop}</option>
                         </c:forEach>
                       </select>
-                      <%-- Gợi ý nếu chưa chọn Năm/Khối --%>
                       <c:if test="${empty dsLopHoc && (empty param.maNH || empty param.maKhoi)}">
                           <small class="text-danger">*Chọn Năm & Khối trước</small>
                       </c:if>
                     </div>
     
-                    <%-- 5. Môn Học --%>
                     <div class="col-md-3">
                       <label class="form-label fw-bold">Môn học</label>
                       <select class="form-select" name="maMH">
@@ -100,7 +92,6 @@
                     </div>
                 </div>
 
-                <%-- Nút Lọc --%>
                 <div class="text-center mt-4">
                   <button type="submit" class="btn btn-primary px-5">
                     <i class="bi bi-funnel-fill"></i> Lọc Bảng Điểm
@@ -118,10 +109,8 @@
             <div class="card-body">
               <h5 class="card-title">Bảng điểm chi tiết</h5>
 
-              <%-- Form POST để lưu điểm --%>
               <form action="${baseURL}/admin/diem-save" method="POST">
                 
-                <%-- Gửi kèm các ID để sau khi lưu thì redirect về đúng trang này --%>
                 <input type="hidden" name="maLop" value="${param.maLop}">
                 <input type="hidden" name="maMH" value="${param.maMH}">
                 <input type="hidden" name="maHK" value="${param.maHK}">
@@ -139,7 +128,6 @@
                         <th rowspan="2" class="align-middle" style="width: 8%">TBM</th>
                       </tr>
                       <tr>
-                        <%-- Tạo các cột con --%>
                         <th>1</th><th>2</th><th>3</th>
                         <th>1</th><th>2</th><th>3</th>
                         <th>1</th><th>2</th>
@@ -151,13 +139,8 @@
                           <td>${status.count}</td>
                           <td style="text-align: left; font-weight: bold;">
                               ${d.tenHocSinh}
-                              <%-- INPUT ẨN: Lưu mã HS để Controller biết dòng này của ai --%>
                               <input type="hidden" name="maHS_list" value="${d.maHS}">
                           </td>
-                          
-                          <%-- INPUT ĐIỂM: Quy tắc đặt tên: tenCot_maHS --%>
-                          <%-- step="0.1": Cho phép nhập số lẻ --%>
-                          <%-- min="0" max="10": Giới hạn giá trị --%>
                           
                           <td><input type="number" step="0.1" min="0" max="10" class="form-control form-control-sm px-1 text-center" name="diemMieng1_${d.maHS}" value="${d.diemMieng1}"></td>
                           <td><input type="number" step="0.1" min="0" max="10" class="form-control form-control-sm px-1 text-center" name="diemMieng2_${d.maHS}" value="${d.diemMieng2}"></td>
@@ -172,7 +155,6 @@
                           
                           <td><input type="number" step="0.1" min="0" max="10" class="form-control form-control-sm px-1 text-center fw-bold text-primary" name="diemThi_${d.maHS}" value="${d.diemThi}"></td>
                           
-                          <%-- Cột TBM: Chỉ hiển thị, không sửa --%>
                           <td class="fw-bold ${d.diemTBM >= 5.0 ? 'text-success' : 'text-danger'}">
                               ${d.diemTBM != null ? d.diemTBM : '-'}
                           </td>
@@ -194,7 +176,6 @@
         </div>
         </c:if>
         
-        <%-- Nếu đã chọn lọc mà không có dữ liệu --%>
         <c:if test="${empty dsDiem and not empty param.maLop}">
             <div class="col-12">
                 <div class="alert alert-warning text-center">

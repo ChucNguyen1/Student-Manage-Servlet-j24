@@ -9,7 +9,6 @@ import com.student.service.GiaoVienService;
 
 public class GiaoVienServiceImpl implements GiaoVienService {
 
-	// Khởi tạo DAO
 	private GiaoVienDAO giaoVienDAO = new GiaoVienDAOImpl();
 
 	@Override
@@ -24,21 +23,17 @@ public class GiaoVienServiceImpl implements GiaoVienService {
 
 	@Override
 	public boolean insert(GiaoVien gv) {
-		// --- LOGIC NGHIỆP VỤ: KIỂM TRA DỮ LIỆU ---
 		if (gv.getHoTen() == null || gv.getHoTen().trim().isEmpty()) {
 			System.out.println("Lỗi: Tên giáo viên không được để trống.");
 			return false;
 		}
 
-		// Nếu email có nhập, có thể kiểm tra định dạng email ở đây...
-
-		// Gọi DAO để lưu
 		return giaoVienDAO.insert(gv);
 	}
 
 	@Override
 	public boolean update(GiaoVien gv) {
-		// Kiểm tra tương tự khi update
+
 		if (gv.getHoTen() == null || gv.getHoTen().trim().isEmpty()) {
 			return false;
 		}
@@ -47,7 +42,7 @@ public class GiaoVienServiceImpl implements GiaoVienService {
 
 	@Override
 	public boolean delete(int maGV) {
-		// Có thể kiểm tra xem GV này có đang chủ nhiệm lớp nào không trước khi xóa
+
 		return giaoVienDAO.delete(maGV);
 	}
 
@@ -61,11 +56,15 @@ public class GiaoVienServiceImpl implements GiaoVienService {
 	}
 
 	@Override
+	public List<GiaoVien> findByToBoMon(int maTo) {
+		return giaoVienDAO.findByToBoMon(maTo);
+	}
+
+	@Override
 	public List<GiaoVien> findByChuyenMon(int maMonHoc) {
 		return giaoVienDAO.findByChuyenMon(maMonHoc);
 	}
 
-	// Main test cho Service
 	public static void main(String[] args) {
 		GiaoVienService service = new GiaoVienServiceImpl();
 

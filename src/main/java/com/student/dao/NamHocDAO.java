@@ -13,11 +13,10 @@ public interface NamHocDAO {
 
 	boolean update(NamHoc nh);
 
-	boolean delete(String maNH); // Xóa theo String ID
+	boolean delete(String maNH); 
 
-	NamHoc findById(String maNH); // Tìm theo String ID
+	NamHoc findById(String maNH); 
 
-	// Kiểm tra mã tồn tại (để validate khi thêm mới)
 	boolean checkExist(String maNH);
 
 	boolean updateStatus(String maNH, boolean status);

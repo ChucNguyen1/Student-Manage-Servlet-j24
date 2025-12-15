@@ -4,7 +4,6 @@ import java.sql.Date;
 
 public class HocSinh {
 	private int maHS;
-	// Thông tin cá nhân
 	private String hoTen;
 	private Date ngaySinh;
 	private String gioiTinh;
@@ -12,12 +11,8 @@ public class HocSinh {
 	private String danToc;
 	private String tonGiao;
 	private String diaChi;
-
-	// Liên lạc
 	private String email;
 	private String sdtCaNhan;
-
-	// Gia đình
 	private String hoTenCha;
 	private String ngheNghiepCha;
 	private String sdtCha;
@@ -25,21 +20,16 @@ public class HocSinh {
 	private String ngheNghiepMe;
 	private String sdtMe;
 
-	// Học vụ
-	private int maLop;
-	private Integer userID; // Có thể null
-	private String trangThaiHocTap; // Đang học, Bảo lưu...
-	private boolean trangThai; // Soft delete
 
-	// DTO (Trường phụ để hiển thị)
+	private int maLop;
+	private Integer userID; 
+	private String trangThaiHocTap; 
+	private boolean trangThai; 
 	private String tenLop;
 
 	public HocSinh() {
 	}
 
-	// --- GETTERS & SETTERS (Generate cho TẤT CẢ các trường trên) ---
-	// (Bạn dùng chức năng Source -> Generate Getters and Setters của Eclipse nhé)
-	// Dưới đây là ví dụ vài cái chính:
 
 	public int getMaHS() {
 		return maHS;

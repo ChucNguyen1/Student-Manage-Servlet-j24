@@ -24,7 +24,7 @@ public class MonHocServiceImpl implements MonHocService {
 	@Override
 	public boolean insert(MonHoc mh) {
 		if (mh.getSoTiet() <= 0)
-			return false; // Validate số tiết
+			return false; 
 		return monHocDAO.insert(mh);
 	}
 

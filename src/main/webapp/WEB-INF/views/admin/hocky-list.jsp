@@ -6,7 +6,6 @@
 
 <main id="main" class="main">
 
-    <%-- 1. TIÊU ĐỀ & BREADCRUMBS --%>
     <div class="pagetitle">
       <h1>Quản lý Học kỳ</h1>
       <nav>
@@ -18,7 +17,6 @@
       </nav>
     </div>
 
-    <%-- 2. TOAST THÔNG BÁO --%>
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100">
       <c:if test="${not empty sessionScope.message}">
         <div id="toastSuccess" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -43,7 +41,6 @@
       </c:if>
     </div>
 
-    <%-- 3. NỘI DUNG CHÍNH --%>
     <section class="section">
       <div class="row">
         <div class="col-lg-12">
@@ -58,7 +55,6 @@
                 </button>
               </h5>
 
-              <%-- THANH TÌM KIẾM --%>
               <div class="row mb-3">
                 <div class="col-12">
                     <form action="${baseURL}/admin/hocky-list" method="GET" class="d-flex justify-content-end">
@@ -71,7 +67,6 @@
                 </div>
               </div>
 
-              <%-- BẢNG DỮ LIỆU --%>
               <div class="table-responsive">
                   <table class="table table-striped table-hover align-middle">
                     <thead>
@@ -95,8 +90,6 @@
                               <td>
                                   <i class="bi bi-calendar-event"></i> ${hk.tenNamHoc}
                               </td>
-                              
-                              <%-- SWITCH TRẠNG THÁI (AJAX) --%>
                               <td>
                                 <div class="form-check form-switch">
                                   <input class="form-check-input" type="checkbox" 
@@ -108,20 +101,18 @@
                                   </label>
                                 </div>
                               </td>
-                              
-                              <%-- HÀNH ĐỘNG --%>
+
                               <td>
-                                <%-- NÚT SỬA --%>
+
                                 <button type="button" class="btn btn-warning btn-sm" title="Sửa"
                                         data-bs-toggle="modal" data-bs-target="#modalSua"
                                         data-id="${hk.maHK}"
                                         data-ten="${hk.tenHK}"
                                         data-heso="${hk.heSo}"
-                                        data-manh="${hk.maNH}"> <%-- Lưu Mã NH để chọn trong dropdown --%>
+                                        data-manh="${hk.maNH}"> 
                                   <i class="bi bi-pencil-square"></i>
                                 </button>
 
-                                <%-- NÚT XÓA --%>
                                 <a href="${baseURL}/admin/hocky-delete?id=${hk.maHK}" class="btn btn-danger btn-sm" title="Xóa vĩnh viễn"
                                    onclick="return confirm('CẢNH BÁO: Bạn có chắc chắn xóa học kỳ này không?');">
                                   <i class="bi bi-trash"></i>
@@ -133,7 +124,6 @@
                   </table>
               </div>
 
-              <%-- PHÂN TRANG --%>
               <c:set var="pageSize" value="10" />
               <div class="row align-items-center mt-3">
                   <div class="col-md-6">
@@ -251,7 +241,7 @@
 
 <%-- SCRIPT XỬ LÝ --%>
 <script>
-  // Hàm xử lý Switch (AJAX)
+
   function toggleStatus(maHK, checkbox) {
       const newStatus = checkbox.checked;
       const label = checkbox.nextElementSibling;
@@ -268,30 +258,26 @@
   }
 
   document.addEventListener('DOMContentLoaded', (event) => {
-    // Toast
+
     const toastSuccessEl = document.getElementById('toastSuccess');
     if (toastSuccessEl) new bootstrap.Toast(toastSuccessEl, {delay: 5000}).show();
     const toastErrorEl = document.getElementById('toastError');
     if (toastErrorEl) new bootstrap.Toast(toastErrorEl, {delay: 5000}).show();
 
-    // Modal Sửa (Bơm dữ liệu)
     const modalSua = document.getElementById('modalSua');
     if(modalSua) {
         modalSua.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget;
-            
-            // Lấy dữ liệu từ button
+
             const id = button.getAttribute('data-id');
             const ten = button.getAttribute('data-ten');
             const heso = button.getAttribute('data-heso');
-            const manh = button.getAttribute('data-manh'); // Mã năm học
+            const manh = button.getAttribute('data-manh'); 
 
-            // Điền vào form
             modalSua.querySelector('#maHK_edit').value = id;
             modalSua.querySelector('#tenHK_edit').value = ten;
             modalSua.querySelector('#heSo_edit').value = heso;
-            
-            // Chọn đúng option trong dropdown
+
             modalSua.querySelector('#maNH_edit').value = manh;
         });
     }

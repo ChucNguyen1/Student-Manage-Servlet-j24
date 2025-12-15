@@ -14,11 +14,10 @@ public class HocKyMapper {
 		hk.setMaNH(rs.getString("maNH"));
 		hk.setTrangThai(rs.getBoolean("trangThai"));
 
-		// Kiểm tra xem trong câu SQL có join lấy tenNH không để map vào
 		try {
 			hk.setTenNamHoc(rs.getString("tenNH"));
 		} catch (SQLException e) {
-			// Không có cột tenNH trong result set thì bỏ qua
+
 		}
 		return hk;
 	}

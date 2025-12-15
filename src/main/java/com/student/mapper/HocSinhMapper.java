@@ -32,12 +32,10 @@ public class HocSinhMapper {
 		hs.setTrangThaiHocTap(rs.getString("trangThaiHocTap"));
 		hs.setTrangThai(rs.getBoolean("trangThai"));
 
-		// Map userID (xử lý null)
 		int uid = rs.getInt("userID");
 		if (!rs.wasNull())
 			hs.setUserID(uid);
 
-		// Map DTO: Tên lớp (Nếu có JOIN)
 		try {
 			hs.setTenLop(rs.getString("tenLop"));
 		} catch (Exception e) {

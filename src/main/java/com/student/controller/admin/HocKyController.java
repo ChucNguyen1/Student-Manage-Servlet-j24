@@ -26,7 +26,7 @@ public class HocKyController extends HttpServlet {
 
 	// KHỞI TẠO 2 SERVICE
 	private HocKyService hkService = new HocKyServiceImpl();
-	private NamHocService nhService = new NamHocServiceImpl(); // <-- Cần cái này cho Dropdown
+	private NamHocService nhService = new NamHocServiceImpl(); 
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -64,7 +64,6 @@ public class HocKyController extends HttpServlet {
 		resp.sendRedirect(req.getContextPath() + "/admin/hocky-list");
 	}
 
-	// --- CÁC HÀM XỬ LÝ ---
 
 	private void showList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
@@ -81,20 +80,17 @@ public class HocKyController extends HttpServlet {
 		int totalItems = hkService.count(searchKey);
 		int totalPages = (int) Math.ceil((double) totalItems / pageSize);
 
-		// 2. LẤY DANH SÁCH NĂM HỌC (QUAN TRỌNG)
-		// Để JSP có thể dùng trong vòng lặp <c:forEach> tạo <option>
-		// Lưu ý: Hàm findAll() này bạn đã thêm vào NamHocService ở bước chuẩn bị
+		// 2. LẤY DANH SÁCH NĂM HỌC
 		List<NamHoc> listNamHoc = nhService.findAll();
 		if (listNamHoc != null) {
 			System.out.println("Controller: Tìm thấy " + listNamHoc.size() + " năm học.");
 		} else {
 			System.out.println("Controller: Lỗi! listNamHoc bị NULL.");
-			// Nếu null, khởi tạo list rỗng để JSP không bị lỗi tiếp theo
 			listNamHoc = new java.util.ArrayList<>();
 		}
-		// 3. Gửi dữ liệu sang JSP
+
 		req.setAttribute("dsHocKy", listHK);
-		req.setAttribute("dsNamHoc", listNamHoc); // <-- Gửi list này sang
+		req.setAttribute("dsNamHoc", listNamHoc);
 
 		req.setAttribute("totalItems", totalItems);
 		req.setAttribute("totalPages", totalPages);
@@ -108,7 +104,7 @@ public class HocKyController extends HttpServlet {
 		try {
 			String tenHK = req.getParameter("tenHK");
 			int heSo = Integer.parseInt(req.getParameter("heSo"));
-			String maNH = req.getParameter("maNH"); // Lấy ID năm học từ dropdown
+			String maNH = req.getParameter("maNH"); 
 
 			HocKy hk = new HocKy();
 			hk.setTenHK(tenHK);
@@ -130,7 +126,7 @@ public class HocKyController extends HttpServlet {
 			int maHK = Integer.parseInt(req.getParameter("maHK_edit"));
 			String tenHK = req.getParameter("tenHK_edit");
 			int heSo = Integer.parseInt(req.getParameter("heSo_edit"));
-			String maNH = req.getParameter("maNH_edit"); // Lấy ID năm học mới
+			String maNH = req.getParameter("maNH_edit"); 
 
 			HocKy hk = new HocKy();
 			hk.setMaHK(maHK);

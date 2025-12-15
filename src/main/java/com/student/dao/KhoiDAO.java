@@ -6,19 +6,19 @@ import com.student.model.Khoi;
 
 public interface KhoiDAO {
 	/**
-	 * Lấy tổng số lượng Khối (có thể kèm tìm kiếm).
+	 * Lấy tổng số lượng Khối 
 	 * 
-	 * @param searchKey Từ khóa tìm kiếm (nếu là null/rỗng, đếm tất cả)
+	 * @param searchKey 
 	 * @return Tổng số Khối
 	 */
 	int count(String searchKey);
 
 	/**
-	 * Lấy danh sách Khối có phân trang và tìm kiếm.
+	 * Lấy danh sách Khối 
 	 * 
-	 * @param searchKey  Từ khóa (null/rỗng nếu không tìm)
-	 * @param pageNumber Trang hiện tại (bắt đầu từ 1)
-	 * @param pageSize   Số lượng mục mỗi trang
+	 * @param searchKey  
+	 * @param pageNumber 
+	 * @param pageSize   
 	 * @return Danh sách Khối
 	 */
 	List<Khoi> findAndPaginate(String searchKey, int pageNumber, int pageSize);

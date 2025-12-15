@@ -15,7 +15,6 @@ public class PhanCongMapper {
 		pc.setMaHocKy(rs.getInt("maHocKy"));
 		pc.setTrangThai(rs.getBoolean("trangThai"));
 
-		// Map các trường phụ nếu có JOIN
 		try {
 			pc.setTenGiaoVien(rs.getString("tenGiaoVien"));
 		} catch (Exception e) {

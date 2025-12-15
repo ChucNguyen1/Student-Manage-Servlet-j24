@@ -3,15 +3,12 @@ package com.student.model;
 public class PhanCong {
 	private int maPhanCong;
 
-	// Khóa ngoại
 	private int maGV;
 	private int maLop;
 	private int maMonHoc;
 	private int maHocKy;
-
+	private int maTo;
 	private boolean trangThai;
-
-	// --- DTO (Data Transfer Object - Trường phụ để hiển thị) ---
 	private String tenGiaoVien;
 	private String tenLop;
 	private String tenMonHoc;
@@ -20,7 +17,7 @@ public class PhanCong {
 	public PhanCong() {
 	}
 
-	// --- GETTERS & SETTERS (Bạn hãy generate đầy đủ nhé) ---
+	// --- GETTERS & SETTERS ---
 
 	public int getMaPhanCong() {
 		return maPhanCong;
@@ -70,7 +67,6 @@ public class PhanCong {
 		this.trangThai = trangThai;
 	}
 
-	// DTO Getters/Setters
 	public String getTenGiaoVien() {
 		return tenGiaoVien;
 	}
@@ -101,5 +97,13 @@ public class PhanCong {
 
 	public void setTenHocKy(String tenHocKy) {
 		this.tenHocKy = tenHocKy;
+	}
+
+	public int getMaTo() {
+		return maTo;
+	}
+
+	public void setMaTo(int maTo) {
+		this.maTo = maTo;
 	}
 }

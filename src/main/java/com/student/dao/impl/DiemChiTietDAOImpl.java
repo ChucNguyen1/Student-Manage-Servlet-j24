@@ -18,14 +18,13 @@ public class DiemChiTietDAOImpl implements DiemChiTietDAO {
 	public List<DiemChiTiet> getBangDiemLop(int maLop, int maMonHoc, int maHocKy) {
 		List<DiemChiTiet> list = new ArrayList<>();
 
-		// SQL PHỨC TẠP:
+		// SQL:
 		// 1. Lấy tất cả Học Sinh trong lớp (hs)
 		// 2. LEFT JOIN với DiemChiTiet (d) theo maHS, maMonHoc, maHocKy
-		// 3. Kết quả: Luôn có tên học sinh. Nếu chưa có điểm, các cột điểm sẽ là NULL.
 
 		String sql = "SELECT hs.maHS, hs.hoTen AS hoTenHS, d.* " + "FROM HocSinh hs "
 				+ "LEFT JOIN DiemChiTiet d ON hs.maHS = d.maHS " + "    AND d.maMonHoc = ? AND d.maHocKy = ? "
-				+ "WHERE hs.maLop = ? AND hs.trangThai = 1 " + "ORDER BY hs.hoTen ASC"; // Sắp xếp theo tên A-Z
+				+ "WHERE hs.maLop = ? AND hs.trangThai = 1 " + "ORDER BY hs.hoTen ASC"; 
 
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -37,10 +36,7 @@ public class DiemChiTietDAOImpl implements DiemChiTietDAO {
 				while (rs.next()) {
 					DiemChiTiet dt = DiemChiTietMapper.mapRow(rs);
 
-					// Vì Mapper lấy maMonHoc, maHocKy từ bảng DiemChiTiet (có thể null do Left
-					// Join)
-					// Ta nên gán lại giá trị từ tham số đầu vào để object luôn đủ thông tin
-					dt.setMaHS(rs.getInt("maHS")); // Lấy từ bảng HocSinh (luôn có)
+					dt.setMaHS(rs.getInt("maHS")); 
 					dt.setMaMonHoc(maMonHoc);
 					dt.setMaHocKy(maHocKy);
 
@@ -81,8 +77,6 @@ public class DiemChiTietDAOImpl implements DiemChiTietDAO {
 			ps.setInt(1, d.getMaHS());
 			ps.setInt(2, d.getMaMonHoc());
 			ps.setInt(3, d.getMaHocKy());
-
-			// Hàm setDouble xử lý null: Nếu null thì setNull, ngược lại setDouble
 			setDoubleOrNull(ps, 4, d.getDiemMieng1());
 			setDoubleOrNull(ps, 5, d.getDiemMieng2());
 			setDoubleOrNull(ps, 6, d.getDiemMieng3());
@@ -138,12 +132,47 @@ public class DiemChiTietDAOImpl implements DiemChiTietDAO {
 		return false;
 	}
 
-	// --- Helper Method: Để xử lý setDouble khi giá trị là null ---
+	// --- xử lý setDouble khi giá trị là null ---
 	private void setDoubleOrNull(PreparedStatement ps, int index, Double value) throws SQLException {
 		if (value == null) {
 			ps.setNull(index, java.sql.Types.FLOAT);
 		} else {
 			ps.setDouble(index, value);
 		}
+	}
+
+	@Override
+	public List<DiemChiTiet> getBangDiemCaNhan(int maHS, int maHocKy) {
+		List<DiemChiTiet> list = new ArrayList<>();
+
+		// SQL:
+		// 1. Lấy tất cả Môn Học (mh)
+		// 2. LEFT JOIN với DiemChiTiet (d) theo maMonHoc, maHS, maHocKy
+
+		String sql = "SELECT mh.maMH, mh.tenMH, d.* " + "FROM MonHoc mh "
+				+ "LEFT JOIN DiemChiTiet d ON mh.maMH = d.maMonHoc " + "    AND d.maHS = ? AND d.maHocKy = ? "
+				+ "WHERE mh.trangThai = 1 " 
+				+ "ORDER BY mh.tenMH ASC"; 
+
+		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+			ps.setInt(1, maHS);
+			ps.setInt(2, maHocKy);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					DiemChiTiet dt = DiemChiTietMapper.mapRow(rs);
+					dt.setMaHS(maHS);
+					dt.setMaMonHoc(rs.getInt("maMH"));
+					dt.setMaHocKy(maHocKy);
+					dt.setTenMonHoc(rs.getString("tenMH")); 
+
+					list.add(dt);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
 	}
 }

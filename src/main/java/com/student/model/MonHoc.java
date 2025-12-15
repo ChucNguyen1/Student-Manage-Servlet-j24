@@ -5,6 +5,7 @@ public class MonHoc {
 	private String tenMH;
 	private int soTiet;
 	private boolean trangThai;
+	private int maTo;
 
 	public MonHoc() {
 	}
@@ -47,5 +48,13 @@ public class MonHoc {
 
 	public void setTrangThai(boolean trangThai) {
 		this.trangThai = trangThai;
+	}
+
+	public int getMaTo() {
+		return maTo;
+	}
+
+	public void setMaTo(int maTo) {
+		this.maTo = maTo;
 	}
 }

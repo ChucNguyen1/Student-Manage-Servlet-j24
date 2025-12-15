@@ -23,7 +23,6 @@ public class HocSinhServiceImpl implements HocSinhService {
 
 	@Override
 	public boolean insert(HocSinh hs) {
-		// Validate: Tên không được rỗng
 		if (hs.getHoTen() == null || hs.getHoTen().trim().isEmpty()) {
 			return false;
 		}
@@ -40,7 +39,6 @@ public class HocSinhServiceImpl implements HocSinhService {
 
 	@Override
 	public boolean delete(int maHS) {
-		// Có thể thêm kiểm tra điểm số trước khi xóa (nếu cần)
 		return hocSinhDAO.delete(maHS);
 	}
 

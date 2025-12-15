@@ -17,18 +17,18 @@ public class GiaoVienMapper {
 		gv.setDiaChi(rs.getString("diaChi"));
 		gv.setTrangThai(rs.getBoolean("trangThai"));
 
-		// Map khóa ngoại Môn học
-		gv.setMaMonHocChuyenMon(rs.getInt("maMonHocChuyenMon"));
-
-		// Map tên môn học (Lấy từ bảng MonHoc đã JOIN)
-		// Dùng try-catch để tránh lỗi nếu câu SQL không join
 		try {
-			gv.setTenMonHocChuyenMon(rs.getString("tenMH"));
+			gv.setMaTo(rs.getInt("maTo"));
 		} catch (SQLException e) {
-			// Không có cột tenMH thì thôi (để null)
 		}
 
-		// Map userID (xử lý null)
+		
+		try {
+			gv.setTenTo(rs.getString("tenTo"));
+		} catch (SQLException e) {
+			
+		}
+
 		int uid = rs.getInt("userID");
 		if (!rs.wasNull()) {
 			gv.setUserID(uid);

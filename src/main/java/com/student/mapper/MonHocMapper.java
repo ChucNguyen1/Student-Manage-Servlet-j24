@@ -12,6 +12,7 @@ public class MonHocMapper {
 		mh.setTenMH(rs.getString("tenMH"));
 		mh.setSoTiet(rs.getInt("soTiet"));
 		mh.setTrangThai(rs.getBoolean("trangThai"));
+		mh.setMaTo(rs.getInt("maTo"));
 		return mh;
 	}
 }

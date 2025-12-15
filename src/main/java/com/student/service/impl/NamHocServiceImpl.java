@@ -23,13 +23,11 @@ public class NamHocServiceImpl implements NamHocService {
 
 	@Override
 	public boolean insert(NamHoc nh) {
-		// Validate 1: Mã năm học không được trùng
 		if (namHocDAO.checkExist(nh.getMaNH())) {
 			System.out.println("Lỗi: Mã năm học đã tồn tại!");
 			return false;
 		}
 
-		// Validate 2: Ngày kết thúc phải sau ngày bắt đầu
 		if (nh.getNgayBatDau() != null && nh.getNgayKetThuc() != null) {
 			if (nh.getNgayKetThuc().before(nh.getNgayBatDau())) {
 				System.out.println("Lỗi: Ngày kết thúc phải sau ngày bắt đầu!");
@@ -42,7 +40,6 @@ public class NamHocServiceImpl implements NamHocService {
 
 	@Override
 	public boolean update(NamHoc nh) {
-		// Validate ngày tháng khi update
 		if (nh.getNgayBatDau() != null && nh.getNgayKetThuc() != null) {
 			if (nh.getNgayKetThuc().before(nh.getNgayBatDau())) {
 				return false;
@@ -53,12 +50,10 @@ public class NamHocServiceImpl implements NamHocService {
 
 	@Override
 	public String delete(String maNH) {
-		// 1. Kiểm tra ràng buộc dữ liệu
 		if (namHocDAO.isUsed(maNH)) {
-			return "FOREIGN_KEY_ERROR"; // Mã lỗi tự quy định: Đang được sử dụng
+			return "FOREIGN_KEY_ERROR"; 
 		}
 
-		// 2. Nếu sạch, thực hiện xóa cứng
 		boolean success = namHocDAO.delete(maNH);
 		if (success) {
 			return "SUCCESS";
@@ -74,7 +69,6 @@ public class NamHocServiceImpl implements NamHocService {
 
 	@Override
 	public boolean updateStatus(String maNH, boolean newStatus) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

@@ -28,7 +28,7 @@ import jakarta.servlet.http.HttpSession;
 public class LopHocController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	// Khởi tạo 4 Service
+	// Khởi tạo Service
 	private LopHocService lopService = new LopHocServiceImpl();
 	private KhoiService khoiService = new KhoiServiceImpl();
 	private NamHocService namHocService = new NamHocServiceImpl();
@@ -79,16 +79,14 @@ public class LopHocController extends HttpServlet {
 		List<LopHoc> listLop = lopService.findAndPaginate(searchKey, page, pageSize);
 		int totalItems = lopService.count(searchKey);
 		int totalPages = (int) Math.ceil((double) totalItems / pageSize);
-
-		// --- LẤY DỮ LIỆU CHO 3 DROPDOWN ---
 		List<Khoi> listKhoi = khoiService.findAll();
 		List<NamHoc> listNamHoc = namHocService.findAll();
 		List<GiaoVien> listGiaoVien = giaoVienService.findAll();
 
 		req.setAttribute("dsLopHoc", listLop);
-		req.setAttribute("dsKhoi", listKhoi); // Dropdown Khối
-		req.setAttribute("dsNamHoc", listNamHoc); // Dropdown Năm học
-		req.setAttribute("dsGiaoVien", listGiaoVien); // Dropdown GVCN
+		req.setAttribute("dsKhoi", listKhoi); 
+		req.setAttribute("dsNamHoc", listNamHoc); 
+		req.setAttribute("dsGiaoVien", listGiaoVien); 
 
 		req.setAttribute("totalItems", totalItems);
 		req.setAttribute("totalPages", totalPages);
@@ -102,8 +100,6 @@ public class LopHocController extends HttpServlet {
 			String tenLop = req.getParameter("tenLop");
 			int maKhoi = Integer.parseInt(req.getParameter("maKhoi"));
 			String maNH = req.getParameter("maNH");
-
-			// Xử lý GVCN (có thể null nếu chưa chọn)
 			String gvcnStr = req.getParameter("maGVCN");
 			int maGVCN = (gvcnStr != null && !gvcnStr.isEmpty()) ? Integer.parseInt(gvcnStr) : 0;
 

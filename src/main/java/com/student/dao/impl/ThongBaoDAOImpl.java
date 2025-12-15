@@ -25,8 +25,6 @@ public class ThongBaoDAOImpl implements ThongBaoDAO {
         if (searchKey == null) searchKey = "";
         String pattern = "%" + searchKey + "%";
         int offset = (page - 1) * pageSize;
-
-        // QUAN TRỌNG: Dùng getNewConnection()
         try (Connection conn = DBConnection.getNewConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
@@ -53,8 +51,6 @@ public class ThongBaoDAOImpl implements ThongBaoDAO {
     public int count(String searchKey) {
         String sql = "SELECT COUNT(*) FROM ThongBao WHERE tieuDe LIKE ?";
         if (searchKey == null) searchKey = "";
-        
-        // --- ĐÂY LÀ CHỖ BẠN BỊ LỖI, HÃY SỬA DÒNG NÀY ---
         try (Connection conn = DBConnection.getNewConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
              
@@ -81,7 +77,6 @@ public class ThongBaoDAOImpl implements ThongBaoDAO {
     }
     @Override
     public boolean update(ThongBao tb) {
-        // Chỉ cập nhật tiêu đề và nội dung, giữ nguyên người tạo và ngày đăng
         String sql = "UPDATE ThongBao SET tieuDe=?, noiDung=? WHERE maTB=?";
         
         try (Connection conn = DBConnection.getNewConnection();

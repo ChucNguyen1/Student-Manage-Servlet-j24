@@ -14,14 +14,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-// Đường dẫn trên trình duyệt
 @WebServlet(urlPatterns = { "/admin/thongbao-list", "/admin/thongbao-add", "/admin/thongbao-delete",
 		"/admin/thongbao-edit" })
 public class ThongBaoController extends HttpServlet {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private ThongBaoService service = new ThongBaoServiceImpl();
 
@@ -30,7 +26,6 @@ public class ThongBaoController extends HttpServlet {
 		String path = req.getServletPath();
 
 		if (path.contains("delete")) {
-			// Xử lý xóa
 			try {
 				int id = Integer.parseInt(req.getParameter("id"));
 				service.delete(id);
@@ -40,23 +35,18 @@ public class ThongBaoController extends HttpServlet {
 			}
 			resp.sendRedirect(req.getContextPath() + "/admin/thongbao-list");
 		} else {
-			// Xử lý hiển thị danh sách (Mặc định)
 			showList(req, resp);
 		}
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		req.setCharacterEncoding("UTF-8"); // Để nhận tiếng Việt
+		req.setCharacterEncoding("UTF-8"); 
 		String path = req.getServletPath();
 		HttpSession session = req.getSession();
-		// Xử lý thêm mới
 		if (path.equals("/admin/thongbao-add")) {
 			String tieuDe = req.getParameter("tieuDe");
 			String noiDung = req.getParameter("noiDung");
-
-			// Mặc định người đăng là Admin (ID=1) vì chưa làm chức năng đăng nhập hoàn
-			// chỉnh
 			int maNguoiTao = 1;
 
 			ThongBao tb = new ThongBao();
@@ -70,10 +60,8 @@ public class ThongBaoController extends HttpServlet {
 				req.getSession().setAttribute("error", "Đăng thất bại!");
 			}
 		}
-		// --- XỬ LÝ CẬP NHẬT (EDIT) ---
 		else if (path.equals("/admin/thongbao-edit")) {
 			try {
-				// Lấy ID từ input ẩn trong form
 				int maTB = Integer.parseInt(req.getParameter("maTB"));
 				String tieuDe = req.getParameter("tieuDe");
 				String noiDung = req.getParameter("noiDung");
@@ -98,21 +86,15 @@ public class ThongBaoController extends HttpServlet {
 
 	private void showList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String searchKey = req.getParameter("searchKey");
-
-		// Xử lý phân trang
 		int page = 1;
 		try {
 			page = Integer.parseInt(req.getParameter("page"));
 		} catch (Exception e) {
 			page = 1;
 		}
-
-		// Lấy dữ liệu
 		List<ThongBao> list = service.findAll(searchKey, page, 10);
 		int totalItems = service.count(searchKey);
 		int totalPages = (int) Math.ceil((double) totalItems / 10);
-
-		// Gửi sang JSP (Chú ý tên biến: dsThongBao)
 		req.setAttribute("dsThongBao", list);
 		req.setAttribute("totalItems", totalItems);
 		req.setAttribute("totalPages", totalPages);

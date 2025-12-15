@@ -17,8 +17,6 @@ public class LopHocDAOImpl implements LopHocDAO {
 	@Override
 	public List<LopHoc> findAndPaginate(String searchKey, int pageNumber, int pageSize) {
 		List<LopHoc> list = new ArrayList<>();
-		// JOIN 3 bảng để lấy tên hiển thị. LEFT JOIN với GVCN vì lớp có thể chưa có
-		// GVCN.
 		String sql = "SELECT l.*, k.tenKhoi, n.tenNH, g.hoTen AS tenGVCN " + "FROM LopHoc l "
 				+ "JOIN Khoi k ON l.maKhoi = k.maKhoi " + "JOIN NamHoc n ON l.maNH = n.maNH "
 				+ "LEFT JOIN GiaoVien g ON l.maGVCN = g.maGV " + "WHERE l.trangThai = 1 ";
@@ -89,8 +87,6 @@ public class LopHocDAOImpl implements LopHocDAO {
 			ps.setString(1, lh.getTenLop());
 			ps.setInt(2, lh.getMaKhoi());
 			ps.setString(3, lh.getMaNH());
-
-			// Xử lý GVCN có thể null (nếu chọn "Chưa phân công")
 			if (lh.getMaGVCN() > 0)
 				ps.setInt(4, lh.getMaGVCN());
 			else
@@ -126,7 +122,6 @@ public class LopHocDAOImpl implements LopHocDAO {
 
 	@Override
 	public boolean delete(int maLop) {
-		// Xóa cứng
 		String sql = "DELETE FROM LopHoc WHERE maLop=?";
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, maLop);
@@ -139,7 +134,6 @@ public class LopHocDAOImpl implements LopHocDAO {
 
 	@Override
 	public boolean updateStatus(int maLop, boolean status) {
-		// Xóa mềm
 		String sql = "UPDATE LopHoc SET trangThai=? WHERE maLop=?";
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setBoolean(1, status);
@@ -153,7 +147,6 @@ public class LopHocDAOImpl implements LopHocDAO {
 
 	@Override
 	public boolean isUsed(int maLop) {
-		// Kiểm tra xem có Học sinh nào trong lớp này không
 		String sql = "SELECT COUNT(*) FROM HocSinh WHERE maLop = ?";
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, maLop);
@@ -169,7 +162,6 @@ public class LopHocDAOImpl implements LopHocDAO {
 
 	@Override
 	public boolean checkDuplicate(String tenLop, String maNH) {
-		// Kiểm tra trùng tên lớp trong cùng 1 năm học
 		String sql = "SELECT COUNT(*) FROM LopHoc WHERE tenLop = ? AND maNH = ? AND trangThai = 1";
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, tenLop);
@@ -185,9 +177,25 @@ public class LopHocDAOImpl implements LopHocDAO {
 	}
 
 	@Override
+	public LopHoc findById(int maLop) {
+		String sql = "SELECT * FROM LopHoc WHERE maLop = ?";
+		try (Connection conn = DBConnection.getNewConnection();
+				PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.setInt(1, maLop);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					return LopHocMapper.mapRow(rs);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
 	public List<LopHoc> findByNamHocAndKhoi(String maNH, int maKhoi) {
 		List<LopHoc> list = new ArrayList<>();
-		// Lấy lớp theo năm, khối và đang hoạt động
 		String sql = "SELECT * FROM LopHoc WHERE maNH = ? AND maKhoi = ? AND trangThai = 1 ORDER BY tenLop ASC";
 
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {

@@ -75,7 +75,7 @@ public class NamHocController extends HttpServlet {
 
 	private void handleAdd(HttpServletRequest req, HttpSession session) {
 		try {
-			String maNH = req.getParameter("maNH"); // Người dùng tự nhập
+			String maNH = req.getParameter("maNH"); 
 			String tenNH = req.getParameter("tenNH");
 			Date ngayBatDau = Date.valueOf(req.getParameter("ngayBatDau"));
 			Date ngayKetThuc = Date.valueOf(req.getParameter("ngayKetThuc"));
@@ -93,7 +93,7 @@ public class NamHocController extends HttpServlet {
 
 	private void handleEdit(HttpServletRequest req, HttpSession session) {
 		try {
-			String maNH = req.getParameter("maNH_edit"); // Lấy ID từ hidden input
+			String maNH = req.getParameter("maNH_edit"); 
 			String tenNH = req.getParameter("tenNH_edit");
 			Date ngayBatDau = Date.valueOf(req.getParameter("ngayBatDau_edit"));
 			Date ngayKetThuc = Date.valueOf(req.getParameter("ngayKetThuc_edit"));
@@ -114,7 +114,7 @@ public class NamHocController extends HttpServlet {
 		HttpSession session = req.getSession();
 		String maNH = req.getParameter("id");
 
-		String result = service.delete(maNH); // Hàm này giờ trả về String
+		String result = service.delete(maNH); 
 
 		if ("SUCCESS".equals(result)) {
 			session.setAttribute("message", "Đã xóa vĩnh viễn năm học!");
@@ -128,10 +128,9 @@ public class NamHocController extends HttpServlet {
 		resp.sendRedirect(req.getContextPath() + "/admin/namhoc-list");
 	}
 
-	// 2. XỬ LÝ SWITCH TRẠNG THÁI (Nên dùng AJAX, nhưng đây là cách GET đơn giản)
+	// 2. XỬ LÝ SWITCH TRẠNG THÁI 
 	private void handleStatus(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		String maNH = req.getParameter("id");
-		// statusStr sẽ là "true" hoặc "false"
 		String statusStr = req.getParameter("status");
 		boolean newStatus = Boolean.parseBoolean(statusStr);
 

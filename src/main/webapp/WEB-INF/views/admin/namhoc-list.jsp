@@ -279,8 +279,8 @@
             const start = button.getAttribute('data-start');
             const end = button.getAttribute('data-end');
 
-            modalSua.querySelector('#maNH_display').value = id; // Hiển thị
-            modalSua.querySelector('#maNH_edit').value = id;    // Gửi đi
+            modalSua.querySelector('#maNH_display').value = id; 
+            modalSua.querySelector('#maNH_edit').value = id;    
             modalSua.querySelector('#tenNH_edit').value = ten;
             modalSua.querySelector('#ngayBatDau_edit').value = start;
             modalSua.querySelector('#ngayKetThuc_edit').value = end;
@@ -289,23 +289,19 @@
   });
   
   function toggleStatus(maNH, checkbox) {
-      const newStatus = checkbox.checked; // true hoặc false
-      const label = checkbox.nextElementSibling; // Thẻ label bên cạnh
+      const newStatus = checkbox.checked; 
+      const label = checkbox.nextElementSibling; 
       
-      // Cập nhật giao diện ngay lập tức cho mượt
+
       label.textContent = newStatus ? 'Hiển thị' : 'Ẩn';
 
-      // Gửi AJAX request về Server
-      // URL: /admin/namhoc-status?id=2024-2025&status=true
       fetch('${baseURL}/admin/namhoc-status?id=' + maNH + '&status=' + newStatus, {
           method: 'GET'
       })
       .then(response => {
           if (response.ok) {
-              // Thành công: Hiện Toast nhỏ (Tùy chọn)
               console.log("Cập nhật trạng thái thành công");
           } else {
-              // Thất bại: Báo lỗi và revert cái switch lại
               alert("Lỗi kết nối! Không thể cập nhật trạng thái.");
               checkbox.checked = !newStatus;
               label.textContent = !newStatus ? 'Hiển thị' : 'Ẩn';

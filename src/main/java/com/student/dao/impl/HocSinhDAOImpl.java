@@ -18,7 +18,6 @@ public class HocSinhDAOImpl implements HocSinhDAO {
 	@Override
 	public List<HocSinh> findAndPaginate(String searchKey, int pageNumber, int pageSize) {
 		List<HocSinh> list = new ArrayList<>();
-		// JOIN bảng LopHoc để lấy tên lớp
 		String sql = "SELECT hs.*, lh.tenLop " + "FROM HocSinh hs " + "LEFT JOIN LopHoc lh ON hs.maLop = lh.maLop "
 				+ "WHERE hs.trangThai = 1 ";
 
@@ -68,7 +67,6 @@ public class HocSinhDAOImpl implements HocSinhDAO {
 
 	@Override
 	public boolean insert(HocSinh hs) {
-		// Câu SQL dài, hãy cẩn thận
 		String sql = "INSERT INTO HocSinh (hoTen, ngaySinh, gioiTinh, noiSinh, danToc, tonGiao, diaChi, "
 				+ "email, sdtCaNhan, hoTenCha, ngheNghiepCha, sdtCha, hoTenMe, ngheNghiepMe, sdtMe, "
 				+ "maLop, trangThaiHocTap, trangThai) "
@@ -91,13 +89,12 @@ public class HocSinhDAOImpl implements HocSinhDAO {
 			ps.setString(i++, hs.getNgheNghiepMe());
 			ps.setString(i++, hs.getSdtMe());
 
-			// Xử lý maLop có thể null
 			if (hs.getMaLop() > 0)
 				ps.setInt(i++, hs.getMaLop());
 			else
 				ps.setNull(i++, Types.INTEGER);
 
-			ps.setString(i++, hs.getTrangThaiHocTap()); // Mặc định 'Đang học'
+			ps.setString(i++, hs.getTrangThaiHocTap()); 
 
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {

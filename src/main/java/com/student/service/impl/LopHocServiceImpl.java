@@ -28,7 +28,6 @@ public class LopHocServiceImpl implements LopHocService {
 
 	@Override
 	public boolean insert(LopHoc lh) {
-		// Validate: Tên lớp không được trùng trong cùng 1 năm học
 		if (lopHocDAO.checkDuplicate(lh.getTenLop(), lh.getMaNH())) {
 			System.out.println("Lỗi: Lớp " + lh.getTenLop() + " đã tồn tại trong năm học này.");
 			return false;
@@ -44,7 +43,7 @@ public class LopHocServiceImpl implements LopHocService {
 	@Override
 	public String delete(int maLop) {
 		if (lopHocDAO.isUsed(maLop)) {
-			return "FOREIGN_KEY_ERROR"; // Lớp đang có học sinh
+			return "FOREIGN_KEY_ERROR"; 
 		}
 		return lopHocDAO.delete(maLop) ? "SUCCESS" : "SYSTEM_ERROR";
 	}
@@ -57,5 +56,10 @@ public class LopHocServiceImpl implements LopHocService {
 	@Override
 	public List<LopHoc> findByNamHocAndKhoi(String maNH, int maKhoi) {
 		return lopHocDAO.findByNamHocAndKhoi(maNH, maKhoi);
+	}
+
+	@Override
+	public LopHoc findById(int maLop) {
+		return lopHocDAO.findById(maLop);
 	}
 }

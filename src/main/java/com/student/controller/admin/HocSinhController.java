@@ -24,7 +24,7 @@ public class HocSinhController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private HocSinhService service = new HocSinhServiceImpl();
-	private LopHocService lopService = new LopHocServiceImpl(); // Để lấy dropdown lớp
+	private LopHocService lopService = new LopHocServiceImpl(); 
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -68,12 +68,10 @@ public class HocSinhController extends HttpServlet {
 		List<HocSinh> listHS = service.findAndPaginate(searchKey, page, pageSize);
 		int totalItems = service.count(searchKey);
 		int totalPages = (int) Math.ceil((double) totalItems / pageSize);
-
-		// Lấy danh sách Lớp học để đổ vào Dropdown
 		List<LopHoc> listLop = lopService.findAll();
 
 		req.setAttribute("dsHocSinh", listHS);
-		req.setAttribute("dsLopHoc", listLop); // <-- Quan trọng
+		req.setAttribute("dsLopHoc", listLop); 
 
 		req.setAttribute("totalItems", totalItems);
 		req.setAttribute("totalPages", totalPages);
@@ -84,7 +82,7 @@ public class HocSinhController extends HttpServlet {
 
 	private void handleAdd(HttpServletRequest req, HttpSession session) {
 		try {
-			HocSinh hs = extractData(req); // Hàm phụ để lấy dữ liệu
+			HocSinh hs = extractData(req); 
 
 			if (service.insert(hs))
 				session.setAttribute("message", "Thêm học sinh thành công!");
@@ -99,14 +97,7 @@ public class HocSinhController extends HttpServlet {
 	private void handleEdit(HttpServletRequest req, HttpSession session) {
 		try {
 			HocSinh hs = extractData(req);
-			// Lấy thêm ID cho trường hợp sửa
 			hs.setMaHS(Integer.parseInt(req.getParameter("maHS_edit")));
-
-			// Với form sửa, tên các field input thường có hậu tố _edit
-			// Nhưng để đơn giản trong hàm extractData, ở file JSP ta sẽ đặt name giống hệt
-			// nhau
-			// Chỉ khác ID hidden.
-
 			if (service.update(hs))
 				session.setAttribute("message", "Cập nhật thành công!");
 			else
@@ -130,8 +121,6 @@ public class HocSinhController extends HttpServlet {
 	// --- Helper Method: Lấy dữ liệu từ Request ---
 	private HocSinh extractData(HttpServletRequest req) {
 		HocSinh hs = new HocSinh();
-
-		// Thông tin cá nhân (name trong JSP phải khớp các chuỗi này)
 		hs.setHoTen(req.getParameter("hoTen"));
 		String ns = req.getParameter("ngaySinh");
 		if (ns != null && !ns.isEmpty())
@@ -160,7 +149,7 @@ public class HocSinhController extends HttpServlet {
 		if (maLopStr != null && !maLopStr.isEmpty()) {
 			hs.setMaLop(Integer.parseInt(maLopStr));
 		}
-		hs.setTrangThaiHocTap(req.getParameter("trangThaiHocTap")); // Đang học, Bảo lưu...
+		hs.setTrangThaiHocTap(req.getParameter("trangThaiHocTap")); 
 
 		return hs;
 	}

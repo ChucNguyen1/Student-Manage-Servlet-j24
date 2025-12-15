@@ -5,10 +5,8 @@ public class LopHoc {
 	private String tenLop;
 	private int maKhoi;
 	private String maNH;
-	private int maGVCN; // Giáo viên chủ nhiệm
+	private int maGVCN; 
 	private boolean trangThai;
-
-	// --- CÁC TRƯỜNG PHỤ (DTO) ĐỂ HIỂN THỊ ---
 	private String tenKhoi;
 	private String tenNamHoc;
 	private String tenGVCN;

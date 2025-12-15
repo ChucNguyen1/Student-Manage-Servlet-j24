@@ -2,7 +2,9 @@ package com.student.controller.admin;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.student.model.*;
 import com.student.service.*;
@@ -21,13 +23,14 @@ public class PhanCongController extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    // Khởi tạo các Service
+    // Khởi tạo Service
     private PhanCongService phanCongService = new PhanCongServiceImpl();
     private NamHocService namHocService = new NamHocServiceImpl();
     private HocKyService hocKyService = new HocKyServiceImpl();
     private KhoiService khoiService = new KhoiServiceImpl();
     private LopHocService lopHocService = new LopHocServiceImpl();
     private GiaoVienService giaoVienService = new GiaoVienServiceImpl();
+    private MonHocService monHocService = new MonHocServiceImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -50,34 +53,22 @@ public class PhanCongController extends HttpServlet {
     }
 
     private void showList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        
-        // 1. LOAD DỮ LIỆU CỐ ĐỊNH (Năm, Khối)
         List<NamHoc> listNamHoc = namHocService.findAll();
         List<Khoi> listKhoi = khoiService.findAll();
-        
-        // Load danh sách Giáo viên (Để đổ vào Dropdown chọn người dạy)
         List<GiaoVien> listGiaoVien = giaoVienService.findAll();
 
         req.setAttribute("dsNamHoc", listNamHoc);
         req.setAttribute("dsKhoi", listKhoi);
-        req.setAttribute("dsGiaoVien", listGiaoVien); // <-- Quan trọng
-
-        // 2. LẤY THAM SỐ TỪ URL
+        req.setAttribute("dsGiaoVien", listGiaoVien); 
         String maNH = req.getParameter("maNH");
         String maKhoiStr = req.getParameter("maKhoi");
         String maLopStr = req.getParameter("maLop");
         String maHocKyStr = req.getParameter("maHK");
-
-        // 3. LOGIC LỌC (Cascading)
-        
-        // 3.1. Lọc Học kỳ (Theo Năm)
         List<HocKy> listHocKy = new ArrayList<>();
         if (maNH != null && !maNH.isEmpty()) {
             listHocKy = hocKyService.findByNamHoc(maNH);
         }
         req.setAttribute("dsHocKy", listHocKy);
-
-        // 3.2. Lọc Lớp (Theo Năm & Khối)
         List<LopHoc> listLopHoc = new ArrayList<>();
         if (maNH != null && !maNH.isEmpty() && maKhoiStr != null && !maKhoiStr.isEmpty()) {
             try {
@@ -86,18 +77,12 @@ public class PhanCongController extends HttpServlet {
             } catch (Exception e) {}
         }
         req.setAttribute("dsLopHoc", listLopHoc);
-
-        // 4. LẤY BẢNG PHÂN CÔNG (Khi đã chọn Lớp và Học kỳ)
         if (maLopStr != null && maHocKyStr != null) {
             try {
                 int maLop = Integer.parseInt(maLopStr);
                 int maHocKy = Integer.parseInt(maHocKyStr);
-
-                // Gọi Service để lấy danh sách merged (Môn học + Giáo viên đã gán)
                 List<PhanCong> listPhanCong = phanCongService.getPhanCongView(maLop, maHocKy);
                 req.setAttribute("dsPhanCong", listPhanCong);
-
-                // Giữ lại lựa chọn
                 req.setAttribute("selectedLop", maLop);
                 req.setAttribute("selectedHK", maHocKy);
 
@@ -112,34 +97,67 @@ public class PhanCongController extends HttpServlet {
 
     private void handleSave(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         HttpSession session = req.getSession();
+        
         try {
-            // Lấy thông tin chung để redirect
             String maNH = req.getParameter("maNH");
             String maKhoi = req.getParameter("maKhoi");
-            int maLop = Integer.parseInt(req.getParameter("maLop"));
-            int maHocKy = Integer.parseInt(req.getParameter("maHK"));
+            String maLopStr = req.getParameter("maLop");
+            String maHocKyStr = req.getParameter("maHK");
+            
+            if (maLopStr == null || maLopStr.isEmpty() || maHocKyStr == null || maHocKyStr.isEmpty()) {
+                session.setAttribute("error", "Thiếu thông tin lớp hoặc học kỳ!");
+                resp.sendRedirect(req.getContextPath() + "/admin/phancong-list");
+                return;
+            }
+            
+            int maLop = Integer.parseInt(maLopStr);
+            int maHocKy = Integer.parseInt(maHocKyStr);
 
-            // Lấy danh sách Môn học (ID) từ form
             String[] listMaMon = req.getParameterValues("maMonHoc_list");
 
-            if (listMaMon != null) {
-                for (String maMonStr : listMaMon) {
+            if (listMaMon == null || listMaMon.length == 0) {
+                session.setAttribute("error", "Không có môn học nào để phân công!");
+                resp.sendRedirect(req.getContextPath() + "/admin/phancong-list?maNH=" + maNH + "&maKhoi=" + maKhoi + "&maLop=" + maLop + "&maHK=" + maHocKy);
+                return;
+            }
+            
+            int successCount = 0;
+            int errorCount = 0;
+            StringBuilder errors = new StringBuilder();
+
+            for (String maMonStr : listMaMon) {
+                try {
                     int maMon = Integer.parseInt(maMonStr);
-                    
-                    // Lấy ID Giáo viên được chọn cho môn này
-                    // Tên input trong JSP là: maGV_IDMON
                     String maGVStr = req.getParameter("maGV_" + maMon);
                     int maGV = (maGVStr != null && !maGVStr.isEmpty()) ? Integer.parseInt(maGVStr) : 0;
-                    
-                    // Gọi Service lưu
-                    phanCongService.savePhanCong(maLop, maMon, maHocKy, maGV);
+                    if (phanCongService.savePhanCong(maLop, maMon, maHocKy, maGV)) {
+                        successCount++;
+                    } else {
+                        errorCount++;
+                        errors.append("Môn ").append(maMon).append(", ");
+                    }
+                } catch (Exception e) {
+                    errorCount++;
+                    errors.append("Môn ").append(maMonStr).append(" lỗi: ").append(e.getMessage()).append("; ");
                 }
-                session.setAttribute("message", "Cập nhật phân công thành công!");
             }
 
-            // Redirect về đúng trang đang đứng
+            if (errorCount == 0) {
+                session.setAttribute("message", String.format(
+                    "Cập nhật phân công thành công! Đã lưu %d môn học.", successCount));
+            } else if (successCount > 0) {
+                session.setAttribute("warning", String.format(
+                    "Cập nhật một phần: %d thành công, %d lỗi. Chi tiết: %s", 
+                    successCount, errorCount, errors.toString()));
+            } else {
+                session.setAttribute("error", "Lưu thất bại! " + errors.toString());
+            }
+
             resp.sendRedirect(req.getContextPath() + "/admin/phancong-list?maNH=" + maNH + "&maKhoi=" + maKhoi + "&maLop=" + maLop + "&maHK=" + maHocKy);
 
+        } catch (NumberFormatException e) {
+            session.setAttribute("error", "Dữ liệu không hợp lệ: " + e.getMessage());
+            resp.sendRedirect(req.getContextPath() + "/admin/phancong-list");
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());

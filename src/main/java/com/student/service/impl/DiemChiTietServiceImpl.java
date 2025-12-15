@@ -18,13 +18,8 @@ public class DiemChiTietServiceImpl implements DiemChiTietService {
 
 	@Override
 	public boolean saveDiem(DiemChiTiet diem) {
-		// 1. Tự động tính toán điểm trung bình trước khi lưu
 		calculateAndSetTBM(diem);
-
-		// 2. Kiểm tra xem điểm này đã tồn tại trong DB chưa
 		boolean exists = diemDAO.checkExist(diem.getMaHS(), diem.getMaMonHoc(), diem.getMaHocKy());
-
-		// 3. Quyết định Insert hay Update
 		if (exists) {
 			return diemDAO.update(diem);
 		} else {
@@ -37,7 +32,6 @@ public class DiemChiTietServiceImpl implements DiemChiTietService {
 		double tongDiem = 0;
 		int tongHeSo = 0;
 
-		// --- HỆ SỐ 1 (Miệng, 15p) ---
 		if (d.getDiemMieng1() != null) {
 			tongDiem += d.getDiemMieng1();
 			tongHeSo += 1;
@@ -64,7 +58,6 @@ public class DiemChiTietServiceImpl implements DiemChiTietService {
 			tongHeSo += 1;
 		}
 
-		// --- HỆ SỐ 2 (1 Tiết) ---
 		if (d.getDiem1Tiet1() != null) {
 			tongDiem += d.getDiem1Tiet1() * 2;
 			tongHeSo += 2;
@@ -74,20 +67,17 @@ public class DiemChiTietServiceImpl implements DiemChiTietService {
 			tongHeSo += 2;
 		}
 
-		// --- HỆ SỐ 3 (Thi) ---
 		if (d.getDiemThi() != null) {
 			tongDiem += d.getDiemThi() * 3;
 			tongHeSo += 3;
 		}
 
-		// --- TÍNH TOÁN ---
 		if (tongHeSo > 0) {
 			double tbm = tongDiem / tongHeSo;
-			// Làm tròn 1 chữ số thập phân (VD: 8.56 -> 8.6)
 			tbm = Math.round(tbm * 10.0) / 10.0;
 			d.setDiemTBM(tbm);
 		} else {
-			d.setDiemTBM(null); // Chưa có điểm nào
+			d.setDiemTBM(null); 
 		}
 	}
 }

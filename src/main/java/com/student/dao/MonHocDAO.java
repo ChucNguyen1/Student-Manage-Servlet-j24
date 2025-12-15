@@ -17,8 +17,9 @@ public interface MonHocDAO {
 
 	boolean updateStatus(int maMH, boolean status);
 
-	boolean isUsed(int maMH); // Kiểm tra ràng buộc dữ liệu
+	boolean isUsed(int maMH); 
 
-	// Thêm hàm này để dùng cho dropdown sau này (khi phân công giảng dạy)
 	List<MonHoc> findAll();
+
+	MonHoc findById(int maMH);
 }

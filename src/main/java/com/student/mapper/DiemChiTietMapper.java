@@ -15,7 +15,6 @@ public class DiemChiTietMapper {
 		diem.setMaMonHoc(rs.getInt("maMonHoc"));
 		diem.setMaHocKy(rs.getInt("maHocKy"));
 
-		// Lấy điểm (getObject để xử lý null an toàn)
 		diem.setDiemMieng1((Double) rs.getObject("diemMieng_1"));
 		diem.setDiemMieng2((Double) rs.getObject("diemMieng_2"));
 		diem.setDiemMieng3((Double) rs.getObject("diemMieng_3"));
@@ -30,9 +29,8 @@ public class DiemChiTietMapper {
 		diem.setDiemThi((Double) rs.getObject("diemThi"));
 		diem.setDiemTBM((Double) rs.getObject("diemTBM"));
 
-		// Map các trường phụ (nếu câu SQL có JOIN)
 		try {
-			diem.setTenHocSinh(rs.getString("hoTenHS")); // Alias trong SQL
+			diem.setTenHocSinh(rs.getString("hoTenHS"));
 		} catch (SQLException e) {
 		}
 
