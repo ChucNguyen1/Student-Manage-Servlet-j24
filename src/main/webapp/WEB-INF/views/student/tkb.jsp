@@ -25,10 +25,19 @@
                             <i class="bi bi-calendar3 text-primary"></i>
                             Lịch học của lớp: <strong class="text-primary">${tenLop}</strong>
 
-                            <c:if test="${not empty dsHocKy}">
-                                <div class="float-end">
-                                    <form action="${baseURL}/student/tkb" method="GET" class="d-inline">
-                                        <label class="me-2">Học kỳ:</label>
+                            <div class="float-end">
+                                <form action="${baseURL}/student/tkb" method="GET" class="d-inline">
+                                    <label class="me-2">Năm học:</label>
+                                    <select name="maNH" class="form-select d-inline-block" style="width: auto;" onchange="this.form.submit()">
+                                        <c:forEach var="nh" items="${dsNamHoc}">
+                                            <option value="${nh.maNH}" ${nh.maNH == maNHHienTai ? 'selected' : ''}>
+                                                ${nh.tenNH}
+                                            </option>
+                                        </c:forEach>
+                                    </select>
+                                    
+                                    <c:if test="${not empty dsHocKy}">
+                                        <label class="ms-3 me-2">Học kỳ:</label>
                                         <select name="maHocKy" class="form-select d-inline-block" style="width: auto;" onchange="this.form.submit()">
                                             <c:forEach var="hk" items="${dsHocKy}">
                                                 <option value="${hk.maHK}" ${hk.maHK == maHocKyHienTai ? 'selected' : ''}>
@@ -36,9 +45,9 @@
                                                 </option>
                                             </c:forEach>
                                         </select>
-                                    </form>
-                                </div>
-                            </c:if>
+                                    </c:if>
+                                </form>
+                            </div>
                         </h5>
 
                         <c:if test="${not empty error}">

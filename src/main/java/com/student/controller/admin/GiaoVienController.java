@@ -174,6 +174,8 @@ public class GiaoVienController extends HttpServlet {
 					System.out.println("Lỗi parse mã tổ khi edit");
 				}
 			}
+			gv.setMaTo(maTo);
+			
 			if (service.update(gv)) {
 				session.setAttribute("message", "Cập nhật giáo viên thành công!");
 			} else {

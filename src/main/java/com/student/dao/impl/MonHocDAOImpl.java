@@ -17,11 +17,11 @@ public class MonHocDAOImpl implements MonHocDAO {
 	@Override
 	public List<MonHoc> findAndPaginate(String searchKey, int pageNumber, int pageSize) {
 		List<MonHoc> list = new ArrayList<>();
-		String sql = "SELECT * FROM MonHoc WHERE trangThai = 1";
+		String sql = "SELECT mh.*, t.tenTo FROM MonHoc mh LEFT JOIN ToBoMon t ON mh.maTo = t.maTo WHERE mh.trangThai = 1";
 		if (searchKey != null && !searchKey.isEmpty()) {
-			sql += " AND tenMH LIKE ?";
+			sql += " AND mh.tenMH LIKE ?";
 		}
-		sql += " ORDER BY maMH DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+		sql += " ORDER BY mh.maMH DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			int index = 1;
@@ -62,10 +62,15 @@ public class MonHocDAOImpl implements MonHocDAO {
 
 	@Override
 	public boolean insert(MonHoc mh) {
-		String sql = "INSERT INTO MonHoc (tenMH, soTiet, trangThai) VALUES (?, ?, 1)";
+		String sql = "INSERT INTO MonHoc (tenMH, soTiet, trangThai, maTo) VALUES (?, ?, 1, ?)";
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, mh.getTenMH());
 			ps.setInt(2, mh.getSoTiet());
+			if (mh.getMaTo() > 0) {
+				ps.setInt(3, mh.getMaTo());
+			} else {
+				ps.setNull(3, java.sql.Types.INTEGER);
+			}
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -75,11 +80,16 @@ public class MonHocDAOImpl implements MonHocDAO {
 
 	@Override
 	public boolean update(MonHoc mh) {
-		String sql = "UPDATE MonHoc SET tenMH=?, soTiet=? WHERE maMH=?";
+		String sql = "UPDATE MonHoc SET tenMH=?, soTiet=?, maTo=? WHERE maMH=?";
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, mh.getTenMH());
 			ps.setInt(2, mh.getSoTiet());
-			ps.setInt(3, mh.getMaMH());
+			if (mh.getMaTo() > 0) {
+				ps.setInt(3, mh.getMaTo());
+			} else {
+				ps.setNull(3, java.sql.Types.INTEGER);
+			}
+			ps.setInt(4, mh.getMaMH());
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -138,7 +148,7 @@ public class MonHocDAOImpl implements MonHocDAO {
 	@Override
 	public List<MonHoc> findAll() {
 		List<MonHoc> list = new ArrayList<>();
-		String sql = "SELECT mh.*, t.tenTo FROM MonHoc mh LEFT JOIN ToBoMon t WHERE trangThai = 1";
+		String sql = "SELECT mh.*, t.tenTo FROM MonHoc mh LEFT JOIN ToBoMon t ON mh.maTo = t.maTo WHERE mh.trangThai = 1";
 		try (Connection conn = DBConnection.getNewConnection();
 				PreparedStatement ps = conn.prepareStatement(sql);
 				ResultSet rs = ps.executeQuery()) {

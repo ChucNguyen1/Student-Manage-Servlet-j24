@@ -94,6 +94,7 @@ pageEncoding="UTF-8"%> <%@ taglib uri="jakarta.tags.core" prefix="c" %>
                     <th>ID</th>
                     <th>Tên Môn Học</th>
                     <th>Số Tiết</th>
+                    <th>Tổ Bộ Môn</th>
                     <th>Trạng thái</th>
                     <th>Hành động</th>
                   </tr>
@@ -104,6 +105,16 @@ pageEncoding="UTF-8"%> <%@ taglib uri="jakarta.tags.core" prefix="c" %>
                       <td>${mh.maMH}</td>
                       <td><strong>${mh.tenMH}</strong></td>
                       <td>${mh.soTiet}</td>
+                      <td>
+                        <c:choose>
+                          <c:when test="${mh.maTo > 0}">
+                            <span class="badge bg-info">${mh.tenTo}</span>
+                          </c:when>
+                          <c:otherwise>
+                            <span class="text-muted">Chưa phân</span>
+                          </c:otherwise>
+                        </c:choose>
+                      </td>
                       <td>
                         <div class="form-check form-switch">
                           <input class="form-check-input" type="checkbox"
@@ -123,6 +134,7 @@ pageEncoding="UTF-8"%> <%@ taglib uri="jakarta.tags.core" prefix="c" %>
                           data-id="${mh.maMH}"
                           data-ten="${mh.tenMH}"
                           data-sotiet="${mh.soTiet}"
+                          data-mato="${mh.maTo}"
                         >
                           <i class="bi bi-pencil-square"></i>
                         </button>
@@ -225,6 +237,15 @@ pageEncoding="UTF-8"%> <%@ taglib uri="jakarta.tags.core" prefix="c" %>
                 min="1"
               />
             </div>
+            <div class="mb-3">
+              <label>Tổ Bộ Môn</label>
+              <select name="maTo" class="form-select">
+                <option value="">-- Chọn tổ bộ môn --</option>
+                <c:forEach var="to" items="${dsToBoMon}">
+                  <option value="${to.maTo}">${to.tenTo}</option>
+                </c:forEach>
+              </select>
+            </div>
           </div>
           <div class="modal-footer">
             <button
@@ -276,6 +297,15 @@ pageEncoding="UTF-8"%> <%@ taglib uri="jakarta.tags.core" prefix="c" %>
                 min="1"
               />
             </div>
+            <div class="mb-3">
+              <label>Tổ Bộ Môn</label>
+              <select id="maTo_edit" name="maTo_edit" class="form-select">
+                <option value="">-- Chọn tổ bộ môn --</option>
+                <c:forEach var="to" items="${dsToBoMon}">
+                  <option value="${to.maTo}">${to.tenTo}</option>
+                </c:forEach>
+              </select>
+            </div>
           </div>
           <div class="modal-footer">
             <button
@@ -310,6 +340,10 @@ pageEncoding="UTF-8"%> <%@ taglib uri="jakarta.tags.core" prefix="c" %>
         ms.querySelector("#maMH_edit").value = b.getAttribute("data-id");
         ms.querySelector("#tenMH_edit").value = b.getAttribute("data-ten");
         ms.querySelector("#soTiet_edit").value = b.getAttribute("data-sotiet");
+        const maTo = b.getAttribute("data-mato");
+        if (maTo) {
+          ms.querySelector("#maTo_edit").value = maTo;
+        }
       });
   });
 </script>

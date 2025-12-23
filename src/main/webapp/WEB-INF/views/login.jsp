@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-pageEncoding="UTF-8"%> <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="vi">
   <head>
@@ -241,22 +241,6 @@ pageEncoding="UTF-8"%> <%@ taglib prefix="c" uri="jakarta.tags.core" %>
         </small>
       </div>
 
-      <!-- Demo Accounts Info -->
-      <div class="mt-3 demo-box">
-        <small class="text-muted d-block mb-2">
-          <strong><i class="bi bi-key-fill me-1"></i>Tài khoản demo:</strong>
-        </small>
-        <small class="text-muted d-block">
-          • Admin: <code>admin</code> / <code>admin123</code>
-        </small>
-        <small class="text-muted d-block">
-          • Giáo viên: <code>gv1</code> / <code>gv1123</code>
-        </small>
-        <small class="text-muted d-block">
-          • Học sinh: <code>hs1</code> / <code>hs1123</code>
-        </small>
-      </div>
-    </div>
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

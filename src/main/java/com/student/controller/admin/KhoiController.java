@@ -21,10 +21,6 @@ public class KhoiController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private KhoiService khoiService = new KhoiServiceImpl();
 
-	/**
-	 * Xử lý request GET Chúng ta cần kiểm tra xem người dùng muốn xem LIST hay xem
-	 * FORM ADD
-	 */
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String servletPath = req.getServletPath();
@@ -46,7 +42,7 @@ public class KhoiController extends HttpServlet {
 	}
 
 	/**
-	 * Xử lý request POST Khi người dùng nhấn nút "Lưu" trên form
+	 * Xử lý request POST
 	 */
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -107,21 +103,21 @@ public class KhoiController extends HttpServlet {
 		String searchKey = req.getParameter("searchKey");
 		String pageParam = req.getParameter("page");
 		String entriesParam = req.getParameter("entries");
-		int pageNumber = 1; 
+		int pageNumber = 1;
 		if (pageParam != null && !pageParam.isEmpty()) {
 			try {
 				pageNumber = Integer.parseInt(pageParam);
 			} catch (NumberFormatException e) {
-				pageNumber = 1; 
+				pageNumber = 1;
 			}
 		}
 
-		int pageSize = 10; 
+		int pageSize = 10;
 		if (entriesParam != null && !entriesParam.isEmpty()) {
 			try {
 				pageSize = Integer.parseInt(entriesParam);
 			} catch (NumberFormatException e) {
-				pageSize = 10; 
+				pageSize = 10;
 			}
 		}
 
@@ -130,10 +126,10 @@ public class KhoiController extends HttpServlet {
 		int totalPages = (int) Math.ceil((double) totalItems / pageSize);
 
 		req.setAttribute("dsKhoi", listKhoi);
-		req.setAttribute("totalItems", totalItems); 
-		req.setAttribute("totalPages", totalPages); 
+		req.setAttribute("totalItems", totalItems);
+		req.setAttribute("totalPages", totalPages);
 		req.setAttribute("currentPage", pageNumber);
-		req.setAttribute("pageSize", pageSize); 
+		req.setAttribute("pageSize", pageSize);
 		RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/views/admin/khoi-list.jsp");
 		dispatcher.forward(req, resp);
 	}

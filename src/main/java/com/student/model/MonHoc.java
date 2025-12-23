@@ -6,6 +6,7 @@ public class MonHoc {
 	private int soTiet;
 	private boolean trangThai;
 	private int maTo;
+	private String tenTo; 
 
 	public MonHoc() {
 	}
@@ -56,5 +57,13 @@ public class MonHoc {
 
 	public void setMaTo(int maTo) {
 		this.maTo = maTo;
+	}
+
+	public String getTenTo() {
+		return tenTo;
+	}
+
+	public void setTenTo(String tenTo) {
+		this.tenTo = tenTo;
 	}
 }

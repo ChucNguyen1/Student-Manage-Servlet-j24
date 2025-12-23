@@ -36,7 +36,7 @@
 				    <form action="${baseURL}/admin/khoi-list" method="GET">
 				      <label class="me-2">Hiển thị</label>
 				      <select name="entries" class="form-select d-inline-block" style="width: auto;" onchange="this.form.submit()">
-				          <%-- Dùng biến 'pageSize' để chọn --%>
+			
 				          <option value="10" ${pageSize == 10 ? 'selected' : ''}>10</option>
 				          <option value="25" ${pageSize == 25 ? 'selected' : ''}>25</option>
 				          <option value="50" ${pageSize == 50 ? 'selected' : ''}>50</option>

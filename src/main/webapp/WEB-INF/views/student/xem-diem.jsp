@@ -181,7 +181,7 @@
     </style>
 </head>
 <body>
-    <jsp:include page="../includes/header.jsp" />
+    <jsp:include page="/WEB-INF/includes/header.jsp" />
     
     <div class="container main-content">
         <div class="page-header">
@@ -434,8 +434,7 @@
         </div>
     </div>
     
-    <%-- Include Footer --%>
-    <jsp:include page="../includes/footer.jsp" />
+    <jsp:include page="/WEB-INF/includes/footer.jsp" />
     
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

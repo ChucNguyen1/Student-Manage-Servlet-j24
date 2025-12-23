@@ -19,7 +19,7 @@ public class PhanCongDAOImpl implements PhanCongDAO {
 		List<PhanCong> list = new ArrayList<>();
 		String sql = "SELECT pc.*, gv.hoTen AS tenGiaoVien, mh.tenMH AS tenMonHoc " + "FROM PhanCong pc "
 				+ "JOIN GiaoVien gv ON pc.maGV = gv.maGV " + "JOIN MonHoc mh ON pc.maMonHoc = mh.maMH "
-				+ "WHERE pc.maLop = ? AND pc.maHocKy = ? AND pc.trangThai = 1";
+				+ "WHERE pc.maLop = ? AND pc.maHocKy = ?";
 
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, maLop);
@@ -54,7 +54,7 @@ public class PhanCongDAOImpl implements PhanCongDAO {
 
 	@Override
 	public boolean insert(PhanCong pc) {
-		String sql = "INSERT INTO PhanCong (maGV, maLop, maMonHoc, maHocKy, trangThai) VALUES (?, ?, ?, ?, 1)";
+		String sql = "INSERT INTO PhanCong (maGV, maLop, maMonHoc, maHocKy) VALUES (?, ?, ?, ?)";
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, pc.getMaGV());
 			ps.setInt(2, pc.getMaLop());
@@ -69,7 +69,7 @@ public class PhanCongDAOImpl implements PhanCongDAO {
 
 	@Override
 	public boolean update(PhanCong pc) {
-		String sql = "UPDATE PhanCong SET maGV=?, trangThai=1 WHERE maLop=? AND maMonHoc=? AND maHocKy=?";
+		String sql = "UPDATE PhanCong SET maGV=? WHERE maLop=? AND maMonHoc=? AND maHocKy=?";
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, pc.getMaGV());
 			ps.setInt(2, pc.getMaLop());
@@ -109,7 +109,7 @@ public class PhanCongDAOImpl implements PhanCongDAO {
 				"JOIN MonHoc mh ON pc.maMonHoc = mh.maMH " + 
 				"JOIN HocKy hk ON pc.maHocKy = hk.maHK " +
 				"JOIN GiaoVien gv ON pc.maGV = gv.maGV " + 
-				"WHERE pc.maGV = ? AND pc.maHocKy = ? AND pc.trangThai = 1";
+				"WHERE pc.maGV = ? AND pc.maHocKy = ?";
 
 		try (Connection conn = DBConnection.getNewConnection(); 
 			 PreparedStatement ps = conn.prepareStatement(sql)) {

@@ -14,7 +14,13 @@ public class ThongBaoServiceImpl implements ThongBaoService {
         return dao.findAll(searchKey, page, pageSize);
     }
     @Override
+    public ThongBao findById(int maTB) {
+        return dao.findById(maTB);
+    }
+    @Override
     public int count(String searchKey) { return dao.count(searchKey); }
+    @Override
+    public int countRecentAnnouncements(int days) { return dao.countRecentAnnouncements(days); }
     @Override
     public boolean insert(ThongBao tb) { return dao.insert(tb); }
     @Override

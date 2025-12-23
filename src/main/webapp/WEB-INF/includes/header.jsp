@@ -168,7 +168,7 @@ pageEncoding="UTF-8"%> <%@ taglib prefix="c" uri="jakarta.tags.core" %>
         </li>
         <!-- End Dashboard Nav -->
 
-        <li class="nav-heading">Quản lý Hệ thống</li>
+        <li class="nav-heading">Quản lý Hệ thống đào tạo</li>
 
         <li class="nav-item">
           <a

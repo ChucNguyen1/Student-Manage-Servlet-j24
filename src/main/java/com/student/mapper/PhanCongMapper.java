@@ -8,12 +8,11 @@ import com.student.model.PhanCong;
 public class PhanCongMapper {
 	public static PhanCong mapRow(ResultSet rs) throws SQLException {
 		PhanCong pc = new PhanCong();
-		pc.setMaPhanCong(rs.getInt("maPhanCong"));
+		// Bảng PhanCong không có maPhanCong (dùng composite PK: maLop, maMonHoc, maHocKy)
 		pc.setMaGV(rs.getInt("maGV"));
 		pc.setMaLop(rs.getInt("maLop"));
 		pc.setMaMonHoc(rs.getInt("maMonHoc"));
 		pc.setMaHocKy(rs.getInt("maHocKy"));
-		pc.setTrangThai(rs.getBoolean("trangThai"));
 
 		try {
 			pc.setTenGiaoVien(rs.getString("tenGiaoVien"));

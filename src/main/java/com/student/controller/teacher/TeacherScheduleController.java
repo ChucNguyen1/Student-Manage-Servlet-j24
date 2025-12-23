@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.util.List;
 
 import com.student.dao.HocKyDAO;
+import com.student.dao.NamHocDAO;
 import com.student.dao.ThoiKhoaBieuDAO;
 import com.student.dao.impl.HocKyDAOImpl;
+import com.student.dao.impl.NamHocDAOImpl;
 import com.student.dao.impl.ThoiKhoaBieuDAOImpl;
 import com.student.model.HocKy;
+import com.student.model.NamHoc;
 import com.student.model.TaiKhoan;
 import com.student.model.ThoiKhoaBieu;
 
@@ -27,10 +30,12 @@ public class TeacherScheduleController extends HttpServlet {
 
 	private final ThoiKhoaBieuDAO thoiKhoaBieuDAO;
 	private final HocKyDAO hocKyDAO;
+	private final NamHocDAO namHocDAO;
 
 	public TeacherScheduleController() {
 		this.thoiKhoaBieuDAO = new ThoiKhoaBieuDAOImpl();
 		this.hocKyDAO = new HocKyDAOImpl();
+		this.namHocDAO = new NamHocDAOImpl();
 	}
 
 	@Override
@@ -57,8 +62,34 @@ public class TeacherScheduleController extends HttpServlet {
 			request.getRequestDispatcher("/WEB-INF/views/teacher/lich-day.jsp").forward(request, response);
 			return;
 		}
-		List<HocKy> dsHocKy = hocKyDAO.findAll();
+		// Lấy danh sách năm học
+		List<NamHoc> dsNamHoc = namHocDAO.findAll();
+		request.setAttribute("dsNamHoc", dsNamHoc);
+
+		// Lấy năm học được chọn (hoặc mặc định năm học đang hoạt động)
+		String maNH = request.getParameter("maNH");
+		if (maNH == null || maNH.isEmpty()) {
+			// Tìm năm học đang hoạt động (trangThai = true)
+			for (NamHoc nh : dsNamHoc) {
+				if (nh.isTrangThai()) {
+					maNH = nh.getMaNH();
+					break;
+				}
+			}
+			// Nếu không có năm học nào active, lấy năm đầu tiên
+			if ((maNH == null || maNH.isEmpty()) && !dsNamHoc.isEmpty()) {
+				maNH = dsNamHoc.get(0).getMaNH();
+			}
+		}
+		request.setAttribute("maNHHienTai", maNH);
+
+		// Lấy danh sách học kỳ theo năm học
+		List<HocKy> dsHocKy = List.of();
+		if (maNH != null && !maNH.isEmpty()) {
+			dsHocKy = hocKyDAO.findByNamHoc(maNH);
+		}
 		request.setAttribute("dsHocKy", dsHocKy);
+
 		String maHocKyParam = request.getParameter("maHocKy");
 		int maHocKy = 0;
 

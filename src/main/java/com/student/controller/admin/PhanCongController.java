@@ -59,7 +59,19 @@ public class PhanCongController extends HttpServlet {
 
         req.setAttribute("dsNamHoc", listNamHoc);
         req.setAttribute("dsKhoi", listKhoi);
-        req.setAttribute("dsGiaoVien", listGiaoVien); 
+        req.setAttribute("dsGiaoVien", listGiaoVien);
+        
+        Map<Integer, List<GiaoVien>> mapGVTheoTo = new HashMap<>();
+        for (GiaoVien gv : listGiaoVien) {
+            int maTo = gv.getMaTo();
+            if (maTo > 0) {
+                if (!mapGVTheoTo.containsKey(maTo)) {
+                    mapGVTheoTo.put(maTo, new ArrayList<>());
+                }
+                mapGVTheoTo.get(maTo).add(gv);
+            }
+        }
+        req.setAttribute("mapGVTheoTo", mapGVTheoTo); 
         String maNH = req.getParameter("maNH");
         String maKhoiStr = req.getParameter("maKhoi");
         String maLopStr = req.getParameter("maLop");

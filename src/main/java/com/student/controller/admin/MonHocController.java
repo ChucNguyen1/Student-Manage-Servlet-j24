@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.util.List;
 
 import com.student.model.MonHoc;
+import com.student.model.ToBoMon;
 import com.student.service.MonHocService;
+import com.student.service.ToBoMonService;
 import com.student.service.impl.MonHocServiceImpl;
+import com.student.service.impl.ToBoMonServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -19,6 +22,7 @@ import jakarta.servlet.http.HttpSession;
 public class MonHocController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private MonHocService service = new MonHocServiceImpl();
+	private ToBoMonService toBoMonService = new ToBoMonServiceImpl();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -65,8 +69,11 @@ public class MonHocController extends HttpServlet {
 		List<MonHoc> list = service.findAndPaginate(searchKey, page, pageSize);
 		int totalItems = service.count(searchKey);
 		int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+		
+		List<ToBoMon> dsToBoMon = toBoMonService.findAll();
 
 		req.setAttribute("dsMonHoc", list);
+		req.setAttribute("dsToBoMon", dsToBoMon);
 		req.setAttribute("totalItems", totalItems);
 		req.setAttribute("totalPages", totalPages);
 		req.setAttribute("currentPage", page);
@@ -78,7 +85,12 @@ public class MonHocController extends HttpServlet {
 		try {
 			String tenMH = req.getParameter("tenMH");
 			int soTiet = Integer.parseInt(req.getParameter("soTiet"));
+			String maToStr = req.getParameter("maTo");
+			
 			MonHoc mh = new MonHoc(0, tenMH, soTiet, true);
+			if (maToStr != null && !maToStr.isEmpty()) {
+				mh.setMaTo(Integer.parseInt(maToStr));
+			}
 
 			if (service.insert(mh))
 				session.setAttribute("message", "Thêm môn học thành công!");
@@ -94,7 +106,12 @@ public class MonHocController extends HttpServlet {
 			int maMH = Integer.parseInt(req.getParameter("maMH_edit"));
 			String tenMH = req.getParameter("tenMH_edit");
 			int soTiet = Integer.parseInt(req.getParameter("soTiet_edit"));
+			String maToStr = req.getParameter("maTo_edit");
+			
 			MonHoc mh = new MonHoc(maMH, tenMH, soTiet, true);
+			if (maToStr != null && !maToStr.isEmpty()) {
+				mh.setMaTo(Integer.parseInt(maToStr));
+			}
 
 			if (service.update(mh))
 				session.setAttribute("message", "Cập nhật thành công!");
