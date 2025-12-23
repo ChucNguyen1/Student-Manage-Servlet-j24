@@ -130,10 +130,29 @@ pageEncoding="UTF-8"%> <%@ taglib prefix="c" uri="jakarta.tags.core" %>
                 <hr class="dropdown-divider" />
               </li>
               <li>
-                <a class="dropdown-item d-flex align-items-center" href="#">
-                  <i class="bi bi-person"></i>
-                  <span>Thông tin tài khoản</span>
-                </a>
+                <c:choose>
+                  <c:when test="${sessionScope.role == 'HOCSINH'}">
+                    <a
+                      class="dropdown-item d-flex align-items-center"
+                      href="${baseURL}/student/profile"
+                    >
+                      <i class="bi bi-person"></i>
+                      <span>Thông tin tài khoản</span>
+                    </a>
+                  </c:when>
+                  <c:when test="${sessionScope.role == 'GIAOVIEN'}">
+                    <a class="dropdown-item d-flex align-items-center" href="#">
+                      <i class="bi bi-person"></i>
+                      <span>Thông tin tài khoản</span>
+                    </a>
+                  </c:when>
+                  <c:otherwise>
+                    <a class="dropdown-item d-flex align-items-center" href="#">
+                      <i class="bi bi-person"></i>
+                      <span>Thông tin tài khoản</span>
+                    </a>
+                  </c:otherwise>
+                </c:choose>
               </li>
               <li>
                 <hr class="dropdown-divider" />
@@ -156,126 +175,5 @@ pageEncoding="UTF-8"%> <%@ taglib prefix="c" uri="jakarta.tags.core" %>
       <!-- End Icons Navigation -->
     </header>
     <!-- End Header -->
-
-    <!-- ======= Sidebar ======= -->
-    <aside id="sidebar" class="sidebar">
-      <ul class="sidebar-nav" id="sidebar-nav">
-        <li class="nav-item">
-          <a class="nav-link" href="${baseURL}/">
-            <i class="bi bi-grid"></i>
-            <span>Trang chủ</span>
-          </a>
-        </li>
-        <!-- End Dashboard Nav -->
-
-        <li class="nav-heading">Quản lý Hệ thống đào tạo</li>
-
-        <li class="nav-item">
-          <a
-            class="nav-link collapsed"
-            data-bs-target="#hethong-nav"
-            data-bs-toggle="collapse"
-            href="#"
-          >
-            <i class="bi bi-gear-wide-connected"></i><span>Cấu hình</span
-            ><i class="bi bi-chevron-down ms-auto"></i>
-          </a>
-          <ul
-            id="hethong-nav"
-            class="nav-content collapse"
-            data-bs-parent="#sidebar-nav"
-          >
-            <li>
-              <a href="${baseURL}/admin/khoi-list">
-                <i class="bi bi-circle"></i><span>Quản lý Khối</span>
-              </a>
-            </li>
-            <li>
-              <a href="${baseURL}/admin/namhoc-list">
-                <i class="bi bi-circle"> </i><span>Quản lý Năm học</span>
-              </a>
-            </li>
-            <li>
-              <a href="${baseURL}/admin/hocky-list">
-                <i class="bi bi-circle"></i>
-                <span>Quản lý Học kỳ</span>
-              </a>
-            </li>
-            <li>
-              <a href="${baseURL}/admin/monhoc-list">
-                <i class="bi bi-circle"></i><span>Quản lý Môn học</span>
-              </a>
-            </li>
-            <li>
-              <a href="${baseURL}/admin/tobomon-list">
-                <i class="bi bi-circle"></i><span>Quản lý tổ bộ môn</span>
-              </a>
-            </li>
-          </ul>
-        </li>
-
-        <li class="nav-heading">Quản lý Nghiệp vụ</li>
-
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="${baseURL}/admin/giaovien-list">
-            <i class="bi bi-person-video3"></i>
-            <span>Quản lý Giáo viên</span>
-          </a>
-        </li>
-        <!-- End Giao Vien Nav -->
-
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="${baseURL}/admin/lophoc-list">
-            <i class="bi bi-building"></i>
-            <span>Quản lý Lớp học</span>
-          </a>
-        </li>
-        <!-- End Lop Hoc Nav -->
-
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="${baseURL}/admin/hocsinh-list">
-            <i class="bi bi-people-fill"></i>
-            <span>Quản lý Học sinh</span>
-          </a>
-        </li>
-        <!-- End Hoc Sinh Nav -->
-
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="${baseURL}/admin/diem-list">
-            <i class="bi bi-card-checklist"></i>
-            <span>Quản lý Điểm số</span>
-          </a>
-        </li>
-        <!-- End Diem Nav -->
-
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="${baseURL}/admin/thongbao-list">
-            <i class="bi bi-bell-fill"></i>
-            <span>Quản lý Thông báo</span>
-          </a>
-        </li>
-        <!-- End Thong Bao Nav -->
-
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="${baseURL}/admin/phancong-list">
-            <i class="bi bi-bell-fill"></i>
-            <span>Quản lý Phân công</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="${baseURL}/admin/tkb-list">
-            <i class="bi bi-bell-fill"></i>
-            <span>Quản lý Thời khóa biểu</span>
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="#">
-            <i class="bi bi-person-lines-fill"></i>
-            <span>Phân quyền</span>
-          </a>
-        </li>
-      </ul>
-    </aside>
   </body>
 </html>

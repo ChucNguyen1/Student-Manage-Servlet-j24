@@ -4,6 +4,7 @@
 <c:set var="baseURL" value="${pageContext.request.contextPath}" />
 
 <jsp:include page="/WEB-INF/includes/header.jsp" />
+<jsp:include page="/WEB-INF/includes/sidebar.jsp" />
 
 <main id="main" class="main">
 

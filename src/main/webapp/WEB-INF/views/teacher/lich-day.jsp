@@ -3,6 +3,7 @@
 <c:set var="baseURL" value="${pageContext.request.contextPath}" />
 
 <jsp:include page="/WEB-INF/includes/header.jsp" />
+<jsp:include page="/WEB-INF/includes/sidebar.jsp" />
 
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet" />
 

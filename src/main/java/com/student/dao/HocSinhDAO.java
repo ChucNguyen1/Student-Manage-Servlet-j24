@@ -17,4 +17,6 @@ public interface HocSinhDAO {
 	HocSinh findById(int maHS);
 
 	List<HocSinh> findByLop(int maLop);
+	
+	boolean updateProfile(int maHS, String email, String sdtCaNhan, String diaChi);
 }

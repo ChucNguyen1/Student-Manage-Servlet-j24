@@ -3,11 +3,11 @@ pageEncoding="UTF-8"%> <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <c:set var="baseURL" value="${pageContext.request.contextPath}" />
 
 <jsp:include page="/WEB-INF/includes/header.jsp" />
+<jsp:include page="/WEB-INF/includes/sidebar.jsp" />
 
 <link href="${baseURL}/assets/css/nhap-diem.css" rel="stylesheet" />
 
 <main id="main" class="main">
-
   <div class="pagetitle">
     <h1>Nhập điểm chi tiết</h1>
     <nav>
@@ -113,7 +113,6 @@ pageEncoding="UTF-8"%> <%@ taglib uri="jakarta.tags.core" prefix="c" %>
                 method="POST"
                 id="formNhapDiem"
               >
-
                 <input type="hidden" name="maLop" value="${maLop}" />
                 <input type="hidden" name="maMonHoc" value="${maMonHoc}" />
                 <input type="hidden" name="maHocKy" value="${maHocKy}" />
@@ -266,9 +265,7 @@ pageEncoding="UTF-8"%> <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <jsp:include page="/WEB-INF/includes/footer.jsp" />
 
 <script>
-
   function tinhDiem(maHS) {
-
     var mieng = parseFloat(document.getElementById("mieng_" + maHS).value) || 0;
     var p15 = parseFloat(document.getElementById("p15_" + maHS).value) || 0;
     var tiet1 = parseFloat(document.getElementById("tiet1_" + maHS).value) || 0;
@@ -297,16 +294,15 @@ pageEncoding="UTF-8"%> <%@ taglib uri="jakarta.tags.core" prefix="c" %>
       "text-muted"
     );
     if (dtb >= 8.0) {
-      dtbElement.classList.add("text-success"); 
+      dtbElement.classList.add("text-success");
     } else if (dtb >= 6.5) {
-      dtbElement.classList.add("text-primary"); 
+      dtbElement.classList.add("text-primary");
     } else if (dtb >= 5.0) {
       dtbElement.classList.add("text-warning");
     } else {
-      dtbElement.classList.add("text-danger"); 
+      dtbElement.classList.add("text-danger");
     }
   }
-
 
   document.addEventListener("DOMContentLoaded", function () {
     var maHSInputs = document.querySelectorAll('input[name="maHS"]');

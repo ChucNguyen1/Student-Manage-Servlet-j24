@@ -1,21 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xem Bảng Điểm | Student Management</title>
-    
-    <c:set var="baseURL" value="${pageContext.request.contextPath}" />
-    
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    
-    <style>
+<c:set var="baseURL" value="${pageContext.request.contextPath}" />
+
+<jsp:include page="/WEB-INF/includes/header.jsp" />
+<jsp:include page="/WEB-INF/includes/sidebar.jsp" />
+
+<style>
         body {
             background-color: #f4f6f9;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -179,9 +170,8 @@
             }
         }
     </style>
-</head>
-<body>
-    <jsp:include page="/WEB-INF/includes/header.jsp" />
+
+<main id="main" class="main">
     
     <div class="container main-content">
         <div class="page-header">
@@ -433,10 +423,6 @@
             </div>
         </div>
     </div>
+</main>
     
-    <jsp:include page="/WEB-INF/includes/footer.jsp" />
-    
-    <!-- Bootstrap 5 JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<jsp:include page="/WEB-INF/includes/footer.jsp" />

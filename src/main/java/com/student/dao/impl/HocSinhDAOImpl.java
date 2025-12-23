@@ -184,4 +184,19 @@ public class HocSinhDAOImpl implements HocSinhDAO {
 		}
 		return list;
 	}
+
+	@Override
+	public boolean updateProfile(int maHS, String email, String sdtCaNhan, String diaChi) {
+		String sql = "UPDATE HocSinh SET email=?, sdtCaNhan=?, diaChi=? WHERE maHS=?";
+		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.setString(1, email);
+			ps.setString(2, sdtCaNhan);
+			ps.setString(3, diaChi);
+			ps.setInt(4, maHS);
+			return ps.executeUpdate() > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 }
