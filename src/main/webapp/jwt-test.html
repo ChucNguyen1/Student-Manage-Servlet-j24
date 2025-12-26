@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JWT Authentication Test</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        color: white;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .section {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .section h2 {
+        color: #667eea;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 10px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+        font-weight: 600;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+      }
+
+      input:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      textarea {
+        min-height: 100px;
+        font-family: monospace;
+        resize: vertical;
+      }
+
+      button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      .response {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        padding: 15px;
+        margin-top: 15px;
+        font-family: monospace;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .success {
+        background: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+      }
+
+      .error {
+        background: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+      }
+
+      .token-info {
+        background: #fff3cd;
+        border: 1px solid #ffeeba;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 15px;
+        font-size: 12px;
+      }
+
+      .token-info strong {
+        color: #856404;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+
+      .endpoint-btn {
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      code {
+        background: #e9ecef;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔐 JWT Authentication Test</h1>
+
+      <!-- Login Section -->
+      <div class="section">
+        <h2>1. Login</h2>
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input
+            type="text"
+            id="username"
+            value="admin"
+            placeholder="Nhập username"
+          />
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            value="123456"
+            placeholder="Nhập password"
+          />
+        </div>
+        <button onclick="login()">🔑 Login</button>
+        <div id="loginResponse" class="response" style="display: none"></div>
+      </div>
+
+      <!-- Token Info Section -->
+      <div class="section" id="tokenSection" style="display: none">
+        <h2>2. Token Information</h2>
+        <div class="token-info">
+          <strong>Access Token:</strong><br />
+          <span id="accessTokenDisplay">N/A</span>
+        </div>
+        <div class="token-info">
+          <strong>Refresh Token:</strong><br />
+          <span id="refreshTokenDisplay">N/A</span>
+        </div>
+        <div class="token-info">
+          <strong>User Info:</strong><br />
+          <span id="userInfoDisplay">N/A</span>
+        </div>
+      </div>
+
+      <!-- API Test Section -->
+      <div class="section" id="apiTestSection" style="display: none">
+        <h2>3. Test Protected Endpoints</h2>
+        <p style="margin-bottom: 15px; color: #666">
+          Các endpoint này yêu cầu JWT token trong header. Token sẽ tự động được
+          thêm vào.
+        </p>
+        <div class="grid">
+          <div>
+            <h3 style="color: #667eea; margin-bottom: 10px">Custom Endpoint</h3>
+            <div class="form-group">
+              <label for="customEndpoint">Endpoint:</label>
+              <input
+                type="text"
+                id="customEndpoint"
+                value="/api/admin/students"
+                placeholder="/api/..."
+              />
+            </div>
+            <button class="endpoint-btn" onclick="testCustomEndpoint()">
+              📡 Test Endpoint
+            </button>
+          </div>
+        </div>
+        <div id="apiResponse" class="response" style="display: none"></div>
+      </div>
+
+      <!-- Refresh Token Section -->
+      <div class="section" id="refreshSection" style="display: none">
+        <h2>4. Refresh Access Token</h2>
+        <p style="margin-bottom: 15px; color: #666">
+          Khi access token hết hạn (30 phút), dùng refresh token để lấy access
+          token mới.
+        </p>
+        <button onclick="refreshAccessToken()">🔄 Refresh Token</button>
+        <div id="refreshResponse" class="response" style="display: none"></div>
+      </div>
+
+      <!-- Logout Section -->
+      <div class="section" id="logoutSection" style="display: none">
+        <h2>5. Logout</h2>
+        <p style="margin-bottom: 15px; color: #666">
+          Thu hồi refresh token và xóa tất cả tokens trong local storage.
+        </p>
+        <button onclick="logout()">🚪 Logout</button>
+        <div id="logoutResponse" class="response" style="display: none"></div>
+      </div>
+    </div>
+
+    <script>
+      // Base URL - THAY ĐỔI THEO ENVIRONMENT CỦA BẠN
+      const BASE_URL = "http://localhost:8080/student-management-j24";
+
+      let accessToken = localStorage.getItem("accessToken");
+      let refreshToken = localStorage.getItem("refreshToken");
+      let userInfo = null;
+
+      // Update UI khi load page
+      window.addEventListener("load", () => {
+        if (accessToken) {
+          showTokenInfo();
+          showProtectedSections();
+        }
+      });
+
+      // Login function
+      async function login() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        if (!username || !password) {
+          showResponse(
+            "loginResponse",
+            "Vui lòng nhập username và password",
+            "error"
+          );
+          return;
+        }
+
+        try {
+          const response = await fetch(`${BASE_URL}/api/auth/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            // Lưu tokens vào localStorage
+            accessToken = data.accessToken;
+            refreshToken = data.refreshToken;
+            userInfo = data.user;
+
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("refreshToken", refreshToken);
+            localStorage.setItem("userInfo", JSON.stringify(userInfo));
+
+            showResponse(
+              "loginResponse",
+              JSON.stringify(data, null, 2),
+              "success"
+            );
+            showTokenInfo();
+            showProtectedSections();
+          } else {
+            showResponse(
+              "loginResponse",
+              JSON.stringify(data, null, 2),
+              "error"
+            );
+          }
+        } catch (error) {
+          showResponse("loginResponse", `Error: ${error.message}`, "error");
+        }
+      }
+
+      // Refresh access token
+      async function refreshAccessToken() {
+        if (!refreshToken) {
+          showResponse(
+            "refreshResponse",
+            "Không có refresh token. Vui lòng login lại.",
+            "error"
+          );
+          return;
+        }
+
+        try {
+          const response = await fetch(`${BASE_URL}/api/auth/refresh`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ refreshToken }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            accessToken = data.accessToken;
+            localStorage.setItem("accessToken", accessToken);
+
+            showResponse(
+              "refreshResponse",
+              JSON.stringify(data, null, 2),
+              "success"
+            );
+            showTokenInfo();
+          } else {
+            showResponse(
+              "refreshResponse",
+              JSON.stringify(data, null, 2),
+              "error"
+            );
+          }
+        } catch (error) {
+          showResponse("refreshResponse", `Error: ${error.message}`, "error");
+        }
+      }
+
+      // Logout
+      async function logout() {
+        if (!refreshToken) {
+          showResponse("logoutResponse", "Không có refresh token.", "error");
+          return;
+        }
+
+        try {
+          const response = await fetch(`${BASE_URL}/api/auth/logout`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ refreshToken }),
+          });
+
+          const data = await response.json();
+
+          // Xóa tokens khỏi localStorage
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          localStorage.removeItem("userInfo");
+
+          accessToken = null;
+          refreshToken = null;
+          userInfo = null;
+
+          hideProtectedSections();
+
+          if (response.ok) {
+            showResponse(
+              "logoutResponse",
+              JSON.stringify(data, null, 2),
+              "success"
+            );
+          } else {
+            showResponse(
+              "logoutResponse",
+              JSON.stringify(data, null, 2),
+              "error"
+            );
+          }
+        } catch (error) {
+          showResponse("logoutResponse", `Error: ${error.message}`, "error");
+        }
+      }
+
+      // Test custom endpoint
+      async function testCustomEndpoint() {
+        const endpoint = document.getElementById("customEndpoint").value;
+
+        if (!endpoint) {
+          showResponse("apiResponse", "Vui lòng nhập endpoint", "error");
+          return;
+        }
+
+        if (!accessToken) {
+          showResponse(
+            "apiResponse",
+            "Không có access token. Vui lòng login.",
+            "error"
+          );
+          return;
+        }
+
+        try {
+          const response = await fetch(`${BASE_URL}${endpoint}`, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            showResponse(
+              "apiResponse",
+              JSON.stringify(data, null, 2),
+              "success"
+            );
+          } else {
+            showResponse("apiResponse", JSON.stringify(data, null, 2), "error");
+          }
+        } catch (error) {
+          showResponse("apiResponse", `Error: ${error.message}`, "error");
+        }
+      }
+
+      // Helper: Show response
+      function showResponse(elementId, message, type) {
+        const element = document.getElementById(elementId);
+        element.textContent = message;
+        element.className = `response ${type}`;
+        element.style.display = "block";
+      }
+
+      // Helper: Show token info
+      function showTokenInfo() {
+        document.getElementById("tokenSection").style.display = "block";
+        document.getElementById("accessTokenDisplay").textContent = accessToken
+          ? accessToken.substring(0, 50) + "..."
+          : "N/A";
+        document.getElementById("refreshTokenDisplay").textContent =
+          refreshToken ? refreshToken.substring(0, 50) + "..." : "N/A";
+
+        const storedUserInfo = localStorage.getItem("userInfo");
+        if (storedUserInfo) {
+          userInfo = JSON.parse(storedUserInfo);
+          document.getElementById(
+            "userInfoDisplay"
+          ).textContent = `ID: ${userInfo.id}, Username: ${userInfo.username}, Role: ${userInfo.role}, Name: ${userInfo.fullName}`;
+        }
+      }
+
+      // Helper: Show protected sections
+      function showProtectedSections() {
+        document.getElementById("apiTestSection").style.display = "block";
+        document.getElementById("refreshSection").style.display = "block";
+        document.getElementById("logoutSection").style.display = "block";
+      }
+
+      // Helper: Hide protected sections
+      function hideProtectedSections() {
+        document.getElementById("tokenSection").style.display = "none";
+        document.getElementById("apiTestSection").style.display = "none";
+        document.getElementById("refreshSection").style.display = "none";
+        document.getElementById("logoutSection").style.display = "none";
+      }
+    </script>
+  </body>
+</html>

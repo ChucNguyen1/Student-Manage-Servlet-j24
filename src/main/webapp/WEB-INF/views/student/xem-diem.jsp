@@ -6,187 +6,34 @@
 <jsp:include page="/WEB-INF/includes/header.jsp" />
 <jsp:include page="/WEB-INF/includes/sidebar.jsp" />
 
-<style>
-        body {
-            background-color: #f4f6f9;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .main-content {
-            margin-top: 30px;
-            margin-bottom: 50px;
-        }
-        
-        .page-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
-        }
-        
-        .card-title {
-            color: #495057;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-        
-        /* Bảng điểm */
-        .table-grades {
-            background: white;
-        }
-        
-        .table-grades thead {
-            background-color: #667eea;
-            color: white;
-        }
-        
-        .table-grades thead th {
-            font-weight: 600;
-            text-align: center;
-            vertical-align: middle;
-            padding: 15px 8px;
-            font-size: 0.9rem;
-        }
-        
-        .table-grades tbody td {
-            text-align: center;
-            vertical-align: middle;
-            padding: 12px 8px;
-        }
-        
-        .table-grades tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-        
-        /* Cột môn học */
-        .subject-name {
-            font-weight: 600;
-            color: #495057;
-            text-align: left !important;
-            padding-left: 15px !important;
-        }
-        
-        /* Điểm số */
-        .grade-cell {
-            font-weight: 500;
-            color: #212529;
-        }
-        
-        .grade-empty {
-            color: #adb5bd;
-            font-weight: 400;
-        }
-        
-        /* Điểm trung bình môn */
-        .grade-average {
-            font-weight: 700;
-            font-size: 1.05rem;
-        }
-        
-        /* Xếp loại */
-        .rank-excellent {
-            color: #28a745;
-            font-weight: 700;
-        }
-        
-        .rank-good {
-            color: #17a2b8;
-            font-weight: 700;
-        }
-        
-        .rank-average {
-            color: #ffc107;
-            font-weight: 700;
-        }
-        
-        .rank-weak {
-            color: #dc3545;
-            font-weight: 700;
-        }
-        
-        .rank-none {
-            color: #6c757d;
-            font-style: italic;
-        }
-        
-        /* Footer tổng kết */
-        .table-footer {
-            background-color: #e9ecef;
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-        
-        .summary-grade {
-            color: #667eea;
-            font-size: 1.3rem;
-        }
-        
-        /* Dropdown học kỳ */
-        .semester-selector {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
-        }
-        
-        .semester-selector label {
-            font-weight: 600;
-            color: #495057;
-            margin-right: 10px;
-        }
-        
-        .semester-selector select {
-            min-width: 200px;
-        }
-        
-        /* Alert */
-        .alert-custom {
-            border-left: 4px solid #667eea;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .table-grades {
-                font-size: 0.85rem;
-            }
-            
-            .table-grades thead th,
-            .table-grades tbody td {
-                padding: 8px 4px;
-            }
-            
-            .page-header {
-                padding: 20px;
-            }
-        }
-    </style>
+<!-- External CSS -->
+<link rel="stylesheet" href="${baseURL}/assets/css/xem-diem.css">
+<!-- Meta tag for base URL (used by JavaScript) -->
+<meta name="base-url" content="${baseURL}">
 
 <main id="main" class="main">
-    
-    <div class="container main-content">
-        <div class="page-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h2><i class="bi bi-journal-text"></i> Bảng Điểm Cá Nhân</h2>
-                    <p class="mb-0">
-                        <i class="bi bi-person-badge"></i> ${hocSinh.hoTen} 
-                        <span class="ms-3"><i class="bi bi-bookmark"></i> Lớp: ${hocSinh.tenLop}</span>
-                    </p>
-                </div>
-                <div>
-                    <a href="${baseURL}/student/home" class="btn btn-light">
-                        <i class="bi bi-house-door"></i> Trang chủ
-                    </a>
+    <div class="pagetitle">
+        <h1>Bảng Điểm Cá Nhân</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="${baseURL}/student/home">Trang chủ</a>
+                </li>
+                <li class="breadcrumb-item active">Xem điểm</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section">
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-person-badge text-primary"></i> ${hocSinh.hoTen}
+                            <span class="ms-3"><i class="bi bi-bookmark text-primary"></i> Lớp: <span class="badge bg-primary">${hocSinh.tenLop}</span></span>
+                        </h5>
+                    </div>
                 </div>
             </div>
         </div>
@@ -198,41 +45,121 @@
             </div>
         </c:if>
 
-        <div class="semester-selector">
-            <form action="${baseURL}/student/xem-diem" method="GET" class="d-flex align-items-center">
-                <label for="maHocKy"><i class="bi bi-calendar-range"></i> Học kỳ:</label>
-                <select name="maHocKy" id="maHocKy" class="form-select" onchange="this.form.submit()">
-                    <c:forEach var="hk" items="${dsHocKy}">
-                        <option value="${hk.maHK}" ${hk.maHK == maHocKyHienTai ? 'selected' : ''}>
-                            ${hk.tenHK}
-                        </option>
-                    </c:forEach>
-                </select>
-            </form>
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form action="${baseURL}/student/xem-diem" method="GET" id="formChonHocKy">
+                            <div class="row align-items-center g-3">
+                                <div class="col-md-5">
+                                    <div class="d-flex align-items-center">
+                                        <label for="maNamHoc" class="form-label mb-0 me-2 text-nowrap">
+                                            <i class="bi bi-calendar3"></i> Năm học:
+                                        </label>
+                                        <select name="maNamHoc" id="maNamHoc" class="form-select">
+                                            <c:forEach var="nh" items="${dsNamHoc}">
+                                                <option value="${nh.maNH}" ${nh.maNH == maNamHocHienTai ? 'selected' : ''}>
+                                                    ${nh.tenNH}
+                                                </option>
+                                            </c:forEach>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="d-flex align-items-center">
+                                        <label for="maHocKy" class="form-label mb-0 me-2 text-nowrap">
+                                            <i class="bi bi-calendar-range"></i> Học kỳ:
+                                        </label>
+                                        <select name="maHocKy" id="maHocKy" class="form-select" onchange="this.form.submit()">
+                                            <c:forEach var="hk" items="${dsHocKy}">
+                                                <option value="${hk.maHK}" 
+                                                        data-ma-nh="${hk.maNH}"
+                                                        ${hk.maHK == maHocKyHienTai ? 'selected' : ''}>
+                                                    ${hk.tenHK}
+                                                </option>
+                                            </c:forEach>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="bi bi-arrow-clockwise"></i> Tải lại
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
+        
+        <script>
+            (function() {
+                // Lọc và hiển thị học kỳ theo năm học được chọn
+                function filterHocKy() {
+                    var maNamHoc = document.getElementById('maNamHoc').value;
+                    var selectHocKy = document.getElementById('maHocKy');
+                    var allOptions = Array.from(selectHocKy.options);
+                    
+                    // Ẩn/hiện options dựa trên năm học
+                    var hasVisibleOption = false;
+                    var firstVisibleOption = null;
+                    
+                    allOptions.forEach(function(option) {
+                        var optionMaNH = option.getAttribute('data-ma-nh');
+                        if (optionMaNH === maNamHoc) {
+                            option.style.display = '';
+                            if (!firstVisibleOption) {
+                                firstVisibleOption = option;
+                            }
+                            if (option.selected) {
+                                hasVisibleOption = true;
+                            }
+                        } else {
+                            option.style.display = 'none';
+                        }
+                    });
+                    
+                    // Nếu option hiện tại bị ẩn, chọn option đầu tiên visible
+                    if (!hasVisibleOption && firstVisibleOption) {
+                        firstVisibleOption.selected = true;
+                    }
+                }
+                
+                // Khởi tạo khi trang load
+                document.addEventListener('DOMContentLoaded', function() {
+                    filterHocKy();
+                    
+                    // Lắng nghe sự kiện thay đổi năm học
+                    document.getElementById('maNamHoc').addEventListener('change', filterHocKy);
+                });
+            })();
+        </script>
 
-        <div class="card">
-            <div class="card-body p-0">
-                <c:choose>
-                    <c:when test="${empty dsDiem}">
-                        <div class="alert alert-info alert-custom m-3">
-                            <i class="bi bi-info-circle-fill"></i> 
-                            Hiện tại chưa có dữ liệu điểm cho học kỳ này.
-                        </div>
-                    </c:when>
-                    <c:otherwise>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body p-0">
+                        <c:choose>
+                            <c:when test="${empty dsDiem}">
+                                <div class="alert alert-info m-3">
+                                    <i class="bi bi-info-circle-fill"></i> 
+                                    Hiện tại chưa có dữ liệu điểm cho học kỳ này.
+                                </div>
+                            </c:when>
+                            <c:otherwise>
                         <div class="table-responsive">
                             <table class="table table-grades table-hover mb-0">
                                 <thead>
                                     <tr>
                                         <th style="width: 5%;">STT</th>
                                         <th style="width: 20%;">Môn học</th>
-                                        <th style="width: 8%;" title="Điểm Miệng">Miệng</th>
-                                        <th style="width: 8%;" title="Điểm 15 phút">15p</th>
-                                        <th style="width: 8%;" title="Điểm 1 Tiết">1 Tiết</th>
+                                        <th style="width: 12%;" title="Điểm Miệng (3 cột)">Miệng</th>
+                                        <th style="width: 12%;" title="Điểm 15 phút (3 cột)">15p</th>
+                                        <th style="width: 10%;" title="Điểm 1 Tiết (2 cột)">1 Tiết</th>
                                         <th style="width: 8%;" title="Điểm Thi">Thi</th>
                                         <th style="width: 10%;" title="Điểm Trung Bình Môn">ĐTB</th>
-                                        <th style="width: 15%;">Xếp loại</th>
+                                        <th style="width: 13%;">Xếp loại</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -401,12 +328,16 @@
                         </div>
                     </c:otherwise>
                 </c:choose>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <div class="card">
-            <div class="card-body">
-                <h6 class="card-title"><i class="bi bi-info-circle"></i> Ghi chú</h6>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-info-circle"></i> Ghi chú</h5>
                 <ul class="mb-0">
                     <li><strong>ĐTB (Điểm Trung Bình Môn):</strong> Được tính theo công thức: 
                         <code>(Miệng + 15p + 1Tiết×2 + Thi×3) ÷ 7</code>
@@ -420,9 +351,13 @@
                     </li>
                     <li>Ký hiệu <span class="grade-empty">"-"</span> nghĩa là điểm chưa được nhập.</li>
                 </ul>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 </main>
+
+
     
 <jsp:include page="/WEB-INF/includes/footer.jsp" />

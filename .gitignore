@@ -9,6 +9,9 @@
 .factorypath
 src/main/resources/.env
 
+# 🔐 BẢO MẬT: Config chứa API keys và secrets - KHÔNG COMMIT!
+src/main/resources/config.properties
+
 # Chặn file cấu hình của VS Code/IntelliJ (nếu team dùng nhiều IDE)
 .vscode/
 .idea/

@@ -6,12 +6,15 @@ import java.util.List;
 import com.student.dao.DiemChiTietDAO;
 import com.student.dao.HocKyDAO;
 import com.student.dao.HocSinhDAO;
+import com.student.dao.NamHocDAO;
 import com.student.dao.impl.DiemChiTietDAOImpl;
 import com.student.dao.impl.HocKyDAOImpl;
 import com.student.dao.impl.HocSinhDAOImpl;
+import com.student.dao.impl.NamHocDAOImpl;
 import com.student.model.DiemChiTiet;
 import com.student.model.HocKy;
 import com.student.model.HocSinh;
+import com.student.model.NamHoc;
 import com.student.model.TaiKhoan;
 
 import jakarta.servlet.ServletException;
@@ -32,6 +35,7 @@ public class StudentGradeController extends HttpServlet {
 	private HocSinhDAO hocSinhDAO = new HocSinhDAOImpl();
 	private DiemChiTietDAO diemChiTietDAO = new DiemChiTietDAOImpl();
 	private HocKyDAO hocKyDAO = new HocKyDAOImpl();
+	private NamHocDAO namHocDAO = new NamHocDAOImpl();
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -71,15 +75,27 @@ public class StudentGradeController extends HttpServlet {
 			return;
 		}
 
+		List<NamHoc> dsNamHoc = namHocDAO.findAll();
 		List<HocKy> dsHocKy = hocKyDAO.findAll();
 
 		int maHocKy = parseMaHocKy(request, dsHocKy);
+		
+		// Tìm năm học hiện tại từ học kỳ được chọn
+		String maNamHocHienTai = "";
+		for (HocKy hk : dsHocKy) {
+			if (hk.getMaHK() == maHocKy) {
+				maNamHocHienTai = hk.getMaNH();
+				break;
+			}
+		}
 
 		List<DiemChiTiet> dsDiem = diemChiTietDAO.getBangDiemCaNhan(maHS, maHocKy);
 		double diemTBHK = tinhDiemTrungBinhHocKy(dsDiem);
 
 		request.setAttribute("hocSinh", hocSinh);
+		request.setAttribute("dsNamHoc", dsNamHoc);
 		request.setAttribute("dsHocKy", dsHocKy);
+		request.setAttribute("maNamHocHienTai", maNamHocHienTai);
 		request.setAttribute("maHocKyHienTai", maHocKy);
 		request.setAttribute("dsDiem", dsDiem);
 		request.setAttribute("diemTBHK", diemTBHK);

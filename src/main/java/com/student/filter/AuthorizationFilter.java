@@ -34,9 +34,6 @@ public class AuthorizationFilter implements Filter {
      */
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println("========================================");
-        System.out.println("AuthorizationFilter initialized");
-        System.out.println("========================================");
     }
 
     /**
@@ -51,9 +48,7 @@ public class AuthorizationFilter implements Filter {
         String requestURI = httpRequest.getRequestURI();
         String contextPath = httpRequest.getContextPath();
         String path = requestURI.substring(contextPath.length());
-        System.out.println("Filter checking: " + path);
         if (isPublicResource(path)) {
-            System.out.println("✓ Allow: Public resource - " + path);
             chain.doFilter(request, response);
             return;
         }
@@ -66,7 +61,6 @@ public class AuthorizationFilter implements Filter {
         }
         
         if (account == null) {
-            System.out.println("✗ Block: Not logged in - Redirect to /login");
             httpResponse.sendRedirect(contextPath + "/login");
             return;
         }
@@ -75,7 +69,6 @@ public class AuthorizationFilter implements Filter {
         
         if (path.startsWith("/admin/")) {
             if (!"ADMIN".equalsIgnoreCase(role)) {
-                System.out.println("✗ Block: Access denied to /admin/* for role: " + role);
                 handleForbidden(httpRequest, httpResponse, "Bạn không có quyền truy cập trang quản trị.");
                 return;
             }
@@ -83,7 +76,6 @@ public class AuthorizationFilter implements Filter {
 
         if (path.startsWith("/teacher/")) {
             if (!"GIAOVIEN".equalsIgnoreCase(role)) {
-                System.out.println("✗ Block: Access denied to /teacher/* for role: " + role);
                 handleForbidden(httpRequest, httpResponse, "Bạn không có quyền truy cập trang giáo viên.");
                 return;
             }
@@ -91,14 +83,12 @@ public class AuthorizationFilter implements Filter {
 
         if (path.startsWith("/student/")) {
             if (!"HOCSINH".equalsIgnoreCase(role)) {
-                System.out.println("✗ Block: Access denied to /student/* for role: " + role);
                 handleForbidden(httpRequest, httpResponse, "Bạn không có quyền truy cập trang học sinh.");
                 return;
             }
         }
         
 
-        System.out.println("✓ Allow: " + path + " for role: " + role);
         chain.doFilter(request, response);
     }
 
@@ -189,8 +179,5 @@ public class AuthorizationFilter implements Filter {
      */
     @Override
     public void destroy() {
-        System.out.println("========================================");
-        System.out.println("AuthorizationFilter destroyed");
-        System.out.println("========================================");
     }
 }
