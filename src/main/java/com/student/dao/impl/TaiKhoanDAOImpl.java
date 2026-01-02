@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TaiKhoanDAOImpl implements TaiKhoanDAO {
 
@@ -295,6 +297,229 @@ public class TaiKhoanDAOImpl implements TaiKhoanDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * Lấy danh sách tài khoản với phân trang
+     */
+    @Override
+    public List<TaiKhoan> findAllWithPagination(String searchKey, int page, int pageSize) {
+        List<TaiKhoan> list = new ArrayList<>();
+        
+        String sql = "SELECT " +
+                     "    tk.maTK, " +
+                     "    tk.username, " +
+                     "    tk.password, " +
+                     "    tk.role, " +
+                     "    tk.maGV, " +
+                     "    tk.maHS, " +
+                     "    tk.isActive, " +
+                     "    tk.createdAt, " +
+                     "    tk.updatedAt, " +
+                     "    COALESCE(gv.hoTen, hs.hoTen, 'Admin') AS hoTenHienThi " +
+                     "FROM TaiKhoan tk " +
+                     "LEFT JOIN GiaoVien gv ON tk.maGV = gv.maGV " +
+                     "LEFT JOIN HocSinh hs ON tk.maHS = hs.maHS " +
+                     "WHERE 1=1 ";
+        
+        if (searchKey != null && !searchKey.isEmpty()) {
+            sql += " AND (tk.username LIKE ? OR COALESCE(gv.hoTen, hs.hoTen, 'Admin') LIKE ?) ";
+        }
+        
+        sql += " ORDER BY tk.maTK DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        
+        try (Connection conn = DBConnection.getNewConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            int index = 1;
+            if (searchKey != null && !searchKey.isEmpty()) {
+                String keyword = "%" + searchKey + "%";
+                ps.setString(index++, keyword);
+                ps.setString(index++, keyword);
+            }
+            
+            int offset = (page - 1) * pageSize;
+            ps.setInt(index++, offset);
+            ps.setInt(index++, pageSize);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSetToTaiKhoan(rs));
+                }
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Error in findAllWithPagination: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return list;
+    }
+    
+    /**
+     * Đếm tổng số tài khoản
+     */
+    @Override
+    public int count(String searchKey) {
+        String sql = "SELECT COUNT(*) FROM TaiKhoan tk " +
+                     "LEFT JOIN GiaoVien gv ON tk.maGV = gv.maGV " +
+                     "LEFT JOIN HocSinh hs ON tk.maHS = hs.maHS " +
+                     "WHERE 1=1 ";
+        
+        if (searchKey != null && !searchKey.isEmpty()) {
+            sql += " AND (tk.username LIKE ? OR COALESCE(gv.hoTen, hs.hoTen, 'Admin') LIKE ?) ";
+        }
+        
+        try (Connection conn = DBConnection.getNewConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            if (searchKey != null && !searchKey.isEmpty()) {
+                String keyword = "%" + searchKey + "%";
+                ps.setString(1, keyword);
+                ps.setString(2, keyword);
+            }
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Error in count: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return 0;
+    }
+    
+    /**
+     * Lấy danh sách học sinh chưa có tài khoản
+     */
+    @Override
+    public List<Integer> getStudentsWithoutAccount() {
+        List<Integer> list = new ArrayList<>();
+        
+        String sql = "SELECT hs.maHS " +
+                     "FROM HocSinh hs " +
+                     "LEFT JOIN TaiKhoan tk ON hs.maHS = tk.maHS " +
+                     "WHERE tk.maTK IS NULL AND hs.trangThai = 1 " +
+                     "ORDER BY hs.maHS";
+        
+        try (Connection conn = DBConnection.getNewConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                list.add(rs.getInt("maHS"));
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Error in getStudentsWithoutAccount: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return list;
+    }
+    
+    /**
+     * Lấy danh sách giáo viên chưa có tài khoản
+     */
+    @Override
+    public List<Integer> getTeachersWithoutAccount() {
+        List<Integer> list = new ArrayList<>();
+        
+        String sql = "SELECT gv.maGV " +
+                     "FROM GiaoVien gv " +
+                     "LEFT JOIN TaiKhoan tk ON gv.maGV = tk.maGV " +
+                     "WHERE tk.maTK IS NULL AND gv.trangThai = 1 " +
+                     "ORDER BY gv.maGV";
+        
+        try (Connection conn = DBConnection.getNewConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                list.add(rs.getInt("maGV"));
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Error in getTeachersWithoutAccount: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return list;
+    }
+    
+    /**
+     * Tạo nhiều tài khoản cùng lúc (batch insert)
+     */
+    @Override
+    public int batchInsert(List<TaiKhoan> accounts) {
+        if (accounts == null || accounts.isEmpty()) {
+            return 0;
+        }
+        
+        String sql = "INSERT INTO TaiKhoan (username, password, role, maGV, maHS, isActive) " +
+                     "VALUES (?, ?, ?, ?, ?, ?)";
+        
+        int successCount = 0;
+        
+        try (Connection conn = DBConnection.getNewConnection()) {
+            conn.setAutoCommit(false); // Start transaction
+            
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                
+                for (TaiKhoan tk : accounts) {
+                    ps.setString(1, tk.getUsername());
+                    ps.setString(2, tk.getPassword());
+                    ps.setString(3, tk.getRole());
+                    
+                    if (tk.getMaGV() != null) {
+                        ps.setInt(4, tk.getMaGV());
+                    } else {
+                        ps.setNull(4, java.sql.Types.INTEGER);
+                    }
+                    
+                    if (tk.getMaHS() != null) {
+                        ps.setInt(5, tk.getMaHS());
+                    } else {
+                        ps.setNull(5, java.sql.Types.INTEGER);
+                    }
+                    
+                    ps.setBoolean(6, tk.isActive());
+                    ps.addBatch();
+                }
+                
+                int[] results = ps.executeBatch();
+                conn.commit();
+                
+                for (int result : results) {
+                    if (result > 0) {
+                        successCount++;
+                    }
+                }
+                
+            } catch (SQLException e) {
+                conn.rollback();
+                System.err.println("Error in batch insert, rolling back: " + e.getMessage());
+                e.printStackTrace();
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Error in batchInsert: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return successCount;
+    }
+    
+    /**
+     * Reset mật khẩu về mặc định
+     */
+    @Override
+    public boolean resetPassword(int maTK, String defaultPassword) {
+        return updatePassword(maTK, defaultPassword);
     }
 
     /**

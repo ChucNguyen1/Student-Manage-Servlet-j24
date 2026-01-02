@@ -28,9 +28,11 @@
 <script src="${baseURL}/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="${baseURL}/assets/js/main.js"></script>
 
-<!-- Chatbox Widget -->
-<link rel="stylesheet" href="${baseURL}/assets/css/chatbox.css">
-<script src="${baseURL}/assets/js/chatbox.js"></script>
+<!-- Chatbox Widget - Chỉ hiển thị cho học sinh -->
+<c:if test="${sessionScope.role == 'HOCSINH'}">
+  <link rel="stylesheet" href="${baseURL}/assets/css/chatbox.css">
+  <script src="${baseURL}/assets/js/chatbox.js"></script>
+</c:if>
 
 </body>
 </html>

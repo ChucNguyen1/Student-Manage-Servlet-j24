@@ -1,6 +1,7 @@
 package com.student.dao;
 
 import com.student.model.TaiKhoan;
+import java.util.List;
 
 public interface TaiKhoanDAO {
     
@@ -38,4 +39,34 @@ public interface TaiKhoanDAO {
     boolean deactivate(int maTK);
     
     boolean activate(int maTK);
+    
+    /**
+     * Lấy danh sách tất cả tài khoản với phân trang
+     */
+    List<TaiKhoan> findAllWithPagination(String searchKey, int page, int pageSize);
+    
+    /**
+     * Đếm tổng số tài khoản
+     */
+    int count(String searchKey);
+    
+    /**
+     * Lấy danh sách học sinh chưa có tài khoản
+     */
+    List<Integer> getStudentsWithoutAccount();
+    
+    /**
+     * Lấy danh sách giáo viên chưa có tài khoản
+     */
+    List<Integer> getTeachersWithoutAccount();
+    
+    /**
+     * Tạo nhiều tài khoản cùng lúc (batch insert)
+     */
+    int batchInsert(List<TaiKhoan> accounts);
+    
+    /**
+     * Reset mật khẩu về mặc định
+     */
+    boolean resetPassword(int maTK, String defaultPassword);
 }

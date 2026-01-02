@@ -130,7 +130,8 @@
           </div>
         </div>
 
-        <c:if test="${not empty dsPhanCong and not empty tkbGrid}">
+        <%-- 2. LƯỚI TKB - Hiển thị khi đã chọn lớp và có phân công môn học --%>
+        <c:if test="${not empty dsPhanCong}">
         <div class="col-12">
           <div class="card">
             <div class="card-body">

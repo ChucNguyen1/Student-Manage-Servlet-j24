@@ -18,8 +18,10 @@ public class GiaoVienDAOImpl implements GiaoVienDAO {
 	public List<GiaoVien> findAndPaginate(String searchKey, int pageNumber, int pageSize) {
 		List<GiaoVien> list = new ArrayList<>();
 
-		String sql = "SELECT gv.*, t.tenTo " + "FROM GiaoVien gv "
-				+ "LEFT JOIN ToBoMon t ON gv.maTo = t.maTo " + "WHERE gv.trangThai = 1";
+		String sql = "SELECT gv.*, t.tenTo, mh.tenMH AS tenMonHocChuyenMon " + "FROM GiaoVien gv "
+				+ "LEFT JOIN ToBoMon t ON gv.maTo = t.maTo "
+				+ "LEFT JOIN MonHoc mh ON gv.maMonHocChuyenMon = mh.maMH "
+				+ "WHERE gv.trangThai = 1";
 
 		if (searchKey != null && !searchKey.isEmpty()) {
 			sql += " AND (gv.hoTen LIKE ? OR gv.email LIKE ?) ";
@@ -134,8 +136,10 @@ public class GiaoVienDAOImpl implements GiaoVienDAO {
 
 	@Override
 	public GiaoVien findById(int maGV) {
-		String sql = "SELECT gv.*, t.tenTo " + "FROM GiaoVien gv "
-				+ "LEFT JOIN ToBoMon t ON gv.maTo = t.maTo " + "WHERE gv.maGV = ?";
+		String sql = "SELECT gv.*, t.tenTo, mh.tenMH AS tenMonHocChuyenMon " + "FROM GiaoVien gv "
+				+ "LEFT JOIN ToBoMon t ON gv.maTo = t.maTo "
+				+ "LEFT JOIN MonHoc mh ON gv.maMonHocChuyenMon = mh.maMH "
+				+ "WHERE gv.maGV = ?";
 
 		try (Connection conn = DBConnection.getNewConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -155,7 +159,10 @@ public class GiaoVienDAOImpl implements GiaoVienDAO {
 	@Override
 	public List<GiaoVien> findAll() {
 		List<GiaoVien> list = new ArrayList<>();
-		String sql = "SELECT gv.*, t.tenTo FROM GiaoVien gv LEFT JOIN ToBoMon t ON gv.maTo = t.maTo WHERE gv.trangThai = 1 ORDER BY gv.hoTen ASC";
+		String sql = "SELECT gv.*, t.tenTo, mh.tenMH AS tenMonHocChuyenMon FROM GiaoVien gv " +
+				"LEFT JOIN ToBoMon t ON gv.maTo = t.maTo " +
+				"LEFT JOIN MonHoc mh ON gv.maMonHocChuyenMon = mh.maMH " +
+				"WHERE gv.trangThai = 1 ORDER BY gv.hoTen ASC";
 
 		try (Connection conn = DBConnection.getNewConnection();
 				PreparedStatement ps = conn.prepareStatement(sql);
@@ -173,8 +180,9 @@ public class GiaoVienDAOImpl implements GiaoVienDAO {
 	@Override
 	public List<GiaoVien> findByToBoMon(int maTo) {
 		List<GiaoVien> list = new ArrayList<>();
-		String sql = "SELECT gv.*, t.tenTo FROM GiaoVien gv " +
+		String sql = "SELECT gv.*, t.tenTo, mh.tenMH AS tenMonHocChuyenMon FROM GiaoVien gv " +
 					 "LEFT JOIN ToBoMon t ON gv.maTo = t.maTo " +
+					 "LEFT JOIN MonHoc mh ON gv.maMonHocChuyenMon = mh.maMH " +
 					 "WHERE gv.maTo = ? AND gv.trangThai = 1 " +
 					 "ORDER BY gv.hoTen ASC";
 		try (Connection conn = DBConnection.getNewConnection(); 

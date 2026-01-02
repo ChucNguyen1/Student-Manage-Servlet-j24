@@ -48,7 +48,7 @@
         <div class="row mb-3">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body py-3">
                         <form action="${baseURL}/student/xem-diem" method="GET" id="formChonHocKy">
                             <div class="row align-items-center g-3">
                                 <div class="col-md-5">

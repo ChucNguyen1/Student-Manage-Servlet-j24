@@ -1,17 +1,32 @@
 package com.student.service.impl;
 
 import com.student.dao.TaiKhoanDAO;
+import com.student.dao.HocSinhDAO;
+import com.student.dao.GiaoVienDAO;
 import com.student.dao.impl.TaiKhoanDAOImpl;
+import com.student.dao.impl.HocSinhDAOImpl;
+import com.student.dao.impl.GiaoVienDAOImpl;
 import com.student.model.TaiKhoan;
+import com.student.model.HocSinh;
+import com.student.model.GiaoVien;
 import com.student.service.TaiKhoanService;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class TaiKhoanServiceImpl implements TaiKhoanService {
 
     private final TaiKhoanDAO taiKhoanDAO;
+    private final HocSinhDAO hocSinhDAO;
+    private final GiaoVienDAO giaoVienDAO;
 
     public TaiKhoanServiceImpl() {
         this.taiKhoanDAO = new TaiKhoanDAOImpl();
+        this.hocSinhDAO = new HocSinhDAOImpl();
+        this.giaoVienDAO = new GiaoVienDAOImpl();
     }
 
     /**
@@ -192,5 +207,129 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         }
         TaiKhoan tk = taiKhoanDAO.findByUsername(username.trim());
         return tk != null;
+    }
+    
+    @Override
+    public List<TaiKhoan> findAllWithPagination(String searchKey, int page, int pageSize) {
+        return taiKhoanDAO.findAllWithPagination(searchKey, page, pageSize);
+    }
+    
+    @Override
+    public int count(String searchKey) {
+        return taiKhoanDAO.count(searchKey);
+    }
+    
+    @Override
+    public Map<String, Object> autoProvisionStudentAccounts(String defaultPassword) {
+        Map<String, Object> result = new HashMap<>();
+        
+        if (defaultPassword == null || defaultPassword.trim().isEmpty()) {
+            defaultPassword = "123456"; // Mật khẩu mặc định
+        }
+        
+        // Lấy danh sách học sinh chưa có tài khoản
+        List<Integer> studentIds = taiKhoanDAO.getStudentsWithoutAccount();
+        
+        if (studentIds.isEmpty()) {
+            result.put("success", true);
+            result.put("count", 0);
+            result.put("message", "Tất cả học sinh đã có tài khoản");
+            return result;
+        }
+        
+        // Tạo danh sách tài khoản mới
+        List<TaiKhoan> newAccounts = new ArrayList<>();
+        for (Integer maHS : studentIds) {
+            HocSinh hs = hocSinhDAO.findById(maHS);
+            if (hs != null) {
+                TaiKhoan tk = new TaiKhoan();
+                tk.setUsername("HS" + maHS); // Username = HS + Mã học sinh
+                tk.setPassword(defaultPassword);
+                tk.setRole("HOCSINH");
+                tk.setMaHS(maHS);
+                tk.setActive(true);
+                newAccounts.add(tk);
+            }
+        }
+        
+        // Insert batch
+        int successCount = taiKhoanDAO.batchInsert(newAccounts);
+        
+        result.put("success", successCount > 0);
+        result.put("count", successCount);
+        result.put("total", studentIds.size());
+        result.put("message", "Đã tạo " + successCount + "/" + studentIds.size() + " tài khoản học sinh");
+        
+        return result;
+    }
+    
+    @Override
+    public Map<String, Object> autoProvisionTeacherAccounts(String defaultPassword) {
+        Map<String, Object> result = new HashMap<>();
+        
+        if (defaultPassword == null || defaultPassword.trim().isEmpty()) {
+            defaultPassword = "123456"; // Mật khẩu mặc định
+        }
+        
+        // Lấy danh sách giáo viên chưa có tài khoản
+        List<Integer> teacherIds = taiKhoanDAO.getTeachersWithoutAccount();
+        
+        if (teacherIds.isEmpty()) {
+            result.put("success", true);
+            result.put("count", 0);
+            result.put("message", "Tất cả giáo viên đã có tài khoản");
+            return result;
+        }
+        
+        // Tạo danh sách tài khoản mới
+        List<TaiKhoan> newAccounts = new ArrayList<>();
+        for (Integer maGV : teacherIds) {
+            GiaoVien gv = giaoVienDAO.findById(maGV);
+            if (gv != null) {
+                TaiKhoan tk = new TaiKhoan();
+                tk.setUsername("GV" + maGV); // Username = GV + Mã giáo viên
+                tk.setPassword(defaultPassword);
+                tk.setRole("GIAOVIEN");
+                tk.setMaGV(maGV);
+                tk.setActive(true);
+                newAccounts.add(tk);
+            }
+        }
+        
+        // Insert batch
+        int successCount = taiKhoanDAO.batchInsert(newAccounts);
+        
+        result.put("success", successCount > 0);
+        result.put("count", successCount);
+        result.put("total", teacherIds.size());
+        result.put("message", "Đã tạo " + successCount + "/" + teacherIds.size() + " tài khoản giáo viên");
+        
+        return result;
+    }
+    
+    @Override
+    public boolean resetPasswordToDefault(int maTK, String defaultPassword) {
+        if (maTK <= 0) {
+            return false;
+        }
+        
+        if (defaultPassword == null || defaultPassword.trim().isEmpty()) {
+            defaultPassword = "123456"; // Mật khẩu mặc định
+        }
+        
+        return taiKhoanDAO.resetPassword(maTK, defaultPassword);
+    }
+    
+    @Override
+    public boolean toggleAccountStatus(int maTK, boolean isActive) {
+        if (maTK <= 0) {
+            return false;
+        }
+        
+        if (isActive) {
+            return taiKhoanDAO.activate(maTK);
+        } else {
+            return taiKhoanDAO.deactivate(maTK);
+        }
     }
 }

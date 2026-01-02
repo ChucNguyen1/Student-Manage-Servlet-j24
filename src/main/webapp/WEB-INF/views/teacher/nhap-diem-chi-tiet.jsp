@@ -16,7 +16,8 @@ pageEncoding="UTF-8"%> <%@ taglib uri="jakarta.tags.core" prefix="c" %>
           <a href="${baseURL}/teacher/home">Trang chủ</a>
         </li>
         <li class="breadcrumb-item">
-          <a href="${baseURL}/teacher/danh-sach-lop?maHocKy=${maHocKy}"
+          <a
+            href="${baseURL}/teacher/danh-sach-lop?maNH=${param.maNH}&maHocKy=${maHocKy}"
             >Danh sách lớp</a
           >
         </li>
@@ -230,7 +231,7 @@ pageEncoding="UTF-8"%> <%@ taglib uri="jakarta.tags.core" prefix="c" %>
                   class="d-flex justify-content-between align-items-center mt-3"
                 >
                   <a
-                    href="${baseURL}/teacher/danh-sach-lop?maHocKy=${maHocKy}"
+                    href="${baseURL}/teacher/danh-sach-lop?maNH=${param.maNH}&maHocKy=${maHocKy}"
                     class="btn btn-secondary"
                   >
                     <i class="bi bi-arrow-left"></i> Quay lại
@@ -249,7 +250,7 @@ pageEncoding="UTF-8"%> <%@ taglib uri="jakarta.tags.core" prefix="c" %>
                 Lớp này chưa có học sinh nào.
               </div>
               <a
-                href="${baseURL}/teacher/danh-sach-lop?maHocKy=${maHocKy}"
+                href="${baseURL}/teacher/danh-sach-lop?maNH=${param.maNH}&maHocKy=${maHocKy}"
                 class="btn btn-secondary"
               >
                 <i class="bi bi-arrow-left"></i> Quay lại

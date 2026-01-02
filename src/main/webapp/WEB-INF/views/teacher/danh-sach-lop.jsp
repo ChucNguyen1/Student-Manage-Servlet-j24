@@ -25,10 +25,21 @@
                         <h5 class="card-title">
                             Chọn lớp để nhập điểm
 
-                            <c:if test="${not empty dsHocKy}">
-                                <div class="float-end">
-                                    <form action="${baseURL}/teacher/danh-sach-lop" method="GET" class="d-inline">
-                                        <label class="me-2">Học kỳ:</label>
+                            <div class="float-end">
+                                <form action="${baseURL}/teacher/danh-sach-lop" method="GET" class="d-inline" id="filterForm">
+                                    <c:if test="${not empty dsNamHoc}">
+                                        <label class="me-2">Năm học:</label>
+                                        <select name="maNH" class="form-select d-inline-block" style="width: auto;" onchange="this.form.submit()">
+                                            <c:forEach var="nh" items="${dsNamHoc}">
+                                                <option value="${nh.maNH}" ${nh.maNH == maNHHienTai ? 'selected' : ''}>
+                                                    ${nh.tenNH}
+                                                </option>
+                                            </c:forEach>
+                                        </select>
+                                    </c:if>
+
+                                    <c:if test="${not empty dsHocKy}">
+                                        <label class="ms-3 me-2">Học kỳ:</label>
                                         <select name="maHocKy" class="form-select d-inline-block" style="width: auto;" onchange="this.form.submit()">
                                             <c:forEach var="hk" items="${dsHocKy}">
                                                 <option value="${hk.maHK}" ${hk.maHK == maHocKyHienTai ? 'selected' : ''}>
@@ -36,9 +47,9 @@
                                                 </option>
                                             </c:forEach>
                                         </select>
-                                    </form>
-                                </div>
-                            </c:if>
+                                    </c:if>
+                                </form>
+                            </div>
                         </h5>
 
                         <c:if test="${not empty error}">
@@ -86,7 +97,7 @@
                                                 </div>
 
                                                 <div class="mt-auto">
-                                                    <a href="${baseURL}/teacher/nhap-diem-chi-tiet?maLop=${pc.maLop}&maMon=${pc.maMonHoc}&maHocKy=${maHocKyHienTai}" 
+                                                    <a href="${baseURL}/teacher/nhap-diem-chi-tiet?maLop=${pc.maLop}&maMon=${pc.maMonHoc}&maHocKy=${maHocKyHienTai}&maNH=${maNHHienTai}" 
                                                        class="btn btn-primary w-100 btn-hover">
                                                         <i class="bi bi-pencil-square"></i> Nhập điểm
                                                     </a>
@@ -120,7 +131,7 @@
                                                 <td>${pc.tenMonHoc}</td>
                                                 <td>${pc.tenHocKy}</td>
                                                 <td class="text-center">
-                                                    <a href="${baseURL}/teacher/nhap-diem-chi-tiet?maLop=${pc.maLop}&maMon=${pc.maMonHoc}&maHocKy=${maHocKyHienTai}" 
+                                                    <a href="${baseURL}/teacher/nhap-diem-chi-tiet?maLop=${pc.maLop}&maMon=${pc.maMonHoc}&maHocKy=${maHocKyHienTai}&maNH=${maNHHienTai}" 
                                                        class="btn btn-primary btn-sm">
                                                         <i class="bi bi-pencil-square"></i> Nhập điểm
                                                     </a>

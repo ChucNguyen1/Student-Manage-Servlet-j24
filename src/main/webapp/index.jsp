@@ -8,6 +8,7 @@
 
 <%-- 1. NHÚNG HEADER --%>
 <jsp:include page="/WEB-INF/includes/header.jsp" />
+<jsp:include page="/WEB-INF/includes/sidebar.jsp" />
 
 
 <main id="main" class="main">

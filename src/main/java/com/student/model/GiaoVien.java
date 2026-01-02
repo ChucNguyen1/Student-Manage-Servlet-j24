@@ -14,6 +14,9 @@ public class GiaoVien {
 	private int maTo;
 	private String tenTo;
 
+	private Integer maMonHocChuyenMon;
+	private String tenMonHocChuyenMon;
+
 	private boolean trangThai;
 
 	private Integer userID;
@@ -91,6 +94,22 @@ public class GiaoVien {
 
 	public void setTenTo(String tenTo) {
 		this.tenTo = tenTo;
+	}
+
+	public Integer getMaMonHocChuyenMon() {
+		return maMonHocChuyenMon;
+	}
+
+	public void setMaMonHocChuyenMon(Integer maMonHocChuyenMon) {
+		this.maMonHocChuyenMon = maMonHocChuyenMon;
+	}
+
+	public String getTenMonHocChuyenMon() {
+		return tenMonHocChuyenMon;
+	}
+
+	public void setTenMonHocChuyenMon(String tenMonHocChuyenMon) {
+		this.tenMonHocChuyenMon = tenMonHocChuyenMon;
 	}
 
 	public boolean isTrangThai() {

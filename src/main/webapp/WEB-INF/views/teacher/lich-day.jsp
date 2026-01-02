@@ -25,7 +25,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">
-                            Thời khóa biểu
+                            Lịch dạy
                             
                             <%-- Dropdown chọn năm học và học kỳ --%>
                             <div class="float-end">
@@ -61,63 +61,12 @@
                             </div>
                         </c:if>
 
-                        <div class="table-responsive">
-                            <table class="table table-bordered text-center">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 8%;">Tiết</th>
-                                        <th style="width: 15%;">Thứ Hai</th>
-                                        <th style="width: 15%;">Thứ Ba</th>
-                                        <th style="width: 15%;">Thứ Tư</th>
-                                        <th style="width: 15%;">Thứ Năm</th>
-                                        <th style="width: 15%;">Thứ Sáu</th>
-                                        <th style="width: 15%;">Thứ Bảy</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-
-                                    <c:forEach var="tiet" begin="1" end="12">
-                                        <tr>
-                                            <td><strong>Tiết ${tiet}</strong></td>
-                                            
-
-                                            <c:forEach var="thu" begin="2" end="7">
-                                                <td>
-                                                    <c:set var="found" value="false" />
-                                                    <c:forEach var="tkb" items="${dsTKB}">
-                                                        <c:if test="${tkb.thu == thu && tkb.tiet == tiet}">
-                                                            <c:set var="found" value="true" />
-                                                            <div class="p-2 bg-primary bg-opacity-10 border border-primary rounded">
-                                                                <strong>${tkb.tenLop}</strong><br/>
-                                                                <small>${tkb.tenMonHoc}</small>
-                                                                <c:if test="${not empty tkb.phongHoc}">
-                                                                    <br/><small class="text-muted">Phòng: ${tkb.phongHoc}</small>
-                                                                </c:if>
-                                                            </div>
-                                                        </c:if>
-                                                    </c:forEach>
-
-                                                    <c:if test="${!found}">
-                                                        <span class="text-muted">---</span>
-                                                    </c:if>
-                                                </td>
-                                            </c:forEach>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
-                            </table>
-                        </div>
-
                         <c:if test="${empty dsTKB}">
                             <div class="alert alert-info mt-3">
                                 <i class="bi bi-info-circle me-1"></i>
                                 Bạn chưa có lịch dạy nào trong học kỳ này.
                             </div>
                         </c:if>
-
-                        <hr class="my-5" />
-
-                        <h5 class="card-title">Lịch dạy (FullCalendar)</h5>
                         <div id="calendar"></div>
 
                     </div>
@@ -127,6 +76,43 @@
     </section>
 
 </main>
+
+<!-- Modal chi tiết lịch dạy -->
+<div class="modal fade" id="scheduleDetailModal" tabindex="-1" aria-labelledby="scheduleDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scheduleDetailModalLabel">
+                    <i class="bi bi-calendar-event"></i> Chi tiết lịch dạy
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-4 fw-bold">Lớp:</div>
+                    <div class="col-8" id="detailLop"></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-4 fw-bold">Môn học:</div>
+                    <div class="col-8" id="detailMonHoc"></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-4 fw-bold">Phòng học:</div>
+                    <div class="col-8" id="detailPhongHoc"></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-4 fw-bold">Thời gian:</div>
+                    <div class="col-8" id="detailThoiGian"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <jsp:include page="/WEB-INF/includes/footer.jsp" />
 

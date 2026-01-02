@@ -112,10 +112,12 @@ isELIgnored="false" %>
         </a>
       </li>
 
+      <li class="nav-heading">Quản lý Hệ thống</li>
+
       <li class="nav-item">
-        <a class="nav-link collapsed" href="#">
-          <i class="bi bi-person-lines-fill"></i>
-          <span>Phân quyền</span>
+        <a class="nav-link collapsed" href="${baseURL}/admin/taikhoan-list">
+          <i class="bi bi-person-lock"></i>
+          <span>Quản lý Tài khoản</span>
         </a>
       </li>
     </c:if>
@@ -135,30 +137,6 @@ isELIgnored="false" %>
         <a class="nav-link collapsed" href="${baseURL}/teacher/danh-sach-lop">
           <i class="bi bi-building"></i>
           <span>Lớp học phụ trách</span>
-        </a>
-      </li>
-
-      <li class="nav-item">
-        <a
-          class="nav-link collapsed"
-          href="${baseURL}/teacher/nhap-diem-chi-tiet"
-        >
-          <i class="bi bi-card-checklist"></i>
-          <span>Nhập điểm</span>
-        </a>
-      </li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="#">
-          <i class="bi bi-people-fill"></i>
-          <span>Danh sách học sinh</span>
-        </a>
-      </li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="#">
-          <i class="bi bi-bell-fill"></i>
-          <span>Thông báo</span>
         </a>
       </li>
     </c:if>

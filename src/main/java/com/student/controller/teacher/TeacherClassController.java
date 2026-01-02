@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.util.List;
 
 import com.student.dao.HocKyDAO;
+import com.student.dao.NamHocDAO;
 import com.student.dao.PhanCongDAO;
 import com.student.dao.impl.HocKyDAOImpl;
+import com.student.dao.impl.NamHocDAOImpl;
 import com.student.dao.impl.PhanCongDAOImpl;
 import com.student.model.HocKy;
+import com.student.model.NamHoc;
 import com.student.model.PhanCong;
 import com.student.model.TaiKhoan;
 
@@ -29,10 +32,12 @@ public class TeacherClassController extends HttpServlet {
 
 	private final PhanCongDAO phanCongDAO;
 	private final HocKyDAO hocKyDAO;
+	private final NamHocDAO namHocDAO;
 
 	public TeacherClassController() {
 		this.phanCongDAO = new PhanCongDAOImpl();
 		this.hocKyDAO = new HocKyDAOImpl();
+		this.namHocDAO = new NamHocDAOImpl();
 	}
 
 	@Override
@@ -58,8 +63,32 @@ public class TeacherClassController extends HttpServlet {
 			request.getRequestDispatcher("/WEB-INF/views/teacher/danh-sach-lop.jsp").forward(request, response);
 			return;
 		}
-		List<HocKy> dsHocKy = hocKyDAO.findAll();
+
+		// Lấy danh sách năm học
+		List<NamHoc> dsNamHoc = namHocDAO.findAll();
+		request.setAttribute("dsNamHoc", dsNamHoc);
+
+		// Lấy maNH từ request hoặc chọn năm học mặc định
+		String maNHParam = request.getParameter("maNH");
+		String maNH = null;
+
+		if (maNHParam != null && !maNHParam.isEmpty()) {
+			maNH = maNHParam;
+		} else if (dsNamHoc != null && !dsNamHoc.isEmpty()) {
+			// Chọn năm học đầu tiên làm mặc định
+			maNH = dsNamHoc.get(0).getMaNH();
+		}
+
+		request.setAttribute("maNHHienTai", maNH);
+
+		// Lấy danh sách học kỳ theo năm học
+		List<HocKy> dsHocKy = null;
+		if (maNH != null) {
+			dsHocKy = hocKyDAO.findByNamHoc(maNH);
+		}
 		request.setAttribute("dsHocKy", dsHocKy);
+
+		// Lấy maHocKy từ request hoặc chọn học kỳ mặc định
 		String maHocKyParam = request.getParameter("maHocKy");
 		int maHocKy = 0;
 
@@ -70,6 +99,7 @@ public class TeacherClassController extends HttpServlet {
 			}
 		}
 
+		// Nếu chưa chọn học kỳ, chọn học kỳ đầu tiên đang hoạt động
 		if (maHocKy == 0 && dsHocKy != null && !dsHocKy.isEmpty()) {
 			for (HocKy hk : dsHocKy) {
 				if (hk.isTrangThai()) {
@@ -77,6 +107,7 @@ public class TeacherClassController extends HttpServlet {
 					break;
 				}
 			}
+			// Nếu không có học kỳ nào đang hoạt động, chọn học kỳ đầu tiên
 			if (maHocKy == 0) {
 				maHocKy = dsHocKy.get(0).getMaHK();
 			}
@@ -84,6 +115,7 @@ public class TeacherClassController extends HttpServlet {
 
 		request.setAttribute("maHocKyHienTai", maHocKy);
 
+		// Lấy danh sách phân công theo giáo viên và học kỳ
 		if (maHocKy > 0) {
 			List<PhanCong> dsPhanCong = phanCongDAO.findByGiaoVienAndHocKy(maGV, maHocKy);
 			request.setAttribute("dsPhanCong", dsPhanCong);

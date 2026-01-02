@@ -29,6 +29,21 @@ public class GiaoVienMapper {
 			
 		}
 
+		try {
+			gv.setMaMonHocChuyenMon(rs.getInt("maMonHocChuyenMon"));
+			if (rs.wasNull()) {
+				gv.setMaMonHocChuyenMon(null);
+			}
+		} catch (SQLException e) {
+			
+		}
+
+		try {
+			gv.setTenMonHocChuyenMon(rs.getString("tenMonHocChuyenMon"));
+		} catch (SQLException e) {
+			
+		}
+
 		int uid = rs.getInt("userID");
 		if (!rs.wasNull()) {
 			gv.setUserID(uid);
