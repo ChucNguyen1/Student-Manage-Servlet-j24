@@ -1,0 +1,16 @@
+# Gemini AI API Key
+# Lấy từ: https://aistudio.google.com/apikey
+gemini.api.key=YOUR_GEMINI_API_KEY_HERE
+
+# AI Settings
+ai.enabled=true
+ai.model=gemini-2.5-flash
+ai.max.tokens=2048
+ai.temperature=0.7
+
+# Rate Limiting 
+ai.rate.limit.daily=5
+
+# Cache Settings
+ai.cache.enabled=true
+ai.cache.duration.hours=24

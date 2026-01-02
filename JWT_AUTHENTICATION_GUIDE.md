@@ -51,7 +51,7 @@ http://localhost:8080/student-management-j24/jwt-test.html
 
 ---
 
-## 🔑 API Endpoints
+##  API Endpoints
 
 ### Base URL
 

@@ -43,5 +43,50 @@ Database: SQL server
 Language: JAVA  
 Programs: eclipse, apache tomcat 11.0
 
-Steps to reproduce:  
-Mở Eclipse -> Vào database lấy data -> chạy trên SQL Server(se) -> vào src/main/java đến com.student.utils đến DBConnection sửa đường dẫn và password Sql vào và test.
+##  Setup môi trường (Quan trọng!)
+
+### 1. Cấu hình Database
+
+Tạo file `.env` từ file mẫu:
+
+```bash
+# Copy file mẫu
+cp src/main/resources/.env.example src/main/resources/.env
+```
+
+Sau đó mở file `.env` và điền thông tin database của bạn:
+
+```properties
+DB_URL=jdbc:sqlserver://localhost:1433;databaseName=StudentManagementDB;encrypt=false
+DB_USERNAME=sa
+DB_PASSWORD=your_actual_password
+```
+
+### 2. Cấu hình Gemini AI (cho chatbot)
+
+Tạo file `config.properties` từ file mẫu:
+
+```bash
+# Copy file mẫu
+cp src/main/resources/config.properties.example src/main/resources/config.properties
+```
+
+Lấy API key từ [Google AI Studio](https://aistudio.google.com/apikey) và điền vào:
+
+```properties
+gemini.api.key=YOUR_ACTUAL_API_KEY
+```
+
+### 3. Import Database
+
+- Mở SQL Server Management Studio
+- Chạy các file script trong thư mục `database/`
+- Tạo database tên `StudentManagementDB`
+
+### 4. Chạy ứng dụng
+
+- Mở project trong Eclipse
+- Cấu hình Apache Tomcat 11.0
+- Run project
+
+ **Lưu ý:** Các file `.env` và `config.properties` chứa thông tin nhạy cảm, đã được ignore trong git. KHÔNG commit các file này!
