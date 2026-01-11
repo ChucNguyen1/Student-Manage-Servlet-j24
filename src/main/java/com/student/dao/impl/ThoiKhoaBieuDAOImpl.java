@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.student.dao.ThoiKhoaBieuDAO;
+import com.student.dto.LopThoiKhoaBieuDTO;
 import com.student.mapper.ThoiKhoaBieuMapper;
 import com.student.model.ThoiKhoaBieu;
 import com.student.utils.DBConnection;
@@ -302,4 +303,78 @@ public class ThoiKhoaBieuDAOImpl implements ThoiKhoaBieuDAO {
 		
 		return 0;
 	}
+
+@Override
+public List<LopThoiKhoaBieuDTO> getDanhSachLopTKB(String maNH, Integer maHocKy, 
+Integer maKhoi, Integer maLop) {
+List<LopThoiKhoaBieuDTO> list = new ArrayList<>();
+
+StringBuilder sql = new StringBuilder();
+sql.append("SELECT ");
+sql.append("  l.maLop, l.tenLop, ");
+sql.append("  hk.maHK, hk.tenHK, ");
+sql.append("  nh.maNH, nh.tenNH, ");
+sql.append("  k.maKhoi, k.tenKhoi, ");
+sql.append("  COUNT(tkb.maTKB) AS soTietDaXep ");
+sql.append("FROM LopHoc l ");
+sql.append("CROSS JOIN HocKy hk ");
+sql.append("INNER JOIN NamHoc nh ON hk.maNH = nh.maNH ");
+sql.append("INNER JOIN Khoi k ON l.maKhoi = k.maKhoi ");
+sql.append("LEFT JOIN ThoiKhoaBieu tkb ON l.maLop = tkb.maLop AND hk.maHK = tkb.maHocKy ");
+sql.append("WHERE l.trangThai = 1 ");
+
+List<Object> params = new ArrayList<>();
+
+if (maNH != null && !maNH.isEmpty()) {
+sql.append("AND nh.maNH = ? ");
+params.add(maNH);
+}
+
+if (maHocKy != null) {
+sql.append("AND hk.maHK = ? ");
+params.add(maHocKy);
+}
+
+if (maKhoi != null) {
+sql.append("AND k.maKhoi = ? ");
+params.add(maKhoi);
+}
+
+if (maLop != null) {
+sql.append("AND l.maLop = ? ");
+params.add(maLop);
+}
+
+sql.append("GROUP BY l.maLop, l.tenLop, hk.maHK, hk.tenHK, nh.maNH, nh.tenNH, k.maKhoi, k.tenKhoi ");
+sql.append("ORDER BY nh.maNH DESC, hk.maHK, k.tenKhoi, l.tenLop");
+
+try (Connection conn = DBConnection.getNewConnection(); 
+ PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+for (int i = 0; i < params.size(); i++) {
+ps.setObject(i + 1, params.get(i));
+}
+
+try (ResultSet rs = ps.executeQuery()) {
+while (rs.next()) {
+LopThoiKhoaBieuDTO dto = new LopThoiKhoaBieuDTO();
+dto.setMaLop(rs.getInt("maLop"));
+dto.setTenLop(rs.getString("tenLop"));
+dto.setMaHocKy(rs.getInt("maHK"));
+dto.setTenHocKy(rs.getString("tenHK"));
+dto.setMaNH(rs.getString("maNH"));
+dto.setTenNH(rs.getString("tenNH"));
+dto.setMaKhoi(rs.getInt("maKhoi"));
+dto.setTenKhoi(rs.getString("tenKhoi"));
+dto.setSoTietDaXep(rs.getInt("soTietDaXep"));
+
+list.add(dto);
+}
+}
+} catch (SQLException e) {
+e.printStackTrace();
+}
+
+return list;
+}
 }

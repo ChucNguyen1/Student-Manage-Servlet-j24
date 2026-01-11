@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@WebServlet(urlPatterns = { "/admin/phancong-list", "/admin/phancong-save" })
+@WebServlet(urlPatterns = { "/admin/phancong", "/admin/phancong-detail", "/admin/phancong-save" })
 public class PhanCongController extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -35,10 +35,12 @@ public class PhanCongController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getServletPath();
-        if ("/admin/phancong-list".equals(path)) {
+        if ("/admin/phancong".equals(path)) {
+            showDanhSachLopMonChuaPhanCong(req, resp);
+        } else if ("/admin/phancong-detail".equals(path)) {
             showList(req, resp);
         } else {
-            resp.sendRedirect(req.getContextPath() + "/admin/phancong-list");
+            resp.sendRedirect(req.getContextPath() + "/admin/phancong");
         }
     }
 
@@ -48,8 +50,100 @@ public class PhanCongController extends HttpServlet {
         if ("/admin/phancong-save".equals(path)) {
             handleSave(req, resp);
         } else {
-            resp.sendRedirect(req.getContextPath() + "/admin/phancong-list");
+            resp.sendRedirect(req.getContextPath() + "/admin/phancong");
         }
+    }
+
+    private void showDanhSachLopMonChuaPhanCong(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Lấy tham số lọc
+        String maNH = req.getParameter("maNH");
+        String maHKStr = req.getParameter("maHK");
+        String maKhoiStr = req.getParameter("maKhoi");
+        String maLopStr = req.getParameter("maLop");
+
+        // Lấy danh sách năm học, khối cho các bộ lọc
+        List<NamHoc> listNamHoc = namHocService.findAll();
+        List<Khoi> listKhoi = khoiService.findAll();
+        
+        // Load học kỳ: Nếu chọn năm học -> chỉ load học kỳ của năm đó, ngược lại load tất cả
+        List<HocKy> listHocKy;
+        if (maNH != null && !maNH.isEmpty()) {
+            listHocKy = hocKyService.findByNamHoc(maNH);
+        } else {
+            listHocKy = hocKyService.findAll();
+        }
+
+        req.setAttribute("dsNamHoc", listNamHoc);
+        req.setAttribute("dsHocKy", listHocKy);
+        req.setAttribute("dsKhoi", listKhoi);
+
+        // Lấy danh sách lớp học theo năm học và khối
+        List<LopHoc> listLopHoc = new ArrayList<>();
+        if (maNH != null && !maNH.isEmpty() && maKhoiStr != null && !maKhoiStr.isEmpty()) {
+            try {
+                int maKhoi = Integer.parseInt(maKhoiStr);
+                listLopHoc = lopHocService.findByNamHocAndKhoi(maNH, maKhoi);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        req.setAttribute("dsLopHoc", listLopHoc);
+
+        // Parse tham số bộ lọc
+        Integer maHocKy = null;
+        Integer maKhoi = null;
+        Integer maLop = null;
+        
+        try {
+            if (maHKStr != null && !maHKStr.isEmpty()) {
+                maHocKy = Integer.parseInt(maHKStr);
+            }
+            if (maKhoiStr != null && !maKhoiStr.isEmpty()) {
+                maKhoi = Integer.parseInt(maKhoiStr);
+            }
+            if (maLopStr != null && !maLopStr.isEmpty()) {
+                maLop = Integer.parseInt(maLopStr);
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        // Lấy danh sách LỚP đã phân công (không hiển thị từng môn)
+        List<com.student.dto.LopPhanCongDTO> danhSach = phanCongService.getDanhSachLopPhanCong(
+            maNH, maHocKy, maKhoi, maLop
+        );
+
+        // Phân trang
+        int currentPage = 1;
+        String pageParam = req.getParameter("page");
+        if (pageParam != null) {
+            try {
+                currentPage = Integer.parseInt(pageParam);
+            } catch (NumberFormatException e) {}
+        }
+
+        int pageSize = 10;
+        int totalItems = danhSach.size();
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+
+        int fromIndex = (currentPage - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalItems);
+
+        List<com.student.dto.LopPhanCongDTO> danhSachPage = danhSach.subList(fromIndex, toIndex);
+
+        req.setAttribute("danhSach", danhSachPage);
+        req.setAttribute("currentPage", currentPage);
+        req.setAttribute("totalPages", totalPages);
+        req.setAttribute("totalItems", totalItems);
+
+        // Truyền lại các tham số lọc để giữ trên form
+        req.setAttribute("selectedNH", maNH);
+        req.setAttribute("selectedHK", maHKStr);
+        req.setAttribute("selectedKhoi", maKhoiStr);
+        req.setAttribute("selectedLop", maLopStr);
+
+        RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/views/admin/phancong-danh-sach.jsp");
+        rd.forward(req, resp);
     }
 
     private void showList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -103,7 +197,7 @@ public class PhanCongController extends HttpServlet {
             }
         }
 
-        RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/views/admin/phancong-list.jsp");
+        RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/views/admin/phancong-detail.jsp");
         rd.forward(req, resp);
     }
 
@@ -118,7 +212,7 @@ public class PhanCongController extends HttpServlet {
             
             if (maLopStr == null || maLopStr.isEmpty() || maHocKyStr == null || maHocKyStr.isEmpty()) {
                 session.setAttribute("error", "Thiếu thông tin lớp hoặc học kỳ!");
-                resp.sendRedirect(req.getContextPath() + "/admin/phancong-list");
+                resp.sendRedirect(req.getContextPath() + "/admin/phancong");
                 return;
             }
             
@@ -129,7 +223,7 @@ public class PhanCongController extends HttpServlet {
 
             if (listMaMon == null || listMaMon.length == 0) {
                 session.setAttribute("error", "Không có môn học nào để phân công!");
-                resp.sendRedirect(req.getContextPath() + "/admin/phancong-list?maNH=" + maNH + "&maKhoi=" + maKhoi + "&maLop=" + maLop + "&maHK=" + maHocKy);
+                resp.sendRedirect(req.getContextPath() + "/admin/phancong-detail?maNH=" + maNH + "&maKhoi=" + maKhoi + "&maLop=" + maLop + "&maHK=" + maHocKy);
                 return;
             }
             
@@ -165,15 +259,15 @@ public class PhanCongController extends HttpServlet {
                 session.setAttribute("error", "Lưu thất bại! " + errors.toString());
             }
 
-            resp.sendRedirect(req.getContextPath() + "/admin/phancong-list?maNH=" + maNH + "&maKhoi=" + maKhoi + "&maLop=" + maLop + "&maHK=" + maHocKy);
+            resp.sendRedirect(req.getContextPath() + "/admin/phancong-detail?maNH=" + maNH + "&maKhoi=" + maKhoi + "&maLop=" + maLop + "&maHK=" + maHocKy);
 
         } catch (NumberFormatException e) {
             session.setAttribute("error", "Dữ liệu không hợp lệ: " + e.getMessage());
-            resp.sendRedirect(req.getContextPath() + "/admin/phancong-list");
+            resp.sendRedirect(req.getContextPath() + "/admin/phancong");
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
-            resp.sendRedirect(req.getContextPath() + "/admin/phancong-list");
+            resp.sendRedirect(req.getContextPath() + "/admin/phancong");
         }
     }
 }

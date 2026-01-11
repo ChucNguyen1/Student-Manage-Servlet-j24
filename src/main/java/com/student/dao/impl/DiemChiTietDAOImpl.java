@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.student.dao.DiemChiTietDAO;
+import com.student.dto.LopMonChuaNhapDiemDTO;
 import com.student.mapper.DiemChiTietMapper;
 import com.student.model.DiemChiTiet;
 import com.student.utils.DBConnection;
@@ -173,6 +174,97 @@ public class DiemChiTietDAOImpl implements DiemChiTietDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return list;
+	}
+	
+	@Override
+	public List<LopMonChuaNhapDiemDTO> getDanhSachLopMonChuaNhapDiem(String maNH, Integer maHocKy, 
+			Integer maKhoi, Integer maLop, Integer maMonHoc) {
+		List<LopMonChuaNhapDiemDTO> list = new ArrayList<>();
+		
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT ");
+		sql.append("  l.maLop, l.tenLop, ");
+		sql.append("  mh.maMH, mh.tenMH, ");
+		sql.append("  hk.maHK, hk.tenHK, ");
+		sql.append("  nh.maNH, nh.tenNH, ");
+		sql.append("  k.maKhoi, k.tenKhoi, ");
+		sql.append("  COUNT(DISTINCT hs.maHS) AS soHocSinh, ");
+		sql.append("  COUNT(DISTINCT CASE WHEN d.maHS IS NOT NULL THEN hs.maHS END) AS soHocSinhDaNhap ");
+		sql.append("FROM LopHoc l ");
+		sql.append("CROSS JOIN MonHoc mh ");
+		sql.append("CROSS JOIN HocKy hk ");
+		sql.append("INNER JOIN NamHoc nh ON hk.maNH = nh.maNH ");
+		sql.append("INNER JOIN Khoi k ON l.maKhoi = k.maKhoi ");
+		sql.append("LEFT JOIN HocSinh hs ON l.maLop = hs.maLop AND hs.trangThai = 1 ");
+		sql.append("LEFT JOIN DiemChiTiet d ON hs.maHS = d.maHS AND mh.maMH = d.maMonHoc AND hk.maHK = d.maHocKy ");
+		sql.append("WHERE l.trangThai = 1 AND mh.trangThai = 1 ");
+		
+		List<Object> params = new ArrayList<>();
+		
+		if (maNH != null && !maNH.isEmpty()) {
+			sql.append("AND nh.maNH = ? ");
+			params.add(maNH);
+		}
+		
+		if (maHocKy != null) {
+			sql.append("AND hk.maHK = ? ");
+			params.add(maHocKy);
+		}
+		
+		if (maKhoi != null) {
+			sql.append("AND k.maKhoi = ? ");
+			params.add(maKhoi);
+		}
+		
+		if (maLop != null) {
+			sql.append("AND l.maLop = ? ");
+			params.add(maLop);
+		}
+		
+		if (maMonHoc != null) {
+			sql.append("AND mh.maMH = ? ");
+			params.add(maMonHoc);
+		}
+		
+		sql.append("GROUP BY l.maLop, l.tenLop, mh.maMH, mh.tenMH, hk.maHK, hk.tenHK, ");
+		sql.append("         nh.maNH, nh.tenNH, k.maKhoi, k.tenKhoi ");
+		sql.append("HAVING COUNT(DISTINCT hs.maHS) > 0 ");
+		sql.append("   AND COUNT(DISTINCT hs.maHS) > COUNT(DISTINCT CASE WHEN d.maHS IS NOT NULL THEN hs.maHS END) ");
+		sql.append("ORDER BY nh.maNH DESC, hk.maHK, k.tenKhoi, l.tenLop, mh.tenMH");
+		
+		try (Connection conn = DBConnection.getNewConnection(); 
+			 PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+			
+			// Set parameters
+			for (int i = 0; i < params.size(); i++) {
+				ps.setObject(i + 1, params.get(i));
+			}
+			
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					LopMonChuaNhapDiemDTO dto = new LopMonChuaNhapDiemDTO();
+					dto.setMaLop(rs.getInt("maLop"));
+					dto.setTenLop(rs.getString("tenLop"));
+					dto.setMaMonHoc(rs.getInt("maMH"));
+					dto.setTenMonHoc(rs.getString("tenMH"));
+					dto.setMaHocKy(rs.getInt("maHK"));
+					dto.setTenHocKy(rs.getString("tenHK"));
+					dto.setMaNH(rs.getString("maNH"));
+					dto.setTenNH(rs.getString("tenNH"));
+					dto.setMaKhoi(rs.getInt("maKhoi"));
+					dto.setTenKhoi(rs.getString("tenKhoi"));
+					dto.setSoHocSinh(rs.getInt("soHocSinh"));
+					dto.setSoHocSinhDaNhap(rs.getInt("soHocSinhDaNhap"));
+					dto.setDaHoanThanh(dto.getSoHocSinh() == dto.getSoHocSinhDaNhap());
+					
+					list.add(dto);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 		return list;
 	}
 }

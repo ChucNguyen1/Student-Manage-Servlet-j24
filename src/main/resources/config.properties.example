@@ -1,5 +1,4 @@
 # Gemini AI API Key
-# Lấy từ: https://aistudio.google.com/apikey
 gemini.api.key=YOUR_GEMINI_API_KEY_HERE
 
 # AI Settings

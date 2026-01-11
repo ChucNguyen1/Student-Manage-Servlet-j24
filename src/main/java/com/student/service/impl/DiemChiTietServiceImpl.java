@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.student.dao.DiemChiTietDAO;
 import com.student.dao.impl.DiemChiTietDAOImpl;
+import com.student.dto.LopMonChuaNhapDiemDTO;
 import com.student.model.DiemChiTiet;
 import com.student.service.DiemChiTietService;
 
@@ -79,5 +80,11 @@ public class DiemChiTietServiceImpl implements DiemChiTietService {
 		} else {
 			d.setDiemTBM(null); 
 		}
+	}
+	
+	@Override
+	public List<LopMonChuaNhapDiemDTO> getDanhSachLopMonChuaNhapDiem(String maNH, Integer maHocKy, 
+			Integer maKhoi, Integer maLop, Integer maMonHoc) {
+		return diemDAO.getDanhSachLopMonChuaNhapDiem(maNH, maHocKy, maKhoi, maLop, maMonHoc);
 	}
 }

@@ -34,17 +34,50 @@ public class DashboardController extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		System.out.println("Controller: Đang tải dữ liệu Dashboard...");
-		int totalGiaoVien = giaoVienService.count(null);
-		int totalMonHoc = monHocService.count(null);
-		int totalNamHoc = namHocService.count(null);
-		int totalHocKy = hocKyService.count(null);
+		
+		try {
+			long startTime = System.currentTimeMillis();
+			
+			System.out.println("Dashboard: Đang đếm giáo viên...");
+			int totalGiaoVien = giaoVienService.count(null);
+			System.out.println("Dashboard: Tìm thấy " + totalGiaoVien + " giáo viên");
+			
+			System.out.println("Dashboard: Đang đếm môn học...");
+			int totalMonHoc = monHocService.count(null);
+			System.out.println("Dashboard: Tìm thấy " + totalMonHoc + " môn học");
+			
+			System.out.println("Dashboard: Đang đếm năm học...");
+			int totalNamHoc = namHocService.count(null);
+			System.out.println("Dashboard: Tìm thấy " + totalNamHoc + " năm học");
+			
+			System.out.println("Dashboard: Đang đếm học kỳ...");
+			int totalHocKy = hocKyService.count(null);
+			System.out.println("Dashboard: Tìm thấy " + totalHocKy + " học kỳ");
 
-		req.setAttribute("totalGiaoVien", totalGiaoVien);
-		req.setAttribute("totalMonHoc", totalMonHoc);
-		req.setAttribute("totalNamHoc", totalNamHoc);
-		req.setAttribute("totalHocKy", totalHocKy);
+			long endTime = System.currentTimeMillis();
+			System.out.println("Dashboard: Tải dữ liệu hoàn tất trong " + (endTime - startTime) + "ms");
 
-		RequestDispatcher rd = req.getRequestDispatcher("/index.jsp");
-		rd.forward(req, resp);
+			req.setAttribute("totalGiaoVien", totalGiaoVien);
+			req.setAttribute("totalMonHoc", totalMonHoc);
+			req.setAttribute("totalNamHoc", totalNamHoc);
+			req.setAttribute("totalHocKy", totalHocKy);
+
+			RequestDispatcher rd = req.getRequestDispatcher("/index.jsp");
+			rd.forward(req, resp);
+			
+		} catch (Exception e) {
+			System.err.println("LỖI tại Dashboard Controller: " + e.getMessage());
+			e.printStackTrace();
+			
+			// Set giá trị mặc định khi lỗi
+			req.setAttribute("totalGiaoVien", 0);
+			req.setAttribute("totalMonHoc", 0);
+			req.setAttribute("totalNamHoc", 0);
+			req.setAttribute("totalHocKy", 0);
+			req.setAttribute("error", "Không thể tải dữ liệu dashboard. Vui lòng kiểm tra kết nối database.");
+			
+			RequestDispatcher rd = req.getRequestDispatcher("/index.jsp");
+			rd.forward(req, resp);
+		}
 	}
 }

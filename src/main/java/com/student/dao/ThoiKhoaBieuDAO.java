@@ -3,6 +3,7 @@ package com.student.dao;
 import java.util.List;
 import java.util.Map;
 
+import com.student.dto.LopThoiKhoaBieuDTO;
 import com.student.model.ThoiKhoaBieu;
 
 /**
@@ -44,4 +45,16 @@ public interface ThoiKhoaBieuDAO {
 	boolean deleteAll(int maLop, int maHocKy);
 	
 	int countScheduled(int maLop, int maHocKy);
+	
+	/**
+	 * Lấy danh sách lớp với thống kê TKB (nhóm theo lớp, không hiển thị từng tiết).
+	 * 
+	 * @param maNH Mã năm học
+	 * @param maHocKy Mã học kỳ
+	 * @param maKhoi Mã khối
+	 * @param maLop Mã lớp
+	 * @return Danh sách LopThoiKhoaBieuDTO
+	 */
+	List<LopThoiKhoaBieuDTO> getDanhSachLopTKB(String maNH, Integer maHocKy, 
+			Integer maKhoi, Integer maLop);
 }

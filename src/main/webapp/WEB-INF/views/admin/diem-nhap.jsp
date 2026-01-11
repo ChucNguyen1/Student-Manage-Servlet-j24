@@ -8,11 +8,12 @@
 <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Quản lý Điểm số</h1>
+      <h1>Nhập Điểm Chi Tiết</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="${baseURL}/">Trang chủ</a></li>
-          <li class="breadcrumb-item active">Sổ điểm</li>
+          <li class="breadcrumb-item"><a href="${baseURL}/admin/diem">Danh sách nhập điểm</a></li>
+          <li class="breadcrumb-item active">Nhập điểm</li>
         </ol>
       </nav>
     </div>
@@ -36,12 +37,12 @@
             <div class="card-body">
               <h5 class="card-title">Chọn lớp cần nhập điểm</h5>
               
-              <form action="${baseURL}/admin/diem-list" method="GET" id="filterForm">
+              <form action="${baseURL}/admin/diem-nhap" method="GET" id="filterForm">
                 
                 <div class="row g-3">
                     <div class="col-md-2">
                       <label class="form-label fw-bold">Năm học</label>
-                      <select class="form-select" name="maNH" id="selectNamHoc">
+                      <select class="form-select" name="maNH" onchange="document.getElementById('filterForm').submit()">
                         <option value="" disabled selected>-- Chọn năm --</option>
                         <c:forEach var="nh" items="${dsNamHoc}">
                            <option value="${nh.maNH}" ${param.maNH == nh.maNH ? 'selected' : ''}>${nh.tenNH}</option>
@@ -51,17 +52,17 @@
     
                     <div class="col-md-2">
                       <label class="form-label fw-bold">Học kỳ</label>
-                      <select class="form-select" name="maHK" id="selectHocKy">
-                        <option value="" disabled selected>-- Chọn năm trước --</option>
+                      <select class="form-select" name="maHK">
+                        <option value="" disabled selected>-- Chọn kỳ --</option>
                         <c:forEach var="hk" items="${dsHocKy}">
-                           <option value="${hk.maHK}" data-manh="${hk.maNH}" ${param.maHK == hk.maHK ? 'selected' : ''}>${hk.tenHK}</option>
+                           <option value="${hk.maHK}" ${param.maHK == hk.maHK ? 'selected' : ''}>${hk.tenHK}</option>
                         </c:forEach>
                       </select>
                     </div>
     
                     <div class="col-md-2">
                       <label class="form-label fw-bold">Khối</label>
-                      <select class="form-select" name="maKhoi" id="selectKhoi">
+                      <select class="form-select" name="maKhoi" onchange="document.getElementById('filterForm').submit()">
                         <option value="" disabled selected>-- Chọn khối --</option>
                         <c:forEach var="k" items="${dsKhoi}">
                            <option value="${k.maKhoi}" ${param.maKhoi == k.maKhoi ? 'selected' : ''}>${k.tenKhoi}</option>
@@ -71,8 +72,8 @@
     
                     <div class="col-md-3">
                       <label class="form-label fw-bold">Lớp</label>
-                      <select class="form-select" name="maLop" id="selectLop">
-                        <option value="" disabled selected>-- Chọn năm & khối --</option>
+                      <select class="form-select" name="maLop">
+                        <option value="" disabled selected>-- Chọn lớp --</option>
                         <c:forEach var="lop" items="${dsLopHoc}">
                            <option value="${lop.maLop}" ${param.maLop == lop.maLop ? 'selected' : ''}>${lop.tenLop}</option>
                         </c:forEach>
@@ -112,6 +113,8 @@
 
               <form action="${baseURL}/admin/diem-save" method="POST">
                 
+                <input type="hidden" name="maNH" value="${param.maNH}">
+                <input type="hidden" name="maKhoi" value="${param.maKhoi}">
                 <input type="hidden" name="maLop" value="${param.maLop}">
                 <input type="hidden" name="maMH" value="${param.maMH}">
                 <input type="hidden" name="maHK" value="${param.maHK}">
@@ -194,53 +197,6 @@
   document.addEventListener('DOMContentLoaded', (event) => {
     const ts = document.getElementById('toastSuccess'); if(ts) new bootstrap.Toast(ts, {delay:5000}).show();
     const te = document.getElementById('toastError'); if(te) new bootstrap.Toast(te, {delay:5000}).show();
-
-    // Cascade dropdown: Năm học -> Học kỳ
-    const selectNamHoc = document.getElementById('selectNamHoc');
-    const selectHocKy = document.getElementById('selectHocKy');
-    const selectKhoi = document.getElementById('selectKhoi');
-    const filterForm = document.getElementById('filterForm');
-
-    // Lưu tất cả option học kỳ
-    const allHocKyOptions = Array.from(selectHocKy.options).slice(1);
-
-    // Filter học kỳ theo năm học
-    function filterHocKy() {
-      const selectedNamHoc = selectNamHoc.value;
-      
-      // Xóa tất cả option hiện tại (trừ option đầu tiên)
-      selectHocKy.innerHTML = '<option value="" disabled selected>-- Chọn năm trước --</option>';
-      
-      if (selectedNamHoc) {
-        // Thêm các học kỳ của năm học đã chọn
-        allHocKyOptions.forEach(option => {
-          if (option.getAttribute('data-manh') === selectedNamHoc) {
-            selectHocKy.appendChild(option.cloneNode(true));
-          }
-        });
-        selectHocKy.options[0].text = '-- Chọn kỳ --';
-        selectHocKy.options[0].removeAttribute('disabled');
-      }
-      
-      // Restore selected value if exists
-      const selectedHK = '${param.maHK}';
-      if (selectedHK) {
-        selectHocKy.value = selectedHK;
-      }
-    }
-
-    // Auto submit khi chọn năm học hoặc khối
-    selectNamHoc.addEventListener('change', function() {
-      filterHocKy();
-      filterForm.submit();
-    });
-
-    selectKhoi.addEventListener('change', function() {
-      filterForm.submit();
-    });
-
-    // Initial filter on page load
-    filterHocKy();
   });
 </script>
 

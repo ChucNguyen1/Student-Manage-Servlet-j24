@@ -9,6 +9,7 @@ import com.student.dao.PhanCongDAO;
 import com.student.dao.ThoiKhoaBieuDAO;
 import com.student.dao.impl.PhanCongDAOImpl;
 import com.student.dao.impl.ThoiKhoaBieuDAOImpl;
+import com.student.dto.LopThoiKhoaBieuDTO;
 import com.student.model.PhanCong;
 import com.student.model.ThoiKhoaBieu;
 import com.student.service.ThoiKhoaBieuService;
@@ -157,4 +158,10 @@ public class ThoiKhoaBieuServiceImpl implements ThoiKhoaBieuService {
 		
 		return result;
 	}
+
+@Override
+public List<LopThoiKhoaBieuDTO> getDanhSachLopTKB(String maNH, Integer maHocKy, 
+Integer maKhoi, Integer maLop) {
+return tkbDAO.getDanhSachLopTKB(maNH, maHocKy, maKhoi, maLop);
+}
 }

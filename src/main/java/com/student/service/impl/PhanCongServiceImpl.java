@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.student.dao.PhanCongDAO;
 import com.student.dao.impl.PhanCongDAOImpl;
+import com.student.dto.LopMonChuaPhanCongDTO;
+import com.student.dto.LopPhanCongDTO;
 import com.student.model.MonHoc;
 import com.student.model.PhanCong;
 import com.student.service.MonHocService;
@@ -89,5 +91,17 @@ public class PhanCongServiceImpl implements PhanCongService {
 	public int countPhanCong(int maLop, int maHocKy) {
 		List<PhanCong> list = phanCongDAO.findByLopAndHocKy(maLop, maHocKy);
 		return (list != null) ? list.size() : 0;
+	}
+	
+	@Override
+	public List<LopMonChuaPhanCongDTO> getDanhSachLopMonChuaPhanCong(String maNH, Integer maHocKy, 
+			Integer maKhoi, Integer maLop, Integer maMonHoc) {
+		return phanCongDAO.getDanhSachLopMonChuaPhanCong(maNH, maHocKy, maKhoi, maLop, maMonHoc);
+	}
+	
+	@Override
+	public List<LopPhanCongDTO> getDanhSachLopPhanCong(String maNH, Integer maHocKy, 
+			Integer maKhoi, Integer maLop) {
+		return phanCongDAO.getDanhSachLopPhanCong(maNH, maHocKy, maKhoi, maLop);
 	}
 }

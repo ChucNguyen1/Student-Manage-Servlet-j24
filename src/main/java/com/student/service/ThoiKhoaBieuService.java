@@ -3,6 +3,7 @@ package com.student.service;
 import java.util.List;
 import java.util.Map;
 
+import com.student.dto.LopThoiKhoaBieuDTO;
 import com.student.model.PhanCong;
 import com.student.model.ThoiKhoaBieu;
 
@@ -39,4 +40,10 @@ public interface ThoiKhoaBieuService {
 	 * @return Map với key: "valid" (true/false), "errors" (List<String>)
 	 */
 	Map<String, Object> validate(ThoiKhoaBieu tkb);
+	
+	/**
+	 * Lấy danh sách lớp với thống kê TKB
+	 */
+	List<LopThoiKhoaBieuDTO> getDanhSachLopTKB(String maNH, Integer maHocKy, 
+			Integer maKhoi, Integer maLop);
 }

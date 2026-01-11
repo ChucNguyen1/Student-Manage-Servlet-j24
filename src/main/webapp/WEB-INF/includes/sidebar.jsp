@@ -85,7 +85,7 @@ isELIgnored="false" %>
       </li>
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="${baseURL}/admin/diem-list">
+        <a class="nav-link collapsed" href="${baseURL}/admin/diem">
           <i class="bi bi-card-checklist"></i>
           <span>Quản lý Điểm số</span>
         </a>
@@ -99,14 +99,14 @@ isELIgnored="false" %>
       </li>
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="${baseURL}/admin/phancong-list">
+        <a class="nav-link collapsed" href="${baseURL}/admin/phancong">
           <i class="bi bi-calendar-check"></i>
           <span>Quản lý Phân công</span>
         </a>
       </li>
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="${baseURL}/admin/tkb-list">
+        <a class="nav-link collapsed" href="${baseURL}/admin/tkb">
           <i class="bi bi-calendar3"></i>
           <span>Quản lý Thời khóa biểu</span>
         </a>

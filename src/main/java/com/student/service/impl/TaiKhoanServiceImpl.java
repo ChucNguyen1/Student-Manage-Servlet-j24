@@ -48,7 +48,14 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
             return null;
         }
 
+        System.out.println("=== BẮT ĐẦU LOGIN ===");
+        System.out.println("Username: " + username);
+        long startTime = System.currentTimeMillis();
+        
         TaiKhoan taiKhoan = taiKhoanDAO.checkLogin(username.trim(), password);
+        
+        long endTime = System.currentTimeMillis();
+        System.out.println("Login query completed in " + (endTime - startTime) + "ms");
         
         if (taiKhoan != null) {
             System.out.println("Đăng nhập thành công: " + taiKhoan.getUsername() + 
@@ -56,6 +63,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         } else {
             System.out.println("Đăng nhập thất bại: Sai username hoặc password");
         }
+        System.out.println("=== KẾT THÚC LOGIN ===");
         
         return taiKhoan;
     }

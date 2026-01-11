@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.student.dto.LopMonChuaNhapDiemDTO;
 import com.student.model.DiemChiTiet;
 import com.student.model.HocKy;
 import com.student.model.Khoi;
@@ -31,7 +32,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@WebServlet(urlPatterns = { "/admin/diem-list", "/admin/diem-save" })
+@WebServlet(urlPatterns = { "/admin/diem", "/admin/diem-nhap", "/admin/diem-save" })
 public class DiemController extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -47,10 +48,12 @@ public class DiemController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String path = req.getServletPath();
-		if ("/admin/diem-list".equals(path)) {
+		if ("/admin/diem".equals(path)) {
+			showDanhSachLopMonChuaNhapDiem(req, resp);
+		} else if ("/admin/diem-nhap".equals(path)) {
 			showBangDiem(req, resp);
 		} else {
-			resp.sendRedirect(req.getContextPath() + "/admin/diem-list");
+			resp.sendRedirect(req.getContextPath() + "/admin/diem");
 		}
 	}
 
@@ -60,8 +63,99 @@ public class DiemController extends HttpServlet {
 		if ("/admin/diem-save".equals(path)) {
 			handleSaveDiem(req, resp);
 		} else {
-			resp.sendRedirect(req.getContextPath() + "/admin/diem-list");
+			resp.sendRedirect(req.getContextPath() + "/admin/diem");
 		}
+	}
+	
+	// --- HIỂN THỊ DANH SÁCH LỚP-MÔN CHƯA NHẬP ĐIỂM ---
+	private void showDanhSachLopMonChuaNhapDiem(HttpServletRequest req, HttpServletResponse resp) 
+			throws ServletException, IOException {
+		
+		// Lấy danh sách cho bộ lọc
+		List<NamHoc> listNamHoc = namHocService.findAll();
+		List<HocKy> listHocKy = hocKyService.findAll();
+		List<MonHoc> listMonHoc = monHocService.findAll();
+		List<Khoi> listKhoi = khoiService.findAll();
+		
+		req.setAttribute("dsNamHoc", listNamHoc);
+		req.setAttribute("dsHocKy", listHocKy);
+		req.setAttribute("dsMonHoc", listMonHoc);
+		req.setAttribute("dsKhoi", listKhoi);
+		
+		// Lấy tham số bộ lọc
+		String maNH = req.getParameter("maNH");
+		String maHocKyStr = req.getParameter("maHK");
+		String maKhoiStr = req.getParameter("maKhoi");
+		String maLopStr = req.getParameter("maLop");
+		String maMonHocStr = req.getParameter("maMH");
+		
+		Integer maHocKy = null;
+		Integer maKhoi = null;
+		Integer maLop = null;
+		Integer maMonHoc = null;
+		
+		if (maHocKyStr != null && !maHocKyStr.isEmpty()) {
+			try { maHocKy = Integer.parseInt(maHocKyStr); } catch (NumberFormatException e) {}
+		}
+		if (maKhoiStr != null && !maKhoiStr.isEmpty()) {
+			try { maKhoi = Integer.parseInt(maKhoiStr); } catch (NumberFormatException e) {}
+		}
+		if (maLopStr != null && !maLopStr.isEmpty()) {
+			try { maLop = Integer.parseInt(maLopStr); } catch (NumberFormatException e) {}
+		}
+		if (maMonHocStr != null && !maMonHocStr.isEmpty()) {
+			try { maMonHoc = Integer.parseInt(maMonHocStr); } catch (NumberFormatException e) {}
+		}
+		
+		// Cập nhật danh sách học kỳ khi chọn năm học
+		if (maNH != null && !maNH.isEmpty()) {
+			listHocKy = hocKyService.findByNamHoc(maNH);
+			req.setAttribute("dsHocKy", listHocKy);
+		}
+		
+		// Cập nhật danh sách lớp khi chọn năm học và khối
+		List<LopHoc> listLopHoc = new ArrayList<>();
+		if (maNH != null && !maNH.isEmpty() && maKhoi != null) {
+			listLopHoc = lopHocService.findByNamHocAndKhoi(maNH, maKhoi);
+		}
+		req.setAttribute("dsLopHoc", listLopHoc);
+		
+		// Lấy danh sách lớp-môn chưa nhập điểm
+		List<LopMonChuaNhapDiemDTO> danhSachFull = diemService.getDanhSachLopMonChuaNhapDiem(
+				maNH, maHocKy, maKhoi, maLop, maMonHoc);
+		
+		// Phân trang
+		int pageSize = 10;
+		int currentPage = 1;
+		String pageStr = req.getParameter("page");
+		if (pageStr != null && !pageStr.isEmpty()) {
+			try {
+				currentPage = Integer.parseInt(pageStr);
+				if (currentPage < 1) currentPage = 1;
+			} catch (NumberFormatException e) {}
+		}
+		
+		int totalItems = danhSachFull.size();
+		int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+		if (totalPages < 1) totalPages = 1;
+		if (currentPage > totalPages) currentPage = totalPages;
+		
+		int fromIndex = (currentPage - 1) * pageSize;
+		int toIndex = Math.min(fromIndex + pageSize, totalItems);
+		
+		List<LopMonChuaNhapDiemDTO> danhSach = new ArrayList<>();
+		if (totalItems > 0) {
+			danhSach = danhSachFull.subList(fromIndex, toIndex);
+		}
+		
+		req.setAttribute("dsLopMon", danhSach);
+		req.setAttribute("currentPage", currentPage);
+		req.setAttribute("totalPages", totalPages);
+		req.setAttribute("totalItems", totalItems);
+		req.setAttribute("pageSize", pageSize);
+		
+		RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/views/admin/diem-danh-sach.jsp");
+		rd.forward(req, resp);
 	}
 
 	// --- HIỂN THỊ BẢNG ĐIỂM ---
@@ -110,7 +204,7 @@ public class DiemController extends HttpServlet {
 			}
 		}
 
-		RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/views/admin/diem-list.jsp");
+		RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/views/admin/diem-nhap.jsp");
 		rd.forward(req, resp);
 	}
 
@@ -148,13 +242,14 @@ public class DiemController extends HttpServlet {
 				session.setAttribute("message", "Lưu điểm thành công!");
 			}
 
-			resp.sendRedirect(req.getContextPath() + "/admin/diem-list?maLop=" + maLop + "&maMH=" + maMonHoc + "&maHK="
-					+ maHocKy);
+			resp.sendRedirect(req.getContextPath() + "/admin/diem-nhap?maNH=" + req.getParameter("maNH") 
+					+ "&maKhoi=" + req.getParameter("maKhoi") + "&maLop=" + maLop 
+					+ "&maMH=" + maMonHoc + "&maHK=" + maHocKy);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			session.setAttribute("error", "Lỗi khi lưu điểm: " + e.getMessage());
-			resp.sendRedirect(req.getContextPath() + "/admin/diem-list");
+			resp.sendRedirect(req.getContextPath() + "/admin/diem");
 		}
 	}
 

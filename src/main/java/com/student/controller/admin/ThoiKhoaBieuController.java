@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@WebServlet(urlPatterns = { "/admin/tkb-list", "/admin/tkb-save", "/admin/tkb-delete", "/admin/tkb-reset" })
+@WebServlet(urlPatterns = { "/admin/tkb", "/admin/tkb-detail", "/admin/tkb-save", "/admin/tkb-delete", "/admin/tkb-reset" })
 public class ThoiKhoaBieuController extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -33,8 +33,10 @@ public class ThoiKhoaBieuController extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String path = req.getServletPath();
 
-		if (path.equals("/admin/tkb-list")) {
-			showTKBForm(req, resp);
+		if (path.equals("/admin/tkb")) {
+			showDanhSachLop(req, resp);  // Danh sách lớp
+		} else if (path.equals("/admin/tkb-detail")) {
+			showTKBForm(req, resp);  // Form xếp TKB chi tiết
 		} else if (path.equals("/admin/tkb-reset")) {
 			resetTKB(req, resp);
 		}
@@ -52,7 +54,102 @@ public class ThoiKhoaBieuController extends HttpServlet {
 	}
 
 	/**
-	 * Hiển thị form xếp TKB
+	 * Hiển thị danh sách lớp TKB (tương tự phân công)
+	 */
+	private void showDanhSachLop(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// Lấy tham số lọc
+		String maNH = req.getParameter("maNH");
+		String maHKStr = req.getParameter("maHK");
+		String maKhoiStr = req.getParameter("maKhoi");
+		String maLopStr = req.getParameter("maLop");
+
+		// Lấy danh sách cho bộ lọc
+		List<NamHoc> listNamHoc = namHocService.findAll();
+		List<Khoi> listKhoi = khoiService.findAll();
+		
+		// Load học kỳ: Nếu chọn năm học -> chỉ load học kỳ của năm đó, ngược lại load tất cả
+		List<HocKy> listHocKy;
+		if (maNH != null && !maNH.isEmpty()) {
+			listHocKy = hocKyService.findByNamHoc(maNH);
+		} else {
+			listHocKy = hocKyService.findAll();
+		}
+
+		req.setAttribute("dsNamHoc", listNamHoc);
+		req.setAttribute("dsHocKy", listHocKy);
+		req.setAttribute("dsKhoi", listKhoi);
+
+		// Lấy danh sách lớp học theo năm học và khối
+		List<LopHoc> listLopHoc = new ArrayList<>();
+		if (maNH != null && !maNH.isEmpty() && maKhoiStr != null && !maKhoiStr.isEmpty()) {
+			try {
+				int maKhoi = Integer.parseInt(maKhoiStr);
+				listLopHoc = lopHocService.findByNamHocAndKhoi(maNH, maKhoi);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		req.setAttribute("dsLopHoc", listLopHoc);
+
+		// Parse tham số
+		Integer maHocKy = null;
+		Integer maKhoi = null;
+		Integer maLop = null;
+		
+		try {
+			if (maHKStr != null && !maHKStr.isEmpty()) {
+				maHocKy = Integer.parseInt(maHKStr);
+			}
+			if (maKhoiStr != null && !maKhoiStr.isEmpty()) {
+				maKhoi = Integer.parseInt(maKhoiStr);
+			}
+			if (maLopStr != null && !maLopStr.isEmpty()) {
+				maLop = Integer.parseInt(maLopStr);
+			}
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+
+		// Lấy danh sách lớp với thống kê TKB
+		List<com.student.dto.LopThoiKhoaBieuDTO> danhSach = tkbService.getDanhSachLopTKB(
+			maNH, maHocKy, maKhoi, maLop
+		);
+
+		// Phân trang
+		int currentPage = 1;
+		String pageParam = req.getParameter("page");
+		if (pageParam != null) {
+			try {
+				currentPage = Integer.parseInt(pageParam);
+			} catch (NumberFormatException e) {}
+		}
+
+		int pageSize = 10;
+		int totalItems = danhSach.size();
+		int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+
+		int fromIndex = (currentPage - 1) * pageSize;
+		int toIndex = Math.min(fromIndex + pageSize, totalItems);
+
+		List<com.student.dto.LopThoiKhoaBieuDTO> danhSachPage = danhSach.subList(fromIndex, toIndex);
+
+		req.setAttribute("danhSach", danhSachPage);
+		req.setAttribute("currentPage", currentPage);
+		req.setAttribute("totalPages", totalPages);
+		req.setAttribute("totalItems", totalItems);
+
+		// Truyền lại các tham số lọc
+		req.setAttribute("selectedNH", maNH);
+		req.setAttribute("selectedHK", maHKStr);
+		req.setAttribute("selectedKhoi", maKhoiStr);
+		req.setAttribute("selectedLop", maLopStr);
+
+		RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/views/admin/tkb-danh-sach.jsp");
+		rd.forward(req, resp);
+	}
+
+	/**
+	 * Hiển thị form xếp TKB chi tiết
 	 */
 	private void showTKBForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession();
@@ -201,13 +298,13 @@ public class ThoiKhoaBieuController extends HttpServlet {
 				session.setAttribute("error", "Lưu thất bại! " + errors.toString());
 			}
 
-			resp.sendRedirect(req.getContextPath() + "/admin/tkb-list?maNH=" + maNH + 
+			resp.sendRedirect(req.getContextPath() + "/admin/tkb-detail?maNH=" + maNH + 
 				"&maKhoi=" + maKhoi + "&maLop=" + maLop + "&maHK=" + maHocKy);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			session.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
-			resp.sendRedirect(req.getContextPath() + "/admin/tkb-list");
+			resp.sendRedirect(req.getContextPath() + "/admin/tkb");
 		}
 	}
 

@@ -12,8 +12,8 @@
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="${baseURL}/">Trang chủ</a></li>
-          <li class="breadcrumb-item">Đào tạo</li>
-          <li class="breadcrumb-item active">Phân công</li>
+          <li class="breadcrumb-item"><a href="${baseURL}/admin/phancong">Phân công</a></li>
+          <li class="breadcrumb-item active">Chi tiết phân công</li>
         </ol>
       </nav>
     </div>
